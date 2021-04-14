@@ -1,10 +1,9 @@
-import { Request, Response, Router } from 'express';
+import { Router } from 'express';
+import { leaderboardController } from '../controllers/leaderboard.controller';
 
 const router = Router();
 
 // GET /
-router.get('/', (req: Request, res: Response): void => {
-    res.status(200).json({ hello: 'leaderboards' });
-});
+router.get('/', leaderboardController.bindRequestHandler(leaderboardController.hello));
 
 export { router as leaderboardRouter };

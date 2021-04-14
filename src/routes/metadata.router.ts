@@ -1,10 +1,11 @@
-import { Request, Response, Router } from 'express';
+import { Router } from 'express';
+import { metadataController } from '../controllers/metadata.controller';
 
 const router = Router();
 
 // GET /
-router.get('/', (req: Request, res: Response): void => {
-    res.status(200).json({ hello: 'metadata' });
-});
+router.get('/', metadataController.bindRequestHandler(metadataController.hello));
+
+router.get('/test', metadataController.bindRequestHandler(metadataController.metadataTest));
 
 export { router as metadataRouter };

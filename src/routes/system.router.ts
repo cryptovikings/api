@@ -7,7 +7,7 @@ const router = Router();
 
 router.use('/metadata', metadataRouter);
 
-router.use('/leaderboards', leaderboardRouter);
+router.use('/leaderboard', leaderboardRouter);
 
 // fallback route
 router.use('*', (req: Request, res: Response): void => {
