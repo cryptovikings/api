@@ -1,18 +1,46 @@
+import express, { Application, NextFunction, Request, Response } from 'express';
 import http from 'http';
-import { app } from './app';
+import { systemRouter } from './routes/system.router';
 
-// configure the app
+// port
 const port = 8080;
-app.set('port', port);
 
-// configure the server
+// app + middleware
+const app: Application = express();
+app.set('port', port);
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+
+// CORS
+app.use((req: Request, res: Response, next: NextFunction): void => {
+    // TODO: restrict origin if applicable for deployment
+    res.header('Access-Control-Allow-Origin', '*');
+
+    // TODO evaluate ongoing
+    res.header('Access-Control-Allow-Headers', 'Origin, Content-Type, Accept');
+
+    // TODO evaluate ongoing
+    res.header('Access-Control-Allow-Methods', 'OPTIONS, GET, POST');
+
+    next();
+});
+
+// system router
+app.use('/api', systemRouter);
+
+// error handling
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+    res.status(500).json({ name: err.name, message: err.message });
+});
+
+// server
 const server: http.Server = http.createServer(app);
 
-// set up error handling
+// server error handling
 server.on('error', (error: NodeJS.ErrnoException) => {
     if (error.syscall !== 'listen') {
         throw error;
-    };
+    }
 
     switch (error.code) {
         case 'EACCESS':
@@ -30,7 +58,7 @@ server.on('error', (error: NodeJS.ErrnoException) => {
     }
 });
 
-// notify when started
+// server listening handler
 server.on('listening', () => {
     const addr = server.address();
 
@@ -46,5 +74,5 @@ server.on('listening', () => {
     console.log(`Listening on ${str}`)
 });
 
-// start the server
+// start server
 server.listen(port);

@@ -1,16 +1,17 @@
 import { Request, Response, Router } from 'express';
+import { metadataRouter } from './metadata.router';
+import { leaderboardRouter } from './leaderboard.router';
 
 // system Router
 const router = Router();
 
-// GET /
-router.get('/', (req: Request, res: Response): void => {
-    res.status(200).json({ hello: 'world' });
-});
+router.use('/metadata', metadataRouter);
+
+router.use('/leaderboards', leaderboardRouter);
 
 // fallback route
 router.use('*', (req: Request, res: Response): void => {
     res.status(404).json({ message: 'Endpoint Not Found' });
 });
 
-export { router };
+export { router as systemRouter };
