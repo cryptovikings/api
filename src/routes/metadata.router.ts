@@ -6,6 +6,6 @@ const router = Router();
 // GET /
 router.get('/', metadataController.bindRequestHandler(metadataController.hello));
 
-router.get('/test', metadataController.bindRequestHandler(metadataController.metadataTest));
+router.post('/test', metadataController.bindRequestHandler(metadataController.metadataTest));
 
 export { router as metadataRouter };

@@ -1,7 +1,7 @@
 /**
  * Utility type restricting a String value to one of the valid Conditions for items
  */
-type ItemCondition = 'None' | 'Broken' | 'Damaged' | 'Worn' | 'Good' | 'Perfect';
+export type ItemCondition = 'None' | 'Broken' | 'Damaged' | 'Worn' | 'Good' | 'Perfect';
 
 /**
  * Interface representing the Viking metadata that will be generated and provided to OpenSea for Viking listings

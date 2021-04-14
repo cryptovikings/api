@@ -2,6 +2,9 @@
  * Interface representing the Viking data that will be received in relation to a given NFT
  */
 export interface Viking {
+    /** Name */
+    name: string;
+
     /** Weapon type (style) */
     weapon: number;
     /** Attack statistic (implying Weapon Condition) */
