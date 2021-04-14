@@ -6,7 +6,8 @@
         "moduleResolution": "node",
         "sourceMap": true,
         "strict": true,
-        "downlevelIteration": true
+        "downlevelIteration": true,
+        "esModuleInterop": true
     },
     "include": [
         "./src/**/*.ts"
