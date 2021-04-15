@@ -4,9 +4,9 @@
 export type ItemCondition = 'None' | 'Broken' | 'Damaged' | 'Worn' | 'Good' | 'Perfect';
 
 /**
- * Interface representing the Viking metadata that will be generated and provided to OpenSea for Viking listings
+ * Model representing the Viking Metadata that will be generated and provided to OpenSea for Viking listings
  */
-export interface Metadata {
+export interface VikingMetadata {
     name: string;
     description: string;
     external_link: string;

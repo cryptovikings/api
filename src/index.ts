@@ -1,6 +1,6 @@
 import express, { Application, NextFunction, Request, Response } from 'express';
 import http from 'http';
-import { systemRouter } from './routes/system.router';
+import { apiRouter } from './routes/api.router';
 
 // port
 const port = 8080;
@@ -25,8 +25,8 @@ app.use((req: Request, res: Response, next: NextFunction): void => {
     next();
 });
 
-// system router
-app.use('/api', systemRouter);
+// API router
+app.use('/api', apiRouter);
 
 // error handling
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {

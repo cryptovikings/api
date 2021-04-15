@@ -1,11 +1,10 @@
 import { Router } from 'express';
 import { metadataController } from '../controllers/metadata.controller';
 
-const router = Router();
+/** The Router handling the /metadata route collection */
+const metadataRouter = Router();
 
-// GET /
-router.get('/', metadataController.bindRequestHandler(metadataController.hello));
+// POST /generate => (MetadataController).generate()
+metadataRouter.post('/generate', metadataController.bindRequestHandler(metadataController.generate));
 
-router.post('/test', metadataController.bindRequestHandler(metadataController.metadataTest));
-
-export { router as metadataRouter };
+export { metadataRouter };

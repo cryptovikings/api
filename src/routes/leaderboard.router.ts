@@ -1,9 +1,10 @@
 import { Router } from 'express';
 import { leaderboardController } from '../controllers/leaderboard.controller';
 
-const router = Router();
+/** The Router handling the /leaderboard route collection */
+const leaderboardRouter = Router();
 
-// GET /
-router.get('/', leaderboardController.bindRequestHandler(leaderboardController.hello));
+// GET / => (LeaderboardController).hello()
+leaderboardRouter.get('/', leaderboardController.bindRequestHandler(leaderboardController.hello));
 
-export { router as leaderboardRouter };
+export { leaderboardRouter };

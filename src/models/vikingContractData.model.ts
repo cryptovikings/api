@@ -1,7 +1,8 @@
 /**
- * Interface representing the Viking data that will be received in relation to a given NFT
+ * Model representing the Viking Contract Data that will be received in relation to a given NFT, serving as a generative basis for Viking
+ *   Metadata and directing the Compositor to generate an image
  */
-export interface Viking {
+export interface VikingContractData {
     /** Name */
     name: string;
 

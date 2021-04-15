@@ -1,9 +1,20 @@
-import { ItemCondition, Metadata } from '../types/metadata.interface';
-import { Viking } from '../types/viking.interface';
+import { ItemCondition, VikingMetadata } from '../models/vikingMetadata.model';
+import { VikingContractData } from '../models/vikingContractData.model';
 
+/**
+ * The MetadataHelper, implementing the actual metadata generation functionality, including Type/Style name resolution and ItemCondition
+ *   mappings
+ */
 export class MetadataHelper {
 
-    public static generateMetadata(viking: Viking): Metadata {
+    /**
+     * Generate a Viking Metadata structure based on a given Viking Contract Data structure
+     *
+     * @param viking the Viking Contract Data
+     *
+     * @returns the Viking Metadata
+     */
+    public static generateMetadata(viking: VikingContractData): VikingMetadata {
         const appearance = viking.appearance.toString(10);
 
         // TODO beard is special - it cannot be blow 10. The others have a minimum value of 0
@@ -130,42 +141,114 @@ export class MetadataHelper {
         };
     }
 
+    /**
+     * Resolve the name of a Beard Type selected by a number in the range 0-99 by the Viking Contract Data
+     *
+     * @param selector the numerical Beard Type value
+     *
+     * @returns the name of the Beard Type
+     */
     private static resolveBeardType(selector: number): string {
         return 'Goatee';
     }
 
+    /**
+     * Resolve the name of a Body Type selected by a number in the range 0-99 by the Viking Contract Data
+     *
+     * @param selector the numerical Body Type value
+     *
+     * @returns the name of the Body Type
+     */
     private static resolveBodyType(selector: number): string {
         return 'Zombie';
     }
 
+    /**
+     * Resolve the name of a Face Type selected by a number in the range 0-99 by the Viking Contract Data
+     *
+     * @param selector the numerical Face Type value
+     *
+     * @returns the name of the Face Type
+     */
     private static resolveFaceType(selector: number): string {
         return 'Happy';
     }
 
+    /**
+     * Resolve the name of a Top Type selected by a number in the range 0-99 by the Viking Contract Data
+     *
+     * @param selector the numerical Top Type value
+     *
+     * @returns the name of the Top Type
+     */
     private static resolveTopType(selector: number): string {
         return 'Shirt';
     }
 
+    /**
+     * Resolve the name of a Boots Type selected by a number in the range 0-99 by the Viking Contract Data
+     *
+     * @param selector the numerical Boots Type value
+     *
+     * @returns the name of the Boots Type
+     */
     private static resolveBootsType(selector: number): string {
         return 'Shoes';
     }
 
+    /**
+     * Resolve the name of a Bottoms Type selected by a number in the range 0-99 by the Viking Contract Data
+     *
+     * @param selector the numerical Bottoms Type value
+     *
+     * @returns the name of the Bottoms Type
+     */
     private static resolveBottomsType(selector: number): string {
         return 'Shorts';
     }
 
+    /**
+     * Resolve the name of a Helmet Type selected by a number in the range 0-99 by the Viking Contract Data
+     *
+     * @param selector the numerical Helmet Type value
+     *
+     * @returns the name of the Helmet Type
+     */
     private static resolveHelmetType(selector: number): string {
         return 'Horned Helmet';
     }
 
+    /**
+     * Resolve the name of a Shield Type selected by a number in the range 0-99 by the Viking Contract Data
+     *
+     * @param selector the numerical Shield Type value
+     *
+     * @returns the name of the Shield Type
+     */
     private static resolveShieldType(selector: number): string {
         return 'Circle';
     }
 
+    /**
+     * Resolve the name of a Weapon Type selected by a number in the range 0-99 by the Viking Contract Data
+     *
+     * @param selector the numerical Weapon Type value
+     *
+     * @returns the name of the Weapon Type
+     */
     private static resolveWeaponType(selector: number): string {
         return 'Axe';
     }
 
+    /**
+     * Resolve the name of an Item's Condition selected by a number in the range 0-99 by the Viking Contract Data
+     *
+     * The statistic associated with an Item (eg, Weapon => Attack) determines the Condition
+     *
+     * @param statistic the numerical Statistic value
+     *
+     * @returns the name of the Condition for the associated Item
+     */
     private static resolveItemCondition(statistic: number): ItemCondition {
         if (statistic <= 9) {
             return 'None';
