@@ -1,6 +1,7 @@
 import { Request, Response, Router } from 'express';
 import { metadataRouter } from './metadata.router';
 import { leaderboardRouter } from './leaderboard.router';
+import { testRouter } from './test.router';
 
 /** The Router handling the top-level /api route collection, incorporating subordinate collection-handling Routers */
 const apiRouter = Router();
@@ -10,6 +11,9 @@ apiRouter.use('/metadata', metadataRouter);
 
 // /leaderboard collection is handled by the leaderboardRouter
 apiRouter.use('/leaderboard', leaderboardRouter);
+
+// /test collection is handled by the testRouter
+apiRouter.use('/test', testRouter);
 
 // configure a fallback route clearly stating that a route was invalid
 apiRouter.use('*', (req: Request, res: Response): void => {

@@ -18,10 +18,7 @@ class MetadataController extends AbstractController {
      * @returns the generated Metadata
      */
     public async generate(req: Request): Promise<APIResponse> {
-        // quick hack while we're not actually using Promises
-        await new Promise(r => r(10));
-
-        // TODO validate req.body
+        // TODO validate req.body as a VikingContractData
 
         return MetadataHelper.generateMetadata(req.body);
     }

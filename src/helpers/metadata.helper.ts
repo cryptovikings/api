@@ -1,11 +1,45 @@
 import { ItemCondition, VikingMetadata } from '../models/vikingMetadata.model';
 import { VikingContractData } from '../models/vikingContractData.model';
+import { AssetSpecs } from '../models/assetSpec.model';
+import { ImageHelper } from './image.helper';
 
 /**
  * The MetadataHelper, implementing the actual metadata generation functionality, including Type/Style name resolution and ItemCondition
  *   mappings
  */
 export class MetadataHelper {
+
+    public static resolveAssetSpecs(viking: VikingContractData): AssetSpecs {
+        const appearance = viking.appearance.toString(10);
+
+        // TODO beard is special - it can't be below 10. Others can be 0
+        const beardSelector = parseInt(appearance.slice(0, 1), 10);
+        const bodySelector = parseInt(appearance.slice(2, 3), 10);
+        const faceSelector = parseInt(appearance.slice(4, 5), 10);
+        const topSelector = parseInt(appearance.slice(6, 7), 10);
+
+        return {
+            names: {
+                viking: viking.name,
+                beard: MetadataHelper.resolveBeardType(beardSelector),
+                body: MetadataHelper.resolveBodyType(bodySelector),
+                boots: MetadataHelper.resolveBootsType(viking.boots),
+                bottoms: MetadataHelper.resolveBottomsType(viking.bottoms),
+                face: MetadataHelper.resolveFaceType(faceSelector),
+                helmet: MetadataHelper.resolveHelmetType(viking.helmet),
+                shield: MetadataHelper.resolveShieldType(viking.shield),
+                top: MetadataHelper.resolveTopType(topSelector),
+                weapon: MetadataHelper.resolveWeaponType(viking.weapon)
+            },
+            conditions: {
+                boots: MetadataHelper.resolveItemCondition(viking.speed),
+                bottoms: MetadataHelper.resolveItemCondition(viking.stamina),
+                helmet: MetadataHelper.resolveItemCondition(viking.intelligence),
+                shield: MetadataHelper.resolveItemCondition(viking.defence),
+                weapon: MetadataHelper.resolveItemCondition(viking.attack)
+            }
+        };
+    }
 
     /**
      * Generate a Viking Metadata structure based on a given Viking Contract Data structure
@@ -14,20 +48,16 @@ export class MetadataHelper {
      *
      * @returns the Viking Metadata
      */
-    public static generateMetadata(viking: VikingContractData): VikingMetadata {
-        const appearance = viking.appearance.toString(10);
+    public static async generateMetadata(viking: VikingContractData): Promise<VikingMetadata> {
+        const assetSpecs = MetadataHelper.resolveAssetSpecs(viking);
 
-        // TODO beard is special - it cannot be blow 10. The others have a minimum value of 0
-        const beardSelector = parseInt(appearance.slice(0, 1), 10);
-        const bodySelector = parseInt(appearance.slice(2, 3), 10);
-        const faceSelector = parseInt(appearance.slice(4, 5), 10);
-        const topSelector = parseInt(appearance.slice(6, 7), 10);
+        const imagePath = await ImageHelper.composeImage(assetSpecs);
 
         return {
             name: viking.name,
             description: 'A unique and special Viking!',
             external_link: '<link_to_viking_on_our_website>',
-            image: '<ipfs_link_to_viking_image>',
+            image: imagePath,
             attributes: [
                 // birthday
                 {
@@ -45,32 +75,32 @@ export class MetadataHelper {
                 // body traits
                 {
                     trait_type: 'Beard',
-                    value: MetadataHelper.resolveBeardType(beardSelector)
+                    value: assetSpecs.names.beard
                 },
                 // body traits
                 {
                     trait_type: 'Body',
-                    value: MetadataHelper.resolveBodyType(bodySelector)
+                    value: assetSpecs.names.body
                 },
                 // face traits
                 {
                     trait_type: 'Face',
-                    value: MetadataHelper.resolveFaceType(faceSelector)
+                    value: assetSpecs.names.face
                 },
                 // top traits
                 {
                     trait_type: 'Top',
-                    value: MetadataHelper.resolveTopType(topSelector)
+                    value: assetSpecs.names.top
                 },
 
                 // boots traits
                 {
                     trait_type: 'Boots Type',
-                    value: MetadataHelper.resolveBootsType(viking.boots)
+                    value: assetSpecs.names.boots
                 },
                 {
                     trait_type: 'Boots Condition',
-                    value: MetadataHelper.resolveItemCondition(viking.speed)
+                    value: assetSpecs.conditions.boots
                 },
                 {
                     trait_type: 'Speed',
@@ -81,11 +111,11 @@ export class MetadataHelper {
                 // bottoms traits
                 {
                     trait_type: 'Bottoms Type',
-                    value: MetadataHelper.resolveBottomsType(viking.bottoms)
+                    value: assetSpecs.names.bottoms
                 },
                 {
                     trait_type: 'Bottoms Condition',
-                    value: MetadataHelper.resolveItemCondition(viking.stamina)
+                    value: assetSpecs.conditions.bottoms
                 },
                 {
                     trait_type: 'Stamina',
@@ -96,11 +126,11 @@ export class MetadataHelper {
                 // helmet traits
                 {
                     trait_type: 'Helmet Type',
-                    value: MetadataHelper.resolveHelmetType(viking.helmet)
+                    value: assetSpecs.names.helmet
                 },
                 {
                     trait_type: 'Helmet Condition',
-                    value: MetadataHelper.resolveItemCondition(viking.intelligence)
+                    value: assetSpecs.conditions.helmet
                 },
                 {
                     trait_type: 'Intelligence',
@@ -111,11 +141,11 @@ export class MetadataHelper {
                 // shield traits
                 {
                     trait_type: 'Shield Type',
-                    value: MetadataHelper.resolveShieldType(viking.shield)
+                    value: assetSpecs.names.shield
                 },
                 {
                     trait_type: 'Shield Condition',
-                    value: MetadataHelper.resolveItemCondition(viking.defence)
+                    value: assetSpecs.conditions.shield
                 },
                 {
                     trait_type: 'Defence',
@@ -126,11 +156,11 @@ export class MetadataHelper {
                 // weapon traits
                 {
                     trait_type: 'Weapon Type',
-                    value: MetadataHelper.resolveWeaponType(viking.weapon)
+                    value: assetSpecs.names.weapon
                 },
                 {
                     trait_type: 'Weapon Condition',
-                    value: MetadataHelper.resolveItemCondition(viking.attack)
+                    value: assetSpecs.conditions.weapon
                 },
                 {
                     trait_type: 'Attack',
@@ -149,7 +179,21 @@ export class MetadataHelper {
      * @returns the name of the Beard Type
      */
     private static resolveBeardType(selector: number): string {
-        return 'Goatee';
+        if (selector <= 19) {
+            return '01';
+        }
+        else if (selector <= 39) {
+            return '02';
+        }
+        else if (selector <= 59) {
+            return '03';
+        }
+        else if (selector <= 79) {
+            return '04';
+        }
+        else {
+            return '05';
+        }
     }
 
     /**
@@ -160,29 +204,21 @@ export class MetadataHelper {
      * @returns the name of the Body Type
      */
     private static resolveBodyType(selector: number): string {
-        return 'Zombie';
-    }
-
-    /**
-     * Resolve the name of a Face Type selected by a number in the range 0-99 by the Viking Contract Data
-     *
-     * @param selector the numerical Face Type value
-     *
-     * @returns the name of the Face Type
-     */
-    private static resolveFaceType(selector: number): string {
-        return 'Happy';
-    }
-
-    /**
-     * Resolve the name of a Top Type selected by a number in the range 0-99 by the Viking Contract Data
-     *
-     * @param selector the numerical Top Type value
-     *
-     * @returns the name of the Top Type
-     */
-    private static resolveTopType(selector: number): string {
-        return 'Shirt';
+        if (selector <= 19) {
+            return 'Devil';
+        }
+        else if (selector <= 39) {
+            return 'Pink';
+        }
+        else if (selector <= 59) {
+            return 'Robot';
+        }
+        else if (selector <= 79) {
+            return 'White';
+        }
+        else {
+            return 'Zombie';
+        }
     }
 
     /**
@@ -193,7 +229,15 @@ export class MetadataHelper {
      * @returns the name of the Boots Type
      */
     private static resolveBootsType(selector: number): string {
-        return 'Shoes';
+        if (selector <= 32) {
+            return 'Blue';
+        }
+        else if (selector <= 65) {
+            return 'Green';
+        }
+        else {
+            return 'Red';
+        }
     }
 
     /**
@@ -204,7 +248,40 @@ export class MetadataHelper {
      * @returns the name of the Bottoms Type
      */
     private static resolveBottomsType(selector: number): string {
-        return 'Shorts';
+        if (selector <= 32) {
+            return 'Blue';
+        }
+        else if (selector <= 65) {
+            return 'Green';
+        }
+        else {
+            return 'Red';
+        }
+    }
+
+    /**
+     * Resolve the name of a Face Type selected by a number in the range 0-99 by the Viking Contract Data
+     *
+     * @param selector the numerical Face Type value
+     *
+     * @returns the name of the Face Type
+     */
+    private static resolveFaceType(selector: number): string {
+        if (selector <= 19) {
+            return '01';
+        }
+        else if (selector <= 39) {
+            return '02';
+        }
+        else if (selector <= 59) {
+            return '03';
+        }
+        else if (selector <= 79) {
+            return '04';
+        }
+        else {
+            return '05';
+        }
     }
 
     /**
@@ -215,18 +292,38 @@ export class MetadataHelper {
      * @returns the name of the Helmet Type
      */
     private static resolveHelmetType(selector: number): string {
-        return 'Horned Helmet';
+        if (selector <= 32) {
+            return 'Green Horned';
+        }
+        else if (selector <= 65) {
+            return 'Green';
+        }
+        else {
+            return 'Red Horned';
+        }
     }
 
     /**
-     * Resolve the name of a Shield Type selected by a number in the range 0-99 by the Viking Contract Data
-     *
-     * @param selector the numerical Shield Type value
-     *
-     * @returns the name of the Shield Type
-     */
+    * Resolve the name of a Shield Type selected by a number in the range 0-99 by the Viking Contract Data
+    *
+    * @param selector the numerical Shield Type value
+    *
+    * @returns the name of the Shield Type
+    */
     private static resolveShieldType(selector: number): string {
         return 'Circle';
+    }
+
+
+    /**
+     * Resolve the name of a Top Type selected by a number in the range 0-99 by the Viking Contract Data
+     *
+     * @param selector the numerical Top Type value
+     *
+     * @returns the name of the Top Type
+     */
+    private static resolveTopType(selector: number): string {
+        return 'Shirt';
     }
 
     /**
