@@ -25,7 +25,7 @@ export class ImageHelper {
         helmets: path.join(ImageHelper.partsRoot, 'helmets'),
         shields: path.join(ImageHelper.partsRoot, 'shields'),
         tops: path.join(ImageHelper.partsRoot, 'tops'),
-        weapons: path.join(ImageHelper.partsRoot, 'weapons'),
+        weapons: path.join(ImageHelper.partsRoot, 'weapons')
     };
 
     /**
@@ -55,11 +55,11 @@ export class ImageHelper {
 
     private static resolveAssetPaths(assetSpecs: AssetSpecs): AssetPaths {
         /* eslint-disable max-len */
-        const beardFile = `beard_${assetSpecs.names.beard.replace(' ', '_').toLowerCase()}.png`;
-        const bodyFile = `body_${assetSpecs.names.body.replace(' ', '_').toLowerCase()}.png`;
-        const faceFile = `face_${assetSpecs.names.face.replace(' ', '_').toLowerCase()}.png`;
+        const beardFile = `beard_${assetSpecs.names.beard.replace(/\s/g, '_').toLowerCase()}.png`;
+        const bodyFile = `body_${assetSpecs.names.body.replace(/\s/g, '_').toLowerCase()}.png`;
+        const faceFile = `face_${assetSpecs.names.face.replace(/\s/g, '_').toLowerCase()}.png`;
         // unused for now (no assets)
-        // const topFile = `top_${assetSpecs.names.top.replace(' ', '_').toLowerCase()}.png`;
+        // const topFile = `top_${assetSpecs.names.top.replace(/\s/g, '_').toLowerCase()}.png`;
 
         const paths: AssetPaths = {
             beard: path.join(ImageHelper.directories.beards, beardFile),
@@ -70,7 +70,7 @@ export class ImageHelper {
         };
 
         if (assetSpecs.conditions.boots !== 'None') {
-            const bootsName = assetSpecs.names.boots.replace(' ', '_').toLowerCase();
+            const bootsName = assetSpecs.names.boots.replace(/\s/g, '_').toLowerCase();
 
             paths.boots = path.join(
                 ImageHelper.directories.boots,
@@ -80,7 +80,7 @@ export class ImageHelper {
         }
 
         if (assetSpecs.conditions.bottoms !== 'None') {
-            const bottomsName = assetSpecs.names.bottoms.replace(' ', '_').toLowerCase();
+            const bottomsName = assetSpecs.names.bottoms.replace(/\s/g, '_').toLowerCase();
 
             paths.bottoms = path.join(
                 ImageHelper.directories.bottoms,
@@ -90,7 +90,7 @@ export class ImageHelper {
         }
 
         if (assetSpecs.conditions.helmet !== 'None') {
-            const helmetName = assetSpecs.names.helmet.replace(' ', '_').toLowerCase();
+            const helmetName = assetSpecs.names.helmet.replace(/\s/g, '_').toLowerCase();
 
             paths.helmet = path.join(
                 ImageHelper.directories.helmets,
@@ -101,7 +101,7 @@ export class ImageHelper {
 
         // unused for now (no assets)
         // if (assetSpecs.conditions.shield !== 'None') {
-        //     const shieldName = assetSpecs.names.shield.replace(' ', '_').toLowerCase();
+        //     const shieldName = assetSpecs.names.shield.replace(/\s/g, '_').toLowerCase();
 
         //     paths.shield = path.join(
         //         ImageHelper.directories.shields,
@@ -112,7 +112,7 @@ export class ImageHelper {
 
         // unused for now (no assets)
         // if (assetSpecs.conditions.weapon !== 'None') {
-        //     const weaponName = assetSpecs.names.weapon.replace(' ', '_').toLowerCase();
+        //     const weaponName = assetSpecs.names.weapon.replace(/\s/g, '_').toLowerCase();
 
         //     paths.weapon = path.join(
         //         ImageHelper.directories.weapons,
@@ -125,7 +125,7 @@ export class ImageHelper {
     }
 
     private static async generateImage(fileName: string, paths: AssetPaths): Promise<string> {
-        const filePath = path.join(ImageHelper.vikingOut, `${fileName.replace(' ', '_').toLowerCase()}.png`);
+        const filePath = path.join(ImageHelper.vikingOut, `${fileName.replace(/\s/g, '_').toLowerCase()}.png`);
 
         return new Promise((resolve, reject) => {
             const image = gm('');
