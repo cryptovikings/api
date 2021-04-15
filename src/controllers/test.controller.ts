@@ -18,15 +18,44 @@ class TestController extends AbstractController {
      * @param req the Express Request
      */
     public async makeImage(req: Request): Promise<APIResponse> {
-        // quick hack while we're not actually using Promises
-        await new Promise((r) => r(10));
-
         const assetSpecs = MetadataHelper.resolveAssetSpecs(req.body);
 
         const filePath = await ImageHelper.composeImage(assetSpecs);
 
         return {
             filePath
+        };
+    }
+
+    public async makeAtlas(req: Request): Promise<APIResponse> {
+        const filePath = await ImageHelper.generateAtlas();
+
+        return {
+            filePath
+        };
+    }
+
+    public async makeMany(req: Request): Promise<APIResponse> {
+        const count = parseInt(req.params.count, 10);
+        const filePaths = [];
+
+        ImageHelper.clear();
+
+        for (let i = 0; i < count; i++) {
+            const contract = MetadataHelper.generateVikingStruct(i);
+
+            const assetSpecs = MetadataHelper.resolveAssetSpecs(contract);
+
+            const filePath = await ImageHelper.composeImage(assetSpecs);
+
+            filePaths.push(filePath);
+        }
+
+        const atlasPath = await ImageHelper.generateAtlas();
+
+        return {
+            filePaths,
+            atlasPath
         };
     }
 }

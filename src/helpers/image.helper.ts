@@ -14,6 +14,8 @@ export class ImageHelper {
 
     private static vikingOut = path.join(ImageHelper.outRoot, 'vikings');
 
+    private static atlasOut = path.join(ImageHelper.outRoot, 'atlas');
+
     private static partsRoot = 'res/';
 
     private static directories = {
@@ -47,6 +49,28 @@ export class ImageHelper {
         return filePath;
     }
 
+    public static generateAtlas(): Promise<string> {
+        ImageHelper.mkDirOptional(ImageHelper.atlasOut);
+
+        return new Promise((resolve, reject) => {
+            const outPath = path.join(ImageHelper.atlasOut, 'atlas.png');
+            const image = gm('');
+
+            for (const file of fs.readdirSync(ImageHelper.vikingOut)) {
+                image.montage(path.join(ImageHelper.vikingOut, file));
+            }
+
+            image
+                .geometry('+0+0')
+                .background('transparent')
+                .write(outPath, (err) => err ? reject(err) : resolve(outPath));
+        });
+    }
+
+    public static clear(): void {
+        fs.rmSync(ImageHelper.outRoot, { recursive: true, force: true });
+    }
+
     private static mkDirOptional(dir: string): void {
         if (!fs.existsSync(dir)) {
             fs.mkdirSync(dir, { recursive: true });
@@ -54,7 +78,6 @@ export class ImageHelper {
     }
 
     private static resolveAssetPaths(assetSpecs: AssetSpecs): AssetPaths {
-        /* eslint-disable max-len */
         const beardFile = `beard_${assetSpecs.names.beard.replace(/\s/g, '_').toLowerCase()}.png`;
         const bodyFile = `body_${assetSpecs.names.body.replace(/\s/g, '_').toLowerCase()}.png`;
         const faceFile = `face_${assetSpecs.names.face.replace(/\s/g, '_').toLowerCase()}.png`;

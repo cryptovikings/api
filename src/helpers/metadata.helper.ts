@@ -9,6 +9,30 @@ import { ImageHelper } from './image.helper';
  */
 export class MetadataHelper {
 
+    public static generateVikingStruct(n: number): VikingContractData {
+        const random = (max: number): number => Math.round(Math.random() * (max - 1) + 1);
+
+        return {
+            name: `viking_${n}`,
+            weapon: random(99),
+            attack: random(99),
+
+            shield: random(99),
+            defence: random(99),
+
+            boots: random(99),
+            speed: random(99),
+
+            helmet: random(99),
+            intelligence: random(99),
+
+            bottoms: random(99),
+            stamina: random(99),
+
+            appearance: random(99999999)
+        };
+    }
+
     public static resolveAssetSpecs(viking: VikingContractData): AssetSpecs {
         const appearance = viking.appearance.toString(10);
 
@@ -174,21 +198,23 @@ export class MetadataHelper {
     /**
      * Resolve the name of a Beard Type selected by a number in the range 0-99 by the Viking Contract Data
      *
+     * // TODO beard is special - it can't be below 10
+     *
      * @param selector the numerical Beard Type value
      *
      * @returns the name of the Beard Type
      */
     private static resolveBeardType(selector: number): string {
-        if (selector <= 19) {
+        if (selector <= 29) {
             return '01';
         }
-        else if (selector <= 39) {
+        else if (selector <= 49) {
             return '02';
         }
-        else if (selector <= 59) {
+        else if (selector <= 69) {
             return '03';
         }
-        else if (selector <= 79) {
+        else if (selector <= 89) {
             return '04';
         }
         else {
