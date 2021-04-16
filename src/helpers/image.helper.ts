@@ -153,9 +153,27 @@ export class ImageHelper {
         return new Promise((resolve, reject) => {
             const image = gm('');
 
-            for (const value of Object.values(paths)) {
-                image.in(value);
+            image
+                .in(paths.body)
+                .in(paths.face)
+                .in(paths.beard);
+            // .in(paths.top);
+
+            if (paths.boots) {
+                image.in(paths.boots)
             }
+            if (paths.bottoms) {
+                image.in(paths.bottoms);
+            }
+            if (paths.helmet) {
+                image.in(paths.helmet)
+            }
+            // if (paths.shield) {
+            //     image.in(paths.shield);
+            // }
+            // if (paths.weapon) {
+            //     image.in(paths.weapon);
+            // }
 
             image
                 .background('transparent')

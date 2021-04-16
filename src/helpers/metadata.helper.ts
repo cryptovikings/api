@@ -12,6 +12,14 @@ export class MetadataHelper {
     public static generateVikingStruct(n: number): VikingContractData {
         const random = (max: number): number => Math.round(Math.random() * (max - 1) + 1);
 
+        const beard = random(89) + 10;
+        const body = random(99);
+        const face = random(99);
+        const top = random(99);
+
+        /* eslint-disable max-len */
+        const appearance = `${beard.toString()}${body < 10 ? `0${body.toString()}` : body.toString()}${face < 10 ? `0${face.toString()}` : face.toString()}${top < 10 ? `0${top.toString()}` : top.toString()}`;
+
         return {
             name: `viking_${n}`,
             weapon: random(99),
@@ -29,7 +37,7 @@ export class MetadataHelper {
             bottoms: random(99),
             stamina: random(99),
 
-            appearance: random(99999999)
+            appearance: parseInt(appearance, 10)
         };
     }
 
@@ -37,10 +45,10 @@ export class MetadataHelper {
         const appearance = viking.appearance.toString(10);
 
         // TODO beard is special - it can't be below 10. Others can be 0
-        const beardSelector = parseInt(appearance.slice(0, 1), 10);
-        const bodySelector = parseInt(appearance.slice(2, 3), 10);
-        const faceSelector = parseInt(appearance.slice(4, 5), 10);
-        const topSelector = parseInt(appearance.slice(6, 7), 10);
+        const beardSelector = parseInt(appearance.slice(0, 2), 10);
+        const bodySelector = parseInt(appearance.slice(2, 4), 10);
+        const faceSelector = parseInt(appearance.slice(4, 6), 10);
+        const topSelector = parseInt(appearance.slice(6, 8), 10);
 
         return {
             names: {
