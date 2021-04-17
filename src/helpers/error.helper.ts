@@ -11,8 +11,4 @@ export class ErrorHelper {
 
         return error;
     }
-
-    public static isAPIError(e: Error | APIError): e is APIError {
-        return !!(e as APIError).statusCode;
-    }
 }

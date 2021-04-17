@@ -53,20 +53,31 @@ server.on('error', (error: NodeJS.ErrnoException) => {
 // server listening handler
 server.on('listening', () => {
     // connect to the database
-    DBConnectionHelper.initialize();
+    DBConnectionHelper.initialize().then(
+        () => {
+            console.log('Database connection successful');
 
-    const addr = server.address();
+            const addr = server.address();
 
-    let str = '';
+            let str = '';
 
-    if (typeof addr === 'string') {
-        str = `Port ${addr}`;
-    }
-    else if (addr) {
-        str = `Port ${addr.port}`;
-    }
+            if (typeof addr === 'string') {
+                str = `Port ${addr}`;
+            }
+            else if (addr) {
+                str = `Port ${addr.port}`;
+            }
 
-    console.log(`Listening on ${str}`)
+            console.log(`Listening on ${str}`)
+        },
+        (err) => {
+            console.log('Database connection error:', err);
+            process.exit(1);
+        }
+    ).catch((err) => {
+        console.log('Database connection error:', err);
+        process.exit(1);
+    });
 });
 
 // start server

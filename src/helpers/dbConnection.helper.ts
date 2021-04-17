@@ -2,14 +2,13 @@ import mongoose from 'mongoose';
 
 export class DBConnectionHelper {
 
-    public static initialize(): void {
-        mongoose.connect('mongodb://127.0.0.1:27017/crypto_api', {
+    private static readonly DB_NAME = 'crypto_api';
+
+    public static initialize(): Promise<typeof mongoose> {
+        return mongoose.connect(`mongodb://127.0.0.1:27017/${DBConnectionHelper.DB_NAME}`, {
             useNewUrlParser: true,
             useUnifiedTopology: true,
             useCreateIndex: true
-        }).then(
-            () => console.log('Database Connection Successful'),
-            (err) => console.error('Database Connection Error!', err)
-        );
+        });
     }
 }

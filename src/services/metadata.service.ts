@@ -1,7 +1,7 @@
-import { VikingMetadataDocument, VikingMetaDataModel, VikingMetadataSchema } from '../models/mongoose/vikingMetadata.model';
+import { VikingMetaDataModel, VikingMetadataRead, VikingMetadataWrite, } from '../models/mongoose/vikingMetadata.model';
 import { AbstractService } from './abstract.service';
 
-class MetadataService extends AbstractService<VikingMetadataSchema, VikingMetadataDocument> {
+class MetadataService extends AbstractService<VikingMetadataWrite, VikingMetadataRead> {
 
     constructor() {
         super(VikingMetaDataModel);
