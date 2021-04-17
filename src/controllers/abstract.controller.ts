@@ -13,7 +13,7 @@ type BoundRequestProcessor = (req: Request, res: Response, next: NextFunction) =
  *   permission management, and more
  *
  * Controllers should extend this class and implement instance methods which will serve as the actual implementations of API route handlers.
- *   These should then be passed to the Router middleware in `*.routes` as, for example:
+ *   These should then be passed to the Router middleware in `*.router` as, for example:
  *       `router.get('/test', testController.bindRequestHandler(testController.test));`
  *
  * The call stack for any Request then looks like this:

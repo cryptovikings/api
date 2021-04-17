@@ -1,5 +1,5 @@
-import { ModelSchema, ModelDocument } from 'models/mongoose/base.model';
 import { Model } from 'mongoose';
+import { ModelDocument, ModelSchema } from '../models/mongoose/base.model';
 
 export abstract class AbstractService<TSchema extends ModelSchema, TDocument extends ModelDocument> {
 
