@@ -6,9 +6,9 @@ interface BaseModel {
     _id: Schema.Types.ObjectId;
 }
 
-export type ModelSchema = Omit<BaseModel, '_id'>;
+export type ModelWrite = Omit<BaseModel, '_id'>;
 
-export type ModelDocument = BaseModel & Document;
+export type ModelRead = BaseModel & Document;
 
 export const _createSchema = (definition: SchemaDefinition, options?: SchemaOptions): Schema => {
     const schema = new Schema(definition, options);

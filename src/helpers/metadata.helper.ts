@@ -1,4 +1,4 @@
-import { VikingMetadataSchema } from '../models/mongoose/vikingMetadata.model';
+import { VikingMetadataWrite } from '../models/mongoose/vikingMetadata.model';
 import { VikingContractData } from '../models/vikingContractData.model';
 import { AssetSpecs } from '../models/assetSpec.model';
 import { ImageHelper } from './image.helper';
@@ -81,7 +81,7 @@ export class MetadataHelper {
      *
      * @returns the Viking Metadata
      */
-    public static async generateMetadata(viking: VikingContractData): Promise<VikingMetadataSchema> {
+    public static async generateMetadata(viking: VikingContractData): Promise<VikingMetadataWrite> {
         const assetSpecs = MetadataHelper.resolveAssetSpecs(viking);
 
         const imagePath = await ImageHelper.composeImage(assetSpecs);

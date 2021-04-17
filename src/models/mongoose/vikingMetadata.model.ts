@@ -1,4 +1,4 @@
-import { ModelDocument, ModelSchema, _createSchema } from './base.model';
+import { ModelRead, ModelWrite, _createSchema } from './base.model';
 import mongoose, { Schema } from 'mongoose';
 import { ItemCondition } from '../../utils/itemCondition.enum';
 
@@ -134,9 +134,9 @@ interface VikingMetadata {
     ];
 }
 
-export interface VikingMetadataSchema extends ModelSchema, VikingMetadata { }
+export interface VikingMetadataWrite extends ModelWrite, VikingMetadata { }
 
-export interface VikingMetadataDocument extends ModelDocument, VikingMetadata { }
+export interface VikingMetadataRead extends ModelRead, VikingMetadata { }
 
 const VikingMetadataSchema = _createSchema({
     name: { type: String, required: true, index: true },

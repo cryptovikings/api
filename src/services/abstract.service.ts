@@ -1,15 +1,15 @@
 import { Model } from 'mongoose';
-import { ModelDocument, ModelSchema } from '../models/mongoose/base.model';
+import { ModelRead, ModelWrite } from '../models/mongoose/base.model';
 
-export abstract class AbstractService<TSchema extends ModelSchema, TDocument extends ModelDocument> {
+export abstract class AbstractService<TWrite extends ModelWrite, TRead extends ModelRead> {
 
-    constructor(public model: Model<TDocument>) { }
+    constructor(public model: Model<TRead>) { }
 
-    public async get(): Promise<Array<TDocument>> {
+    public async get(): Promise<Array<TRead>> {
         return await this.model.find();
     }
 
-    public async create(data: TSchema): Promise<TDocument> {
+    public async create(data: TWrite): Promise<TRead> {
         return await this.model.create(data);
     }
 }
