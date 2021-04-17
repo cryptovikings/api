@@ -7,4 +7,6 @@ const metadataRouter = Router();
 // POST /generate => (MetadataController).generate()
 metadataRouter.post('/generate', metadataController.bindRequestHandler(metadataController.generate));
 
+metadataRouter.get('/', metadataController.bindRequestHandler(metadataController.get));
+
 export { metadataRouter };

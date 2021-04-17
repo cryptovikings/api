@@ -1,3 +1,6 @@
+import { ModelDocument, ModelSchema, _createSchema } from './base.model';
+import mongoose, { Schema } from 'mongoose';
+
 /**
  * Utility type restricting a String value to one of the valid Conditions for items
  */
@@ -6,7 +9,7 @@ export type ItemCondition = 'None' | 'Broken' | 'Damaged' | 'Worn' | 'Good' | 'P
 /**
  * Model representing the Viking Metadata that will be generated and provided to OpenSea for Viking listings
  */
-export interface VikingMetadata {
+interface VikingMetadata {
     name: string;
     description: string;
     external_link: string;
@@ -134,3 +137,17 @@ export interface VikingMetadata {
         }
     ];
 }
+
+export interface VikingMetadataSchema extends ModelSchema, VikingMetadata { }
+
+export interface VikingMetadataDocument extends ModelDocument, VikingMetadata { }
+
+const VikingMetadataSchema = _createSchema({
+    name: { type: String, required: true, index: true },
+    description: { type: String, required: true },
+    external_link: { type: String, required: true },
+    image: { type: String, required: true },
+    attributes: [{ type: Schema.Types.Mixed, required: true }]
+});
+
+export const VikingMetaDataModel = mongoose.model('VikingMetadata', VikingMetadataSchema, 'vikingmetadata');

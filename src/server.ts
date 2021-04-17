@@ -1,5 +1,6 @@
 import express, { Application, NextFunction, Request, Response } from 'express';
 import http from 'http';
+import { DBConnectionHelper } from './helpers/dbConnection.helper';
 import { apiRouter } from './routes/api.router';
 
 // port
@@ -60,6 +61,8 @@ server.on('error', (error: NodeJS.ErrnoException) => {
 
 // server listening handler
 server.on('listening', () => {
+    DBConnectionHelper.initialize();
+
     const addr = server.address();
 
     let str = '';

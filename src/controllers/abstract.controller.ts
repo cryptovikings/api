@@ -19,7 +19,7 @@ type BoundRequestProcessor = (req: Request, res: Response, next: NextFunction) =
  * The call stack for any Request then looks like this:
  *        `GET /anything => processRequest() => (AnythingController).anything()`
  */
-export class AbstractController {
+export abstract class AbstractController {
 
     /**
      * Take a Controller instance method to be used as a request handler for a given route, and return a bound `processRequest()` which

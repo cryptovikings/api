@@ -1,14 +1,20 @@
 import { Request } from 'express';
 import { MetadataHelper } from '../helpers/metadata.helper';
 import { APIResponse } from '../models/apiResponse.model';
-import { AbstractController } from './abstract.controller';
+import { VikingMetadataDocument, VikingMetadataSchema } from '../models/vikingMetadata.model';
+import { metadataService } from '../services/metadata.service';
+import { AbstractResourceController } from './abstractResource.controller';
 
 /**
  * The MetadataController, designed to handle the /metadata route collection
  *
  * Implements Metadata generation + retrieval functionality, setting up the OpenSea Viking representations
  */
-class MetadataController extends AbstractController {
+class MetadataController extends AbstractResourceController<VikingMetadataSchema, VikingMetadataDocument> {
+
+    constructor() {
+        super(metadataService);
+    }
 
     /**
      * Generate Viking Metadata based on Viking Contract Data passed in through `req.body`
@@ -20,7 +26,9 @@ class MetadataController extends AbstractController {
     public async generate(req: Request): Promise<APIResponse> {
         // TODO validate req.body as a VikingContractData
 
-        return MetadataHelper.generateMetadata(req.body);
+        const data = await MetadataHelper.generateMetadata(req.body);
+
+        return await this.service.create(data);
     }
 }
 
