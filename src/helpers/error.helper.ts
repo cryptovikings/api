@@ -1,5 +1,5 @@
 import { APIError } from '../models/apiError.model';
-import { HttpErrorCode } from '../utils/httpcodes';
+import { HttpErrorCode } from '../utils/httpErrorCode.enum';
 
 export class ErrorHelper {
 

@@ -1,8 +1,8 @@
 import { Request } from 'express';
-import { HttpSuccessCode } from '../utils/httpcodes';
+import { HttpSuccessCode } from '../utils/httpSuccessCode.enum';
 import { MetadataHelper } from '../helpers/metadata.helper';
 import { APIResponse } from '../models/apiResponse.model';
-import { VikingMetadataDocument, VikingMetadataSchema } from '../models/vikingMetadata.model';
+import { VikingMetadataDocument, VikingMetadataSchema } from '../models/mongoose/vikingMetadata.model';
 import { metadataService } from '../services/metadata.service';
 import { AbstractResourceController } from './abstractResource.controller';
 

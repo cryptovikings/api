@@ -1,10 +1,6 @@
 import { ModelDocument, ModelSchema, _createSchema } from './base.model';
 import mongoose, { Schema } from 'mongoose';
-
-/**
- * Utility type restricting a String value to one of the valid Conditions for items
- */
-export type ItemCondition = 'None' | 'Broken' | 'Damaged' | 'Worn' | 'Good' | 'Perfect';
+import { ItemCondition } from '../../utils/itemCondition.enum';
 
 /**
  * Model representing the Viking Metadata that will be generated and provided to OpenSea for Viking listings

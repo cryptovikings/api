@@ -1,7 +1,8 @@
-import { ItemCondition, VikingMetadataSchema } from '../models/vikingMetadata.model';
+import { VikingMetadataSchema } from '../models/mongoose/vikingMetadata.model';
 import { VikingContractData } from '../models/vikingContractData.model';
 import { AssetSpecs } from '../models/assetSpec.model';
 import { ImageHelper } from './image.helper';
+import { ItemCondition } from '../utils/itemCondition.enum';
 
 /**
  * The MetadataHelper, implementing the actual metadata generation functionality, including Type/Style name resolution and ItemCondition
@@ -382,22 +383,22 @@ export class MetadataHelper {
      */
     private static resolveItemCondition(statistic: number): ItemCondition {
         if (statistic <= 9) {
-            return 'None';
+            return ItemCondition.NONE;
         }
         else if (statistic <= 49) {
-            return 'Broken';
+            return ItemCondition.BROKEN;
         }
         else if (statistic <= 74) {
-            return 'Damaged';
+            return ItemCondition.DAMAGED;
         }
         else if (statistic <= 89) {
-            return 'Worn';
+            return ItemCondition.WORN;
         }
         else if (statistic <= 96) {
-            return 'Good';
+            return ItemCondition.GOOD;
         }
         else {
-            return 'Perfect';
+            return ItemCondition.PERFECT;
         }
     }
 }

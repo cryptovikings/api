@@ -1,4 +1,4 @@
-import mongoose, { Connection } from 'mongoose';
+import mongoose from 'mongoose';
 
 export class DBConnectionHelper {
 

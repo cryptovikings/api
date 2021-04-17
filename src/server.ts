@@ -3,7 +3,7 @@ import http from 'http';
 import { DBConnectionHelper } from './helpers/dbConnection.helper';
 import { APIError } from './models/apiError.model';
 import { apiRouter } from './routes/api.router';
-import { HttpErrorCode } from './utils/httpcodes';
+import { HttpErrorCode } from './utils/httpErrorCode.enum';
 
 // port
 const port = 8080;

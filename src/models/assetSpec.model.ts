@@ -1,4 +1,4 @@
-import { ItemCondition } from './vikingMetadata.model';
+import { ItemCondition } from '../utils/itemCondition.enum';
 
 /**
  * Model representing the collection of Asset Names and Conditions inferred based on Viking Contract Data and used by the MetadataHelper and

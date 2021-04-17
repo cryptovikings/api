@@ -1,4 +1,4 @@
-import { VikingMetadataDocument, VikingMetaDataModel, VikingMetadataSchema } from '../models/vikingMetadata.model';
+import { VikingMetadataDocument, VikingMetaDataModel, VikingMetadataSchema } from '../models/mongoose/vikingMetadata.model';
 import { AbstractService } from './abstract.service';
 
 class MetadataService extends AbstractService<VikingMetadataSchema, VikingMetadataDocument> {
