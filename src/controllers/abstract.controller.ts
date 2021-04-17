@@ -29,7 +29,7 @@ export abstract class AbstractController {
      *
      * @returns the bound request handler
      */
-    public bindRequestHandler(method: (req: Request) => Promise<APIResponse>): BoundRequestProcessor {
+    public bindRequestHandler(method: (req: Request) => Promise<APIResponse<any>>): BoundRequestProcessor {
         return this.processRequest.bind(this, method.bind(this));
     }
 
@@ -46,11 +46,13 @@ export abstract class AbstractController {
      * @param next the Express NextFunction
      */
     public async processRequest(
-        cb: (req: Request) => Promise<APIResponse>, req: Request, res: Response, next: NextFunction
+        cb: (req: Request) => Promise<APIResponse<any>>, req: Request, res: Response, next: NextFunction
     ): Promise<void> {
 
         try {
-            res.status(200).json(await cb(req));
+            const { status, data } = await cb(req);
+
+            res.status(status).json(data);
         }
         catch (e) {
             // pass any errors to our Express error-handling middleware

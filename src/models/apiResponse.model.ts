@@ -3,5 +3,12 @@
  *
  * Just a regular ol' Object, named for convenience and clarity in Controller authorship
  */
+
+import { ModelSchema } from 'models/base.model';
+import { HttpSuccessCode } from 'utils/httpcodes';
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
-export type APIResponse = { [key: string]: any };
+export interface APIResponse<TSchema extends ModelSchema> {
+    status: HttpSuccessCode;
+    data: TSchema;
+}

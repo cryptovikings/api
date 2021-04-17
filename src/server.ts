@@ -1,7 +1,9 @@
 import express, { Application, NextFunction, Request, Response } from 'express';
 import http from 'http';
 import { DBConnectionHelper } from './helpers/dbConnection.helper';
+import { APIError } from './models/apiError.model';
 import { apiRouter } from './routes/api.router';
+import { HttpErrorCode } from './utils/httpcodes';
 
 // port
 const port = 8080;
@@ -30,8 +32,15 @@ app.use((req: Request, res: Response, next: NextFunction): void => {
 app.use('/api', apiRouter);
 
 // error handling
-app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-    res.status(500).json({ name: err.name, message: err.message });
+app.use((err: Error | APIError, req: Request, res: Response, next: NextFunction) => {
+    switch (err.name) {
+        case 'APIError':
+            res.status((err as APIError).statusCode).json({ data: { message: err.message } });
+            break;
+
+        default:
+            res.status(HttpErrorCode.INTERNAL_SERVER_ERROR).json({ data: { message: err.message } });
+    }
 });
 
 // server

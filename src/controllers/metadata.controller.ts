@@ -1,4 +1,5 @@
 import { Request } from 'express';
+import { HttpSuccessCode } from '../utils/httpcodes';
 import { MetadataHelper } from '../helpers/metadata.helper';
 import { APIResponse } from '../models/apiResponse.model';
 import { VikingMetadataDocument, VikingMetadataSchema } from '../models/vikingMetadata.model';
@@ -23,12 +24,15 @@ class MetadataController extends AbstractResourceController<VikingMetadataSchema
      *
      * @returns the generated Metadata
      */
-    public async generate(req: Request): Promise<APIResponse> {
+    public async generate(req: Request): Promise<APIResponse<VikingMetadataSchema>> {
         // TODO validate req.body as a VikingContractData
 
         const data = await MetadataHelper.generateMetadata(req.body);
 
-        return await this.service.create(data);
+        return {
+            status: HttpSuccessCode.CREATED,
+            data
+        };
     }
 }
 
