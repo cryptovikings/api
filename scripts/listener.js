@@ -11,8 +11,11 @@ async function main() {
 	contract.on('VikingReady', (requestId) => {
 		console.log(`VikingReady - Request ID: ${requestId}`);
 
-		console.log(log.join('\n'));
-		contract.generateViking(requestId);
+		const overrides =  {
+			gasPrice: 1000000000,
+		};
+
+		contract.generateViking(requestId, overrides);
 	});
 
 	contract.on('VikingGenerated', (id, vikingData) => {
