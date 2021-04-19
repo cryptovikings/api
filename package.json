@@ -9,6 +9,7 @@
     },
     "dependencies": {
         "dotenv-safe": "^8.2.0",
+        "ethers": "^5.1.2",
         "express": "^4.17.1",
         "gm": "^1.23.1",
         "lodash.pick": "^4.4.0",
