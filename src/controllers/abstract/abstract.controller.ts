@@ -50,9 +50,9 @@ export abstract class AbstractController {
     ): Promise<void> {
 
         try {
-            const { status, data } = await cb(req);
+            const { status, data, paginate } = await cb(req);
 
-            res.status(status).json(data);
+            res.status(status).json({ data, paginate });
         }
         catch (e) {
             // pass any errors to our Express error-handling middleware

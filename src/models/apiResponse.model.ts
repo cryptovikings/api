@@ -6,4 +6,12 @@ import { HttpSuccessCode } from '../utils/httpSuccessCode.enum';
 export interface APIResponse<TRead> {
     status: HttpSuccessCode;
     data: TRead;
+    paginate?: {
+        total: number;
+        count: number;
+        page: number;
+        pages: number;
+        hasNext: boolean;
+        hasPrev: boolean;
+    };
 }

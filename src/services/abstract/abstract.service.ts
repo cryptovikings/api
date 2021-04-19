@@ -1,4 +1,4 @@
-import { FilterQuery, PaginateOptions } from 'mongoose';
+import { FilterQuery, PaginateOptions, PaginateResult } from 'mongoose';
 import { PaginateModel } from 'mongoose';
 import { Paginate, Select, Sort, Where } from '../../models/apiQuery.model';
 import { ModelRead, ModelWrite } from '../../models/mongoose/base.model';
@@ -38,7 +38,7 @@ export abstract class AbstractService<TWrite extends ModelWrite, TRead extends M
      *
      * @returns the Documents
      */
-    public async findMany(where: Where, select: Select, sort: Sort, paginate: Paginate): Promise<Array<TRead>> {
+    public async findMany(where: Where, select: Select, sort: Sort, paginate: Paginate): Promise<PaginateResult<TRead>> {
         const paginateOptions: PaginateOptions = {
             collation: { locale: 'en' },
             select,
@@ -53,8 +53,7 @@ export abstract class AbstractService<TWrite extends ModelWrite, TRead extends M
             paginateOptions.pagination = false;
         }
 
-        // TODO return pagination information
-        return (await this.model.paginate(where, paginateOptions)).docs;
+        return await this.model.paginate(where, paginateOptions);
     }
 
     /**

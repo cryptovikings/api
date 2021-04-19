@@ -51,7 +51,7 @@ export abstract class AbstractResourceController<TWrite extends ModelWrite, TRea
             return await this.getMany(where, select, sort, paginate);
         }
 
-        return await this.getAll(select, sort, paginate);
+        return await this.getMany({}, select, sort, paginate);
     }
 
     /**
@@ -130,22 +130,19 @@ export abstract class AbstractResourceController<TWrite extends ModelWrite, TRea
     }
 
     protected async getMany(where: Where, select: Select, sort: Sort, paginate: Paginate): Promise<APIResponse<Array<TRead>>> {
+        const result = await this.service.findMany(where, select, sort, paginate);
+
         return {
             status: HttpSuccessCode.OK,
-            data: await this.service.findMany(where, select, sort, paginate)
-        };
-    }
-
-
-    /**
-     * Overrideable multi Entity retrieval routine, retrieving all Entities
-     *
-     * @returns the found Entities
-     */
-    protected async getAll(select: Select, sort: Sort, paginate: Paginate): Promise<APIResponse<Array<TRead>>> {
-        return {
-            status: HttpSuccessCode.OK,
-            data: await this.service.findMany({}, select, sort, paginate)
+            data: result.docs,
+            paginate: {
+                total: result.totalDocs,
+                count: result.docs.length,
+                page: result.page ?? 1,
+                pages: result.totalPages,
+                hasNext: result.hasNextPage,
+                hasPrev: result.hasPrevPage
+            }
         };
     }
 
