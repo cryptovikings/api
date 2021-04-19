@@ -75,13 +75,13 @@ export class VikingHelper {
         };
     }
 
-    public static generateVikingStorage(number: number, imagePath: string, viking: VikingContractData): VikingWrite {
+    public static generateVikingStorage(number: number, imageUrl: string, viking: VikingContractData): VikingWrite {
         const assetSpecs = VikingHelper.resolveAssetSpecs(viking);
 
         return {
             number,
             name: viking.name,
-            image: imagePath,
+            image: imageUrl,
             description: 'A unique and special viking!',
 
             birthday: viking.birthday,

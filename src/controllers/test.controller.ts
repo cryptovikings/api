@@ -23,13 +23,13 @@ class TestController extends AbstractController {
             const contractData = VikingHelper.generateVikingContractData(i);
             const assetSpecs = VikingHelper.resolveAssetSpecs(contractData);
 
-            const imagePath = await ImageHelper.composeImage(i, assetSpecs);
+            const imageUrl = await ImageHelper.composeImage(i, assetSpecs);
 
-            const storage = VikingHelper.generateVikingStorage(i, imagePath, contractData);
+            const storage = VikingHelper.generateVikingStorage(i, imageUrl, contractData);
 
             await vikingService.create(storage);
 
-            filePaths.push(imagePath);
+            filePaths.push(imageUrl);
         }
 
         const atlasPath = await ImageHelper.composeAtlas();

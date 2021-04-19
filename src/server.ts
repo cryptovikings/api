@@ -19,6 +19,9 @@ app.use(express.urlencoded({ extended: false }));
 // custom cors middleware
 app.use(cors);
 
+// Image hosting
+app.use('/static', express.static('out/vikings'));
+
 // API router
 app.use('/api', apiRouter);
 

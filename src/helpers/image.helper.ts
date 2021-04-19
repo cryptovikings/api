@@ -140,7 +140,9 @@ export class ImageHelper {
     }
 
     private static generateImage(fileName: string, paths: AssetPaths): Promise<string> {
-        const filePath = path.join(ImageHelper.vikingOut, `${fileName.replace(/\s/g, '_').toLowerCase()}.png`);
+        const actualName = `${fileName.replace(/\s/g, '_').toLowerCase()}.png`;
+        const filePath = path.join(ImageHelper.vikingOut, actualName);
+        const imageUrl = `https://api.cryptovikings.io/static/${actualName}`;
 
         return new Promise((resolve, reject) => {
             const image = gm('');
@@ -170,7 +172,7 @@ export class ImageHelper {
             image
                 .background('transparent')
                 .mosaic()
-                .write(filePath, ((err) => err ? reject(err) : resolve(filePath)));
+                .write(filePath, ((err) => err ? reject(err) : resolve(imageUrl)));
         });
     }
 
