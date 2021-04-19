@@ -9,7 +9,7 @@ dotenvsafe.config({
 
 async function connect() {
 	// Set the contract address
-	const address = '0x97Cbc7054cd8fe0296A3ca1F24Cdfe5047cfD39E';
+	const address = '0xEa84097717ECa23A36e65BBb72B90420e808712e';
 
 	// Create the connection
 	const provider = new ethers.providers.JsonRpcProvider('https://rpc-mumbai.maticvigil.com');
