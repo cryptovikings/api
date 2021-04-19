@@ -4,7 +4,7 @@ import { MetadataHelper } from '../helpers/metadata.helper';
 import { APIResponse } from '../models/apiResponse.model';
 import { VikingMetadataRead, VikingMetadataWrite } from '../models/mongoose/vikingMetadata.model';
 import { metadataService } from '../services/metadata.service';
-import { AbstractResourceController } from './abstractResource.controller';
+import { AbstractResourceController } from './abstract/abstractResource.controller';
 
 /**
  * The MetadataController, designed to handle the /metadata route collection and the metadata database Entity

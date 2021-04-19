@@ -2,7 +2,8 @@ import { Request } from 'express';
 import { ImageHelper } from '../helpers/image.helper';
 import { MetadataHelper } from '../helpers/metadata.helper';
 import { APIResponse } from '../models/apiResponse.model';
-import { AbstractController } from './abstract.controller';
+import { HttpSuccessCode } from '../utils/httpSuccessCode.enum';
+import { AbstractController } from './abstract/abstract.controller';
 
 /**
  * The TestController, designed to handle the /test route collection
@@ -17,25 +18,27 @@ class TestController extends AbstractController {
      *
      * @param req the Express Request
      */
-    public async makeImage(req: Request): Promise<APIResponse> {
+    public async makeImage(req: Request): Promise<APIResponse<string>> {
         const assetSpecs = MetadataHelper.resolveAssetSpecs(req.body);
 
         const filePath = await ImageHelper.composeImage(assetSpecs);
 
         return {
-            filePath
+            status: HttpSuccessCode.OK,
+            data: filePath
         };
     }
 
-    public async makeAtlas(req: Request): Promise<APIResponse> {
+    public async makeAtlas(req: Request): Promise<APIResponse<string>> {
         const filePath = await ImageHelper.generateAtlas();
 
         return {
-            filePath
+            status: HttpSuccessCode.OK,
+            data: filePath
         };
     }
 
-    public async makeMany(req: Request): Promise<APIResponse> {
+    public async makeMany(req: Request): Promise<APIResponse<{ filePaths: Array<string>; atlasPath: string }>> {
         const count = parseInt(req.params.count, 10);
         const filePaths = [];
 
@@ -54,8 +57,11 @@ class TestController extends AbstractController {
         const atlasPath = await ImageHelper.generateAtlas();
 
         return {
-            filePaths,
-            atlasPath
+            status: HttpSuccessCode.OK,
+            data: {
+                filePaths,
+                atlasPath
+            }
         };
     }
 }

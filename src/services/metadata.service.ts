@@ -1,5 +1,5 @@
 import { VikingMetaDataModel, VikingMetadataRead, VikingMetadataWrite, } from '../models/mongoose/vikingMetadata.model';
-import { AbstractService } from './abstract.service';
+import { AbstractService } from './abstract/abstract.service';
 
 /**
  * The MetadataService, designed to handle database interactivity for the VikingMetaDataModel

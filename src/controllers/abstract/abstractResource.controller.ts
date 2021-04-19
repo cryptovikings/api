@@ -1,8 +1,8 @@
 import { Request } from 'express';
-import { APIResponse } from '../models/apiResponse.model';
-import { ModelWrite, ModelRead } from '../models/mongoose/base.model';
-import { AbstractService } from '../services/abstract.service';
-import { HttpSuccessCode } from '../utils/httpSuccessCode.enum';
+import { APIResponse } from '../../models/apiResponse.model';
+import { ModelWrite, ModelRead } from '../../models/mongoose/base.model';
+import { AbstractService } from '../../services/abstract/abstract.service';
+import { HttpSuccessCode } from '../../utils/httpSuccessCode.enum';
 import { AbstractController } from './abstract.controller';
 
 /**

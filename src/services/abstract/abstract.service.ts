@@ -1,5 +1,5 @@
 import { PaginateModel } from 'mongoose';
-import { ModelRead, ModelWrite } from '../models/mongoose/base.model';
+import { ModelRead, ModelWrite } from '../../models/mongoose/base.model';
 
 /**
  * AbstractService, serving as the foundation of the API's database interaction layer

@@ -1,6 +1,7 @@
 import { Request } from 'express';
 import { APIResponse } from '../models/apiResponse.model';
-import { AbstractController } from './abstract.controller';
+import { HttpSuccessCode } from '../utils/httpSuccessCode.enum';
+import { AbstractController } from './abstract/abstract.controller';
 
 /**
  * The LeaderboardController, designed to handle the /leaderboard route collection
@@ -16,12 +17,13 @@ class LeaderboardController extends AbstractController {
      *
      * @returns a nominal test object
      */
-    public async hello(req: Request): Promise<APIResponse> {
+    public async hello(req: Request): Promise<APIResponse<string>> {
         // quick hack while we're not actually using Promises
         await new Promise((r) => r(10));
 
         return {
-            hello: 'lederboard'
+            status: HttpSuccessCode.OK,
+            data: 'leaderboard'
         };
     }
 }
