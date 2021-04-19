@@ -3,7 +3,7 @@ import { ImageHelper } from '../helpers/image.helper';
 import { VikingHelper } from '../helpers/viking.helper';
 import { APIResponse } from '../models/apiResponse.model';
 import { vikingService } from '../services/viking.service';
-import { HttpSuccessCode } from '../utils/httpSuccessCode.enum';
+import { HttpSuccessCode } from '../enums/httpSuccessCode.enum';
 import { AbstractController } from './abstract/abstract.controller';
 
 /**

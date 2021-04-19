@@ -1,6 +1,6 @@
 import { ModelBroadcast, ModelRead, ModelWrite, _createModel } from './base.model';
-import { ItemCondition } from '../../utils/itemCondition.enum';
-import { ClothesCondition } from '../../utils/clothesCondition.enum';
+import { ItemCondition } from '../../enums/itemCondition.enum';
+import { ClothesCondition } from '../../enums/clothesCondition.enum';
 
 interface Viking {
     number: number;

@@ -1,4 +1,4 @@
-import { HttpSuccessCode } from '../utils/httpSuccessCode.enum';
+import { HttpSuccessCode } from '../enums/httpSuccessCode.enum';
 
 /**
  * Utility interface representing the API Response format for all Controller methods, specifying a Status Code and some data

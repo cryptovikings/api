@@ -1,6 +1,5 @@
 import { Request, Response, Router } from 'express';
 import { vikingRouter } from './viking.router';
-import { leaderboardRouter } from './leaderboard.router';
 import { testRouter } from './test.router';
 
 /** The Router handling the top-level /api route collection, incorporating subordinate collection-handling Routers */
@@ -8,9 +7,6 @@ const apiRouter = Router();
 
 // /metadata collection is handled by the metadataRouter
 apiRouter.use('/viking', vikingRouter);
-
-// /leaderboard collection is handled by the leaderboardRouter
-apiRouter.use('/leaderboard', leaderboardRouter);
 
 // /test collection is handled by the testRouter
 apiRouter.use('/test', testRouter);

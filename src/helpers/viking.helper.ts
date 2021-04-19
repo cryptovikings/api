@@ -1,8 +1,8 @@
 import { VikingBroadcast, VikingRead, VikingWrite } from '../models/mongoose/viking.model';
 import { VikingContractData } from '../models/vikingContractData.model';
 import { AssetSpecs } from '../models/assetSpec.model';
-import { ItemCondition } from '../utils/itemCondition.enum';
-import { ClothesCondition } from '../utils/clothesCondition.enum';
+import { ItemCondition } from '../enums/itemCondition.enum';
+import { ClothesCondition } from '../enums/clothesCondition.enum';
 
 /**
  * The MetadataHelper, implementing the actual metadata generation functionality, including Type/Style name resolution and ItemCondition

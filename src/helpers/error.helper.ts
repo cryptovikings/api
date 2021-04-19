@@ -1,5 +1,5 @@
 import { APIError } from '../models/apiError.model';
-import { HttpErrorCode } from '../utils/httpErrorCode.enum';
+import { HttpErrorCode } from '../enums/httpErrorCode.enum';
 
 /**
  * Error Helper, providing a consistent API for constructing an APIError, containing a Status Code for use in the Error Handling midddleware

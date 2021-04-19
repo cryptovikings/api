@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { ErrorHelper } from '../../helpers/error.helper';
 import { APIResponse } from '../../models/apiResponse.model';
-import { HttpErrorCode } from '../../utils/httpErrorCode.enum';
+import { HttpErrorCode } from '../../enums/httpErrorCode.enum';
 
 /**
  * Utility type representing a properly bound request processor

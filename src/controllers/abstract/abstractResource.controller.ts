@@ -1,13 +1,14 @@
 import { Request } from 'express';
 import { FilterQuery } from 'mongoose';
+
 import { ErrorHelper } from '../../helpers/error.helper';
 import { APIQuery, Paginate, Select, Sort, Where } from '../../models/apiQuery.model';
 import { APIResponse } from '../../models/apiResponse.model';
 import { ModelWrite, ModelRead, ModelBroadcast } from '../../models/mongoose/base.model';
 import { ModelTransformer } from '../../models/transformers/modelTransformer';
 import { AbstractService } from '../../services/abstract/abstract.service';
-import { HttpErrorCode } from '../../utils/httpErrorCode.enum';
-import { HttpSuccessCode } from '../../utils/httpSuccessCode.enum';
+import { HttpErrorCode } from '../../enums/httpErrorCode.enum';
+import { HttpSuccessCode } from '../../enums/httpSuccessCode.enum';
 import { AbstractController } from './abstract.controller';
 
 /**
@@ -20,7 +21,8 @@ import { AbstractController } from './abstract.controller';
  * Controllers which serve a particular Model should extend this class
  *
  * @typeparam TWrite the 'writeable' Model representation, to be received in request bodies for create + update
- * @typeparam TRead the 'as-read' Model representation, as read from the database and broadcast in responses
+ * @typeparam TRead the 'as-read' Model representation, as read from the database
+ * @typeparam TBroadcast the broadcastable Model representation, as sent to the outside world
  */
 export abstract class AbstractResourceController<
     TWrite extends ModelWrite,
@@ -28,9 +30,11 @@ export abstract class AbstractResourceController<
     TBroadcast extends ModelBroadcast> extends AbstractController {
 
     /**
-     * Constructor. Take and store the Service to use and the name of the Entity's unique identifier to be used in single-Entity lookups
+     * Constructor. Take and store the Service to use, the ModelTransformer implementing Model conversion routines, and the name of the
+     *   Entity's unique identifier to be used in single-Entity lookups
      *
      * @param service the Service to use
+     * @param transformer the ModelTransformer to use
      * @param identifierName the name the unique identifier, to be matched in request parameters
      */
     constructor(

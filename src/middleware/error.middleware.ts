@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { APIError } from '../models/apiError.model';
-import { HttpErrorCode } from '../utils/httpErrorCode.enum';
+import { HttpErrorCode } from '../enums/httpErrorCode.enum';
 
 /**
  * Error Handling middleware for the Application
