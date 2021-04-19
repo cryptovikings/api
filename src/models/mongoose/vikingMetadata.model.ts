@@ -7,6 +7,7 @@ import { ItemCondition } from '../../utils/itemCondition.enum';
  *   listings
  */
 interface VikingMetadata {
+    vikingNumber: number;
     name: string;
     description: string;
     external_link: string;
@@ -152,6 +153,7 @@ export const VikingMetaDataModel = _createModel({
     name: 'VikingMetadata',
     collectionName: 'vikingmetadata',
     schemaDefinition: {
+        vikingNumber: { type: Number, required: true, unique: true, index: true },
         name: { type: String, required: true, index: true },
         description: { type: String, required: true },
         external_link: { type: String, required: true },

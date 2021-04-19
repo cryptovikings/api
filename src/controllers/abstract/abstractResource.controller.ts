@@ -1,7 +1,10 @@
 import { Request } from 'express';
+import { FilterQuery } from 'mongoose';
+import { ErrorHelper } from '../../helpers/error.helper';
 import { APIResponse } from '../../models/apiResponse.model';
 import { ModelWrite, ModelRead } from '../../models/mongoose/base.model';
 import { AbstractService } from '../../services/abstract/abstract.service';
+import { HttpErrorCode } from '../../utils/httpErrorCode.enum';
 import { HttpSuccessCode } from '../../utils/httpSuccessCode.enum';
 import { AbstractController } from './abstract.controller';
 
@@ -20,27 +23,28 @@ import { AbstractController } from './abstract.controller';
 export abstract class AbstractResourceController<TWrite extends ModelWrite, TRead extends ModelRead> extends AbstractController {
 
     /**
-     * Constructor. Take and store the Service to use
+     * Constructor. Take and store the Service to use and the name of the Entity's unique identifier to be used in single-Entity lookups
      *
      * @param service the Service to use
+     * @param identifierName the name the unique identifier, to be matched in request parameters
      */
-    constructor(protected service: AbstractService<TWrite, TRead>) {
+    constructor(protected service: AbstractService<TWrite, TRead>, protected identifierName: string) {
         super();
     }
 
     /**
-     * // TODO
+     * Generic GET handler, supporting both single lookups for a single Entity and queried or unqueried lookups for many Entities
      *
-     * @param req
-     * @returns
+     * @param req the Express Request
+     *
+     * @returns the found Documents
      */
-    public async get(req: Request): Promise<APIResponse<Array<TRead>>> {
-        const data = await this.service.find();
+    public async get(req: Request): Promise<APIResponse<TRead | Array<TRead>>> {
+        if (req.params[this.identifierName]) {
+            return await this.getOne(req.params[this.identifierName]);
+        }
 
-        return {
-            status: HttpSuccessCode.OK,
-            data
-        };
+        return await this.getAll();
     }
 
     /**
@@ -50,6 +54,8 @@ export abstract class AbstractResourceController<TWrite extends ModelWrite, TRea
      * @returns
      */
     public async create(req: Request): Promise<APIResponse<TRead>> {
+        // TODO validate req.body
+
         const data = await this.service.create(req.body);
 
         return {
@@ -65,6 +71,9 @@ export abstract class AbstractResourceController<TWrite extends ModelWrite, TRea
      * @returns
      */
     public async update(req: Request): Promise<APIResponse<TRead>> {
+        // TODO validate req.body
+        const data = await this.service.update(req.body);
+
         await new Promise((r) => r(true));
 
         return {
@@ -86,5 +95,53 @@ export abstract class AbstractResourceController<TWrite extends ModelWrite, TRea
             status: HttpSuccessCode.OK,
             data: true
         };
+    }
+
+    /**
+     * Overrideable single Entity retrieval routine, querying by the identifier name to return one result
+     *
+     * @param identifier the value of the identifier as supplied in query params
+     *
+     * @returns the found Entity
+     */
+    protected async getOne(identifier: string): Promise<APIResponse<TRead>> {
+        const identifierQuery = this.buildIdentifierQuery(identifier);
+
+        const found = await this.service.findOne(identifierQuery);
+
+        if (!found) {
+            throw ErrorHelper.createError(
+                HttpErrorCode.NOT_FOUND,
+                `No Entity found with identifier ${JSON.stringify(identifierQuery)}`
+            );
+        }
+
+        return {
+            status: HttpSuccessCode.OK,
+            data: found
+        };
+    }
+
+    /**
+     * Overrideable multi Entity retrieval routine, retrieving all Entities
+     *
+     * @returns the found Entities
+     */
+    protected async getAll(): Promise<APIResponse<Array<TRead>>> {
+        return {
+            status: HttpSuccessCode.OK,
+            data: await this.service.findMany()
+        };
+    }
+
+    /**
+     * Reusable internal utility for building a single-Entity query based on the Entity's unique identifier
+     *
+     * @param identifier the identifier value
+     *
+     * @returns the FilterQuery for passing to the Service
+     */
+    protected buildIdentifierQuery(identifier: string): FilterQuery<TRead> {
+        return { [`${this.identifierName}`]: identifier } as FilterQuery<TRead>;
     }
 }

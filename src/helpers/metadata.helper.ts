@@ -22,6 +22,7 @@ export class MetadataHelper {
         const appearance = `${beard.toString()}${body < 10 ? `0${body.toString()}` : body.toString()}${face < 10 ? `0${face.toString()}` : face.toString()}${top < 10 ? `0${top.toString()}` : top.toString()}`;
 
         return {
+            number: n,
             name: `viking_${n}`,
             weapon: random(99),
             attack: random(99),
@@ -87,6 +88,7 @@ export class MetadataHelper {
         const imagePath = await ImageHelper.composeImage(assetSpecs);
 
         return {
+            vikingNumber: viking.number,
             name: viking.name,
             description: 'A unique and special Viking!',
             external_link: '<link_to_viking_on_our_website>',

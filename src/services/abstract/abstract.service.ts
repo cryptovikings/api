@@ -1,3 +1,4 @@
+import { FilterQuery } from 'mongoose';
 import { PaginateModel } from 'mongoose';
 import { ModelRead, ModelWrite } from '../../models/mongoose/base.model';
 
@@ -21,11 +22,22 @@ export abstract class AbstractService<TWrite extends ModelWrite, TRead extends M
     constructor(public model: PaginateModel<TRead>) { }
 
     /**
-     * // TODO
+     * Find one Document with a given query, based off the Entity's unique identifier
      *
-     * @returns
+     * @param identifierQuery the query
+     *
+     * @returns the found Document, or null
      */
-    public async find(): Promise<Array<TRead>> {
+    public async findOne(identifierQuery: FilterQuery<TRead>): Promise<TRead | null> {
+        return await this.model.findOne(identifierQuery);
+    }
+
+    /**
+     * Find all Documents
+     *
+     * @returns the Documents
+     */
+    public async findMany(): Promise<Array<TRead>> {
         return await this.model.find();
     }
 
@@ -42,8 +54,8 @@ export abstract class AbstractService<TWrite extends ModelWrite, TRead extends M
     /**
      * // TODO
      */
-    public async update(): Promise<void> {
-
+    public async update(data: TWrite): Promise<void> {
+        // return await this.model.updateOne()
     }
 
     /**

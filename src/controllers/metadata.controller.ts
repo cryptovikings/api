@@ -17,7 +17,7 @@ class MetadataController extends AbstractResourceController<VikingMetadataWrite,
      * Constructor. Specify the Service as the MetadataService
      */
     constructor() {
-        super(metadataService);
+        super(metadataService, 'vikingNumber');
     }
 
     /**

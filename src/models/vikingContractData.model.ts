@@ -3,6 +3,9 @@
  *   Metadata and directing the Compositor to generate an image
  */
 export interface VikingContractData {
+    /** Number */
+    number: number;
+
     /** Name */
     name: string;
 
