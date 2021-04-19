@@ -32,7 +32,7 @@ class TestController extends AbstractController {
             filePaths.push(imagePath);
         }
 
-        const atlasPath = await ImageHelper.generateAtlas();
+        const atlasPath = await ImageHelper.composeAtlas();
 
         return {
             status: HttpSuccessCode.OK,

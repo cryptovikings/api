@@ -4,6 +4,8 @@ import gm from 'gm';
 
 import { AssetSpecs } from '../models/assetSpec.model';
 import { AssetPaths } from '../models/assetPaths.model';
+import { ErrorHelper } from './error.helper';
+import { HttpErrorCode } from '../utils/httpErrorCode.enum';
 
 /**
  * The ImageHelper, implementing the asset composition routine so as to produce Viking Images based on generated Viking Metadata
@@ -37,31 +39,21 @@ export class ImageHelper {
      *
      * @returns the file path to the generated image
      */
-    public static async composeImage(number: number, assetSpecs: AssetSpecs): Promise<string> {
+    public static composeImage(number: number, assetSpecs: AssetSpecs): Promise<string> {
         ImageHelper.mkDirOptional(ImageHelper.vikingOut);
 
         const paths = ImageHelper.resolveAssetPaths(assetSpecs);
 
-        const filePath = await ImageHelper.generateImage(`viking_${number}`, paths);
-
-        return filePath;
+        return ImageHelper.generateImage(`viking_${number}`, paths).catch(() => {
+            throw ErrorHelper.createError(HttpErrorCode.INTERNAL_SERVER_ERROR, 'Image generation failed');
+        });
     }
 
-    public static generateAtlas(): Promise<string> {
+    public static composeAtlas(): Promise<string> {
         ImageHelper.mkDirOptional(ImageHelper.atlasOut);
 
-        return new Promise((resolve, reject) => {
-            const outPath = path.join(ImageHelper.atlasOut, 'atlas.png');
-            const image = gm('');
-
-            for (const file of fs.readdirSync(ImageHelper.vikingOut)) {
-                image.montage(path.join(ImageHelper.vikingOut, file));
-            }
-
-            image
-                .geometry('+0+0')
-                .background('transparent')
-                .write(outPath, (err) => err ? reject(err) : resolve(outPath));
+        return ImageHelper.generateAtlas().catch(() => {
+            throw ErrorHelper.createError(HttpErrorCode.INTERNAL_SERVER_ERROR, 'Atlas generation failed');
         });
     }
 
@@ -147,7 +139,7 @@ export class ImageHelper {
         return paths;
     }
 
-    private static async generateImage(fileName: string, paths: AssetPaths): Promise<string> {
+    private static generateImage(fileName: string, paths: AssetPaths): Promise<string> {
         const filePath = path.join(ImageHelper.vikingOut, `${fileName.replace(/\s/g, '_').toLowerCase()}.png`);
 
         return new Promise((resolve, reject) => {
@@ -179,6 +171,22 @@ export class ImageHelper {
                 .background('transparent')
                 .mosaic()
                 .write(filePath, ((err) => err ? reject(err) : resolve(filePath)));
+        });
+    }
+
+    private static generateAtlas(): Promise<string> {
+        return new Promise((resolve, reject) => {
+            const outPath = path.join(ImageHelper.atlasOut, 'atlas.png');
+            const image = gm('');
+
+            for (const file of fs.readdirSync(ImageHelper.vikingOut)) {
+                image.montage(path.join(ImageHelper.vikingOut, file));
+            }
+
+            image
+                .geometry('+0+0')
+                .background('transparent')
+                .write(outPath, (err) => err ? reject(err) : resolve(outPath));
         });
     }
 }

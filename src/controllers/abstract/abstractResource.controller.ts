@@ -190,11 +190,38 @@ export abstract class AbstractResourceController<
             paginate = req.query.paginate ? JSON.parse(req.query.paginate as string) : undefined;
         }
 
+        if (select) {
+            this.validateSelect(select);
+        }
+
         return {
             where,
             select,
             sort,
             paginate
         };
+    }
+
+    protected validateSelect(select: Select): void {
+        if (select) {
+            let last = undefined;
+
+            for (const s of select) {
+                if (s.includes('_id')) {
+                    continue;
+                }
+
+                const current = s.startsWith('-');
+
+                if (last !== undefined && current !== last) {
+                    throw ErrorHelper.createError(
+                        HttpErrorCode.BAD_REQUEST,
+                        `Cannot mix includes and excludes in select: [${select.join(', ')}]`
+                    );
+                }
+
+                last = current;
+            }
+        }
     }
 }
