@@ -49,7 +49,7 @@ export abstract class AbstractResourceController<
      *
      * @returns the found Documents
      */
-    public async get(req: Request): Promise<APIResponse<TBroadcast | Array<TBroadcast>>> {
+    public async get(req: Request): Promise<APIResponse<DeepPartial<TBroadcast> | Array<DeepPartial<TBroadcast>>>> {
         const { where, select, sort, paginate } = this.parseQuery(req);
 
         if (req.params[this.identifierName]) {
@@ -120,7 +120,7 @@ export abstract class AbstractResourceController<
      *
      * @returns the found Entity
      */
-    protected async getOne(identifier: string, select: Select): Promise<APIResponse<TBroadcast>> {
+    protected async getOne(identifier: string, select: Select): Promise<APIResponse<DeepPartial<TBroadcast>>> {
         const identifierQuery = this.buildIdentifierQuery(identifier);
 
         const found = await this.service.findOne(identifierQuery, select);
@@ -134,16 +134,19 @@ export abstract class AbstractResourceController<
 
         return {
             status: HttpSuccessCode.OK,
-            data: this.transformer.convertForBroadcast(found)
+            data: this.transformer.convertForBroadcast(found, select)
         };
     }
 
-    protected async getMany(where: Where, select: Select, sort: Sort, paginate: Paginate): Promise<APIResponse<Array<TBroadcast>>> {
+    protected async getMany(
+        where: Where, select: Select, sort: Sort, paginate: Paginate
+    ): Promise<APIResponse<Array<DeepPartial<TBroadcast>>>> {
+
         const result = await this.service.findMany(where, select, sort, paginate);
 
         return {
             status: HttpSuccessCode.OK,
-            data: this.transformer.convertManyForBroadcast(result.docs),
+            data: this.transformer.convertManyForBroadcast(result.docs, select),
             paginate: {
                 total: result.totalDocs,
                 count: result.docs.length,

@@ -1,7 +1,6 @@
 import { VikingWrite } from '../models/mongoose/viking.model';
 import { VikingContractData } from '../models/vikingContractData.model';
 import { AssetSpecs } from '../models/assetSpec.model';
-import { ImageHelper } from './image.helper';
 import { ItemCondition } from '../utils/itemCondition.enum';
 import { ClothesCondition } from '../utils/clothesCondition.enum';
 
@@ -82,7 +81,9 @@ export class VikingHelper {
         return {
             number,
             name: viking.name,
-            image_uri: imagePath,
+            image: imagePath,
+            description: 'A unique and special viking!',
+
             birthday: viking.birthday,
 
             beard_name: assetSpecs.names.beard,
@@ -111,137 +112,6 @@ export class VikingHelper {
             attack: viking.attack,
         };
     }
-
-    /**
-     * Generate a Viking Metadata structure based on a given Viking Contract Data structure
-     *
-     * @param viking the Viking Contract Data
-     *
-     * @returns the Viking Metadata
-     */
-    // public static async generateMetadata(viking: VikingContractData): Promise<VikingWrite> {
-    //     const assetSpecs = VikingHelper.resolveAssetSpecs(viking);
-
-    //     const imagePath = await ImageHelper.composeImage(assetSpecs);
-
-    //     return {
-    //         vikingNumber: viking.number,
-    //         name: viking.name,
-    //         description: 'A unique and special Viking!',
-    //         external_link: '<link_to_viking_on_our_website>',
-    //         image: imagePath,
-    //         attributes: [
-    //             // birthday
-    //             {
-    //                 display_type: 'date',
-    //                 trait_type: 'Birthday',
-    //                 value: Date.now()
-    //             },
-    //             // generation
-    //             {
-    //                 display_type: 'number',
-    //                 trait_type: 'Generation',
-    //                 value: 567
-    //             },
-
-    //             // body traits
-    //             {
-    //                 trait_type: 'Beard',
-    //                 value: assetSpecs.names.beard
-    //             },
-    //             // body traits
-    //             {
-    //                 trait_type: 'Body',
-    //                 value: assetSpecs.names.body
-    //             },
-    //             // face traits
-    //             {
-    //                 trait_type: 'Face',
-    //                 value: assetSpecs.names.face
-    //             },
-    //             // top traits
-    //             {
-    //                 trait_type: 'Top',
-    //                 value: assetSpecs.names.top
-    //             },
-
-    //             // boots traits
-    //             {
-    //                 trait_type: 'Boots Type',
-    //                 value: assetSpecs.names.boots
-    //             },
-    //             {
-    //                 trait_type: 'Boots Condition',
-    //                 value: assetSpecs.conditions.boots
-    //             },
-    //             {
-    //                 trait_type: 'Speed',
-    //                 value: viking.speed,
-    //                 max_value: 99
-    //             },
-
-    //             // bottoms traits
-    //             {
-    //                 trait_type: 'Bottoms Type',
-    //                 value: assetSpecs.names.bottoms
-    //             },
-    //             {
-    //                 trait_type: 'Bottoms Condition',
-    //                 value: assetSpecs.conditions.bottoms
-    //             },
-    //             {
-    //                 trait_type: 'Stamina',
-    //                 value: viking.stamina,
-    //                 max_value: 99
-    //             },
-
-    //             // helmet traits
-    //             {
-    //                 trait_type: 'Helmet Type',
-    //                 value: assetSpecs.names.helmet
-    //             },
-    //             {
-    //                 trait_type: 'Helmet Condition',
-    //                 value: assetSpecs.conditions.helmet
-    //             },
-    //             {
-    //                 trait_type: 'Intelligence',
-    //                 value: viking.intelligence,
-    //                 max_value: 99
-    //             },
-
-    //             // shield traits
-    //             {
-    //                 trait_type: 'Shield Type',
-    //                 value: assetSpecs.names.shield
-    //             },
-    //             {
-    //                 trait_type: 'Shield Condition',
-    //                 value: assetSpecs.conditions.shield
-    //             },
-    //             {
-    //                 trait_type: 'Defence',
-    //                 value: viking.defence,
-    //                 max_value: 99
-    //             },
-
-    //             // weapon traits
-    //             {
-    //                 trait_type: 'Weapon Type',
-    //                 value: assetSpecs.names.weapon
-    //             },
-    //             {
-    //                 trait_type: 'Weapon Condition',
-    //                 value: assetSpecs.conditions.weapon
-    //             },
-    //             {
-    //                 trait_type: 'Attack',
-    //                 value: viking.attack,
-    //                 max_value: 99
-    //             }
-    //         ]
-    //     };
-    // }
 
     /**
      * Resolve the name of a Beard Type selected by a number in the range 0-99 by the Viking Contract Data

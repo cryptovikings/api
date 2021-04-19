@@ -1,14 +1,36 @@
+import _pick from 'lodash.pick';
+import { Select } from '../apiQuery.model';
 import { VikingBroadcast, VikingRead } from '../mongoose/viking.model';
 import { ModelTransformer } from './modelTransformer';
 
 class VikingTransformer extends ModelTransformer<VikingRead, VikingBroadcast> {
 
-    public convertForBroadcast(data: VikingRead): VikingBroadcast {
-        return {
+    public convertForBroadcast(data: VikingRead, select: Select): DeepPartial<VikingBroadcast> {
+        let keys = [
+            'name',
+            'image',
+            'description',
+            'external_link',
+            'attributes'
+        ];
+
+        if (select && select.length) {
+            const omitKeys = select.filter((key) => key.startsWith('-')).map((key) => key.substr(1));
+            const pickKeys = select.filter((key) => !key.startsWith('-'));
+
+            if (omitKeys.length) {
+                keys = keys.filter((key) => !omitKeys.includes(key));
+            }
+            else if (pickKeys.length) {
+                keys = keys.filter((key) => pickKeys.includes(key));
+            }
+        }
+
+        const broadcast: VikingBroadcast = {
             name: data.name,
-            description: 'A unique and special viking!',
-            external_link: '<external_link',
-            image: data.image_uri,
+            image: data.image,
+            description: data.description,
+            external_link: `https://cryptovikings.io/viking/${data.number}`,
 
             attributes: [
                 // birthday
@@ -125,7 +147,9 @@ class VikingTransformer extends ModelTransformer<VikingRead, VikingBroadcast> {
                     max_value: 99
                 }
             ]
-        };
+        }
+
+        return _pick(broadcast, keys);
     }
 }
 

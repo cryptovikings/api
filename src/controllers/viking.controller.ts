@@ -1,7 +1,7 @@
 import { APIResponse } from '../models/apiResponse.model';
 import { VikingRead, VikingWrite, VikingBroadcast } from '../models/mongoose/viking.model';
 import { vikingTransformer } from '../models/transformers/viking.transformer';
-import { metadataService } from '../services/metadata.service';
+import { vikingService } from '../services/viking.service';
 import { AbstractResourceController } from './abstract/abstractResource.controller';
 
 /**
@@ -15,7 +15,7 @@ class VikingController extends AbstractResourceController<VikingWrite, VikingRea
      * Constructor. Specify the Service as the MetadataService
      */
     constructor() {
-        super(metadataService, vikingTransformer, 'number');
+        super(vikingService, vikingTransformer, 'number');
     }
 
     /**

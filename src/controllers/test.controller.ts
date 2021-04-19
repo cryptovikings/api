@@ -2,7 +2,7 @@ import { Request } from 'express';
 import { ImageHelper } from '../helpers/image.helper';
 import { VikingHelper } from '../helpers/viking.helper';
 import { APIResponse } from '../models/apiResponse.model';
-import { metadataService } from '../services/metadata.service';
+import { vikingService } from '../services/viking.service';
 import { HttpSuccessCode } from '../utils/httpSuccessCode.enum';
 import { AbstractController } from './abstract/abstract.controller';
 
@@ -27,7 +27,7 @@ class TestController extends AbstractController {
 
             const storage = VikingHelper.generateVikingStorage(i, imagePath, contractData);
 
-            await metadataService.create(storage);
+            await vikingService.create(storage);
 
             filePaths.push(imagePath);
         }

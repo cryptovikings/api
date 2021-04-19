@@ -4,8 +4,11 @@ import { ClothesCondition } from '../../utils/clothesCondition.enum';
 
 interface Viking {
     number: number;
+
     name: string;
-    image_uri: string;
+    image: string;
+    description: string;
+
     birthday: number;
 
     beard_name: string;
@@ -36,9 +39,9 @@ interface Viking {
 
 interface VikingMetadata {
     name: string;
+    image: string;
     description: string;
     external_link: string;
-    image: string;
 
     attributes: [
         // birthday
@@ -180,6 +183,8 @@ export const VikingModel = _createModel({
     schemaDefinition: {
         number: { type: Number, required: true, unique: true, index: true },
         name: { type: String, required: true },
+        image: { type: String, required: true },
+        description: { type: String, required: true },
         birthday: { type: Number, required: true },
 
         beard_name: { type: String, required: true },
