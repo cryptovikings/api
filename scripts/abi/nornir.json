@@ -122,6 +122,69 @@
           "internalType": "uint256",
           "name": "id",
           "type": "uint256"
+        },
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "weapon",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "attack",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "shield",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "defence",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "boots",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "speed",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "helmet",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "intelligence",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "bottoms",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "stamina",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "appearance",
+              "type": "uint256"
+            }
+          ],
+          "indexed": false,
+          "internalType": "struct Nornir.Viking",
+          "name": "vikingData",
+          "type": "tuple"
         }
       ],
       "name": "VikingGenerated",
