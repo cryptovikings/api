@@ -120,19 +120,6 @@
         {
           "indexed": false,
           "internalType": "uint256",
-          "name": "currentSupply",
-          "type": "uint256"
-        }
-      ],
-      "name": "VikingCount",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": false,
-          "internalType": "uint256",
           "name": "id",
           "type": "uint256"
         }
