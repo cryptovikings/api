@@ -22,6 +22,20 @@ async function main() {
 		console.log(log.join('\n'));
 		contract.generateViking(requestId);
 	});
+
+	contract.on('VikingGenerated', (id) => {
+		const log = [
+			'VikingGenerated',
+			'-----------',
+			'1 - The VikingReady listener above called the generateViking function',
+			'2 - The generateViking retrieved the requestId and used this to generate the Viking stats',
+			'3 - The generated Viking was pushed to the on-chain array of Vikings',
+			'4 - generateViking returns the generated Viking\'s',
+			`5 - That ID is: ${id}`,
+		];
+
+		console.log(log.join('\n'));
+	});
 }
 
 main()
