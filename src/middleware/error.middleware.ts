@@ -2,6 +2,9 @@ import { Request, Response } from 'express';
 import { APIError } from '../models/apiError.model';
 import { HttpErrorCode } from '../utils/httpErrorCode.enum';
 
+/**
+ * Error Handling middleware for the Application
+ */
 export const error = (err: Error | APIError, req: Request, res: Response): void => {
     switch (err.name) {
         case 'APIError':

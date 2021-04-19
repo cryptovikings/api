@@ -1,20 +1,56 @@
-import { Schema, SchemaDefinition, SchemaOptions, Document } from 'mongoose';
+import mongoose, { Schema, SchemaDefinition, SchemaOptions, Document, PaginateModel } from 'mongoose';
 import beautifyUnique from 'mongoose-beautiful-unique-validation';
 import mongoosePaginate from 'mongoose-paginate-v2';
 
+/**
+ * Base Entity Model, specifying the existence of a Mongo ID
+ */
 interface BaseModel {
     _id: Schema.Types.ObjectId;
 }
 
+/**
+ * The base 'writeable' Model representation, signifying the basic makeup of a Model as received in request bodies and to be written to the
+ *   database
+ *
+ * Models should be specified with a Write Type which extends this
+ */
 export type ModelWrite = Omit<BaseModel, '_id'>;
 
+/**
+ * The base 'readable' Model representation, signifying the basic makeup of a Model as read from the database and to be broadcast to  the
+ *   outside world
+ *
+ * Models should be specified with a Read Type which extends this
+ */
 export type ModelRead = BaseModel & Document;
 
-export const _createSchema = (definition: SchemaDefinition, options?: SchemaOptions): Schema => {
-    const schema = new Schema(definition, options);
+/**
+ * A ModelDescriptor for specifying a Model's makeup as passed to _createModel() (below)
+ *
+ * Incorporates the Model's name + collectionName, as well as its SchemaDefinition and SchemaOptions
+ */
+export interface ModelDescriptor {
+    name: string;
+    collectionName?: string;
+    schemaDefinition: SchemaDefinition;
+    schemaOptions?: SchemaOptions;
+}
 
+/**
+ * Utility method for creating a Mongoose Model based on a given ModelDescriptor, incorproating the system's default definition as well as a
+ *   standard set of Mongoose Plugins
+ *
+ * @param descriptor the ModelDescriptor
+ *
+ * @returns the PaginateModel
+ */
+export const _createModel = (descriptor: ModelDescriptor): PaginateModel<any> => {
+    // set up the Schema to incoroporate the MongooosePaginate and BeautifulUniqueValidation plugins
+    const schema = new Schema(descriptor.schemaDefinition, descriptor.schemaOptions);
     schema.plugin(beautifyUnique);
     schema.plugin(mongoosePaginate);
 
-    return schema;
+    // configure the Model
+    return mongoose.model(descriptor.name, schema, descriptor.collectionName ?? descriptor.name);
 }

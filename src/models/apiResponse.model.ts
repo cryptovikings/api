@@ -1,12 +1,9 @@
 import { HttpSuccessCode } from '../utils/httpSuccessCode.enum';
-import { ModelRead } from './mongoose/base.model';
 
 /**
- * Utility base Model representing the common return type for all Controller route processors
- *
- * Just a regular ol' Object, named for convenience and clarity in Controller authorship
+ * Utility interface representing the API Response format for all Controller methods, specifying a Status Code and some data
  */
-export interface APIResponse<TRead extends ModelRead | Array<ModelRead>> {
+export interface APIResponse<TRead> {
     status: HttpSuccessCode;
     data: TRead;
 }

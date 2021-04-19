@@ -1,9 +1,10 @@
-import { ModelRead, ModelWrite, _createSchema } from './base.model';
-import mongoose, { Schema } from 'mongoose';
+import { ModelRead, ModelWrite, _createModel } from './base.model';
+import { Schema } from 'mongoose';
 import { ItemCondition } from '../../utils/itemCondition.enum';
 
 /**
- * Model representing the Viking Metadata that will be generated and provided to OpenSea for Viking listings
+ * Base Model representing the Viking Metadata that will be generated based on Viking Contract Data and provided to OpenSea for Viking
+ *   listings
  */
 interface VikingMetadata {
     name: string;
@@ -134,16 +135,27 @@ interface VikingMetadata {
     ];
 }
 
+/**
+ * 'Writeable' type for VikingMetadata, extending the base ModelWrite
+ */
 export interface VikingMetadataWrite extends ModelWrite, VikingMetadata { }
 
+/**
+ * 'Readable' type for VikingMetadata, extending the base ModelRead
+ */
 export interface VikingMetadataRead extends ModelRead, VikingMetadata { }
 
-const VikingMetadataSchema = _createSchema({
-    name: { type: String, required: true, index: true },
-    description: { type: String, required: true },
-    external_link: { type: String, required: true },
-    image: { type: String, required: true },
-    attributes: [{ type: Schema.Types.Mixed, required: true }]
+/**
+ * Mongoose PaginateModel for the VikingMetadata collection
+ */
+export const VikingMetaDataModel = _createModel({
+    name: 'VikingMetadata',
+    collectionName: 'vikingmetadata',
+    schemaDefinition: {
+        name: { type: String, required: true, index: true },
+        description: { type: String, required: true },
+        external_link: { type: String, required: true },
+        image: { type: String, required: true },
+        attributes: [{ type: Schema.Types.Mixed, required: true }]
+    }
 });
-
-export const VikingMetaDataModel = mongoose.model('VikingMetadata', VikingMetadataSchema, 'vikingmetadata');

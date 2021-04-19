@@ -1,5 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
 
+/**
+ * CORS middleware for the Application
+ */
 export const cors = (req: Request, res: Response, next: NextFunction): void => {
     // TODO: restrict origin if applicable for deployment
     res.header('Access-Control-Allow-Origin', '*');

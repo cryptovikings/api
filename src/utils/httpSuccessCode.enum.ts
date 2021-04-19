@@ -1,5 +1,5 @@
 /**
- * Enum describing all valid HTTP status codes indicating success
+ * Enum specifying all valid HTTP status codes indicating success
  */
 export enum HttpSuccessCode {
     /** Generic success response; for GET requests the payload will be the resource; for POSTs the payload will describe the operation */

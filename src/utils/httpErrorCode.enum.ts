@@ -1,5 +1,5 @@
 /**
- * Enum describing all valid HTTP status codes indicating failure
+ * Enum specifying all valid HTTP status codes indicating failure
  */
 export enum HttpErrorCode {
     /** Error response - the server cannot process the request due to a malformed payload or otherwise invalid request */

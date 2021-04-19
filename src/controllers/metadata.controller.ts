@@ -7,12 +7,15 @@ import { metadataService } from '../services/metadata.service';
 import { AbstractResourceController } from './abstractResource.controller';
 
 /**
- * The MetadataController, designed to handle the /metadata route collection
+ * The MetadataController, designed to handle the /metadata route collection and the metadata database Entity
  *
- * Implements Metadata generation + retrieval functionality, setting up the OpenSea Viking representations
+ * Additionally implements Metadata generation + retrieval functionality, setting up the OpenSea Viking representations
  */
 class MetadataController extends AbstractResourceController<VikingMetadataWrite, VikingMetadataRead> {
 
+    /**
+     * Constructor. Specify the Service as the MetadataService
+     */
     constructor() {
         super(metadataService);
     }
