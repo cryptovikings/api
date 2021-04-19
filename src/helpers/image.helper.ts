@@ -37,12 +37,12 @@ export class ImageHelper {
      *
      * @returns the file path to the generated image
      */
-    public static async composeImage(assetSpecs: AssetSpecs): Promise<string> {
+    public static async composeImage(number: number, assetSpecs: AssetSpecs): Promise<string> {
         ImageHelper.mkDirOptional(ImageHelper.vikingOut);
 
         const paths = ImageHelper.resolveAssetPaths(assetSpecs);
 
-        const filePath = await ImageHelper.generateImage(`viking_${assetSpecs.number}`, paths);
+        const filePath = await ImageHelper.generateImage(`viking_${number}`, paths);
 
         return filePath;
     }
@@ -90,7 +90,8 @@ export class ImageHelper {
             // top: path.join(ImageHelper.directories.tops, topFile)
         };
 
-        if (assetSpecs.conditions.boots !== 'None') {
+        // TODO basic handling
+        if (assetSpecs.conditions.boots !== 'Basic') {
             const bootsName = assetSpecs.names.boots.replace(/\s/g, '_').toLowerCase();
 
             paths.boots = path.join(
@@ -100,7 +101,8 @@ export class ImageHelper {
             );
         }
 
-        if (assetSpecs.conditions.bottoms !== 'None') {
+        // TODO basic handling
+        if (assetSpecs.conditions.bottoms !== 'Basic') {
             const bottomsName = assetSpecs.names.bottoms.replace(/\s/g, '_').toLowerCase();
 
             paths.bottoms = path.join(

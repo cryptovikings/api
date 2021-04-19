@@ -1,5 +1,5 @@
 import { Request, Response, Router } from 'express';
-import { metadataRouter } from './metadata.router';
+import { vikingRouter } from './viking.router';
 import { leaderboardRouter } from './leaderboard.router';
 import { testRouter } from './test.router';
 
@@ -7,7 +7,7 @@ import { testRouter } from './test.router';
 const apiRouter = Router();
 
 // /metadata collection is handled by the metadataRouter
-apiRouter.use('/metadata', metadataRouter);
+apiRouter.use('/viking', vikingRouter);
 
 // /leaderboard collection is handled by the leaderboardRouter
 apiRouter.use('/leaderboard', leaderboardRouter);

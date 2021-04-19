@@ -1,3 +1,4 @@
+import { ClothesCondition } from '../utils/clothesCondition.enum';
 import { ItemCondition } from '../utils/itemCondition.enum';
 
 /**
@@ -7,7 +8,6 @@ import { ItemCondition } from '../utils/itemCondition.enum';
  * Intermediate transformed data type
  */
 export interface AssetSpecs {
-    number: number;
     names: {
         viking: string;
         beard: string;
@@ -21,8 +21,8 @@ export interface AssetSpecs {
         weapon: string;
     };
     conditions: {
-        boots: ItemCondition;
-        bottoms: ItemCondition;
+        boots: ClothesCondition;
+        bottoms: ClothesCondition;
         helmet: ItemCondition;
         shield: ItemCondition;
         weapon: ItemCondition;

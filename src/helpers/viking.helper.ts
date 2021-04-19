@@ -1,16 +1,17 @@
-import { VikingMetadataWrite } from '../models/mongoose/vikingMetadata.model';
+import { VikingWrite } from '../models/mongoose/viking.model';
 import { VikingContractData } from '../models/vikingContractData.model';
 import { AssetSpecs } from '../models/assetSpec.model';
 import { ImageHelper } from './image.helper';
 import { ItemCondition } from '../utils/itemCondition.enum';
+import { ClothesCondition } from '../utils/clothesCondition.enum';
 
 /**
  * The MetadataHelper, implementing the actual metadata generation functionality, including Type/Style name resolution and ItemCondition
  *   mappings
  */
-export class MetadataHelper {
+export class VikingHelper {
 
-    public static generateVikingStruct(n: number): VikingContractData {
+    public static generateVikingContractData(n: number): VikingContractData {
         const random = (max: number): number => Math.round(Math.random() * (max - 1) + 1);
 
         const beard = random(89) + 10;
@@ -22,8 +23,8 @@ export class MetadataHelper {
         const appearance = `${beard.toString()}${body < 10 ? `0${body.toString()}` : body.toString()}${face < 10 ? `0${face.toString()}` : face.toString()}${top < 10 ? `0${top.toString()}` : top.toString()}`;
 
         return {
-            number: n,
             name: `viking_${n}`,
+            birthday: Date.now(),
             weapon: random(99),
             attack: random(99),
 
@@ -53,26 +54,61 @@ export class MetadataHelper {
         const topSelector = parseInt(appearance.slice(6, 8), 10);
 
         return {
-            number: viking.number,
             names: {
                 viking: viking.name,
-                beard: MetadataHelper.resolveBeardType(beardSelector),
-                body: MetadataHelper.resolveBodyType(bodySelector),
-                boots: MetadataHelper.resolveBootsType(viking.boots),
-                bottoms: MetadataHelper.resolveBottomsType(viking.bottoms),
-                face: MetadataHelper.resolveFaceType(faceSelector),
-                helmet: MetadataHelper.resolveHelmetType(viking.helmet),
-                shield: MetadataHelper.resolveShieldType(viking.shield),
-                top: MetadataHelper.resolveTopType(topSelector),
-                weapon: MetadataHelper.resolveWeaponType(viking.weapon)
+                beard: VikingHelper.resolveBeardType(beardSelector),
+                body: VikingHelper.resolveBodyType(bodySelector),
+                boots: VikingHelper.resolveBootsType(viking.boots),
+                bottoms: VikingHelper.resolveBottomsType(viking.bottoms),
+                face: VikingHelper.resolveFaceType(faceSelector),
+                helmet: VikingHelper.resolveHelmetType(viking.helmet),
+                shield: VikingHelper.resolveShieldType(viking.shield),
+                top: VikingHelper.resolveTopType(topSelector),
+                weapon: VikingHelper.resolveWeaponType(viking.weapon)
             },
             conditions: {
-                boots: MetadataHelper.resolveItemCondition(viking.speed),
-                bottoms: MetadataHelper.resolveItemCondition(viking.stamina),
-                helmet: MetadataHelper.resolveItemCondition(viking.intelligence),
-                shield: MetadataHelper.resolveItemCondition(viking.defence),
-                weapon: MetadataHelper.resolveItemCondition(viking.attack)
+                boots: VikingHelper.resolveClothesCondition(viking.speed),
+                bottoms: VikingHelper.resolveClothesCondition(viking.stamina),
+                helmet: VikingHelper.resolveItemCondition(viking.intelligence),
+                shield: VikingHelper.resolveItemCondition(viking.defence),
+                weapon: VikingHelper.resolveItemCondition(viking.attack)
             }
+        };
+    }
+
+    public static generateVikingStorage(number: number, imagePath: string, viking: VikingContractData): VikingWrite {
+        const assetSpecs = VikingHelper.resolveAssetSpecs(viking);
+
+        return {
+            number,
+            name: viking.name,
+            image_uri: imagePath,
+            birthday: viking.birthday,
+
+            beard_name: assetSpecs.names.beard,
+            body_name: assetSpecs.names.body,
+            face_name: assetSpecs.names.face,
+            top_name: assetSpecs.names.top,
+
+            boots_name: assetSpecs.names.boots,
+            boots_condition: assetSpecs.conditions.boots,
+            speed: viking.speed,
+
+            bottoms_name: assetSpecs.names.bottoms,
+            bottoms_condition: assetSpecs.conditions.bottoms,
+            stamina: viking.stamina,
+
+            helmet_name: assetSpecs.names.helmet,
+            helmet_condition: assetSpecs.conditions.helmet,
+            intelligence: viking.intelligence,
+
+            shield_name: assetSpecs.names.shield,
+            shield_condition: assetSpecs.conditions.shield,
+            defence: viking.defence,
+
+            weapon_name: assetSpecs.names.weapon,
+            weapon_condition: assetSpecs.conditions.weapon,
+            attack: viking.attack,
         };
     }
 
@@ -83,129 +119,129 @@ export class MetadataHelper {
      *
      * @returns the Viking Metadata
      */
-    public static async generateMetadata(viking: VikingContractData): Promise<VikingMetadataWrite> {
-        const assetSpecs = MetadataHelper.resolveAssetSpecs(viking);
+    // public static async generateMetadata(viking: VikingContractData): Promise<VikingWrite> {
+    //     const assetSpecs = VikingHelper.resolveAssetSpecs(viking);
 
-        const imagePath = await ImageHelper.composeImage(assetSpecs);
+    //     const imagePath = await ImageHelper.composeImage(assetSpecs);
 
-        return {
-            vikingNumber: viking.number,
-            name: viking.name,
-            description: 'A unique and special Viking!',
-            external_link: '<link_to_viking_on_our_website>',
-            image: imagePath,
-            attributes: [
-                // birthday
-                {
-                    display_type: 'date',
-                    trait_type: 'Birthday',
-                    value: Date.now()
-                },
-                // generation
-                {
-                    display_type: 'number',
-                    trait_type: 'Generation',
-                    value: 567
-                },
+    //     return {
+    //         vikingNumber: viking.number,
+    //         name: viking.name,
+    //         description: 'A unique and special Viking!',
+    //         external_link: '<link_to_viking_on_our_website>',
+    //         image: imagePath,
+    //         attributes: [
+    //             // birthday
+    //             {
+    //                 display_type: 'date',
+    //                 trait_type: 'Birthday',
+    //                 value: Date.now()
+    //             },
+    //             // generation
+    //             {
+    //                 display_type: 'number',
+    //                 trait_type: 'Generation',
+    //                 value: 567
+    //             },
 
-                // body traits
-                {
-                    trait_type: 'Beard',
-                    value: assetSpecs.names.beard
-                },
-                // body traits
-                {
-                    trait_type: 'Body',
-                    value: assetSpecs.names.body
-                },
-                // face traits
-                {
-                    trait_type: 'Face',
-                    value: assetSpecs.names.face
-                },
-                // top traits
-                {
-                    trait_type: 'Top',
-                    value: assetSpecs.names.top
-                },
+    //             // body traits
+    //             {
+    //                 trait_type: 'Beard',
+    //                 value: assetSpecs.names.beard
+    //             },
+    //             // body traits
+    //             {
+    //                 trait_type: 'Body',
+    //                 value: assetSpecs.names.body
+    //             },
+    //             // face traits
+    //             {
+    //                 trait_type: 'Face',
+    //                 value: assetSpecs.names.face
+    //             },
+    //             // top traits
+    //             {
+    //                 trait_type: 'Top',
+    //                 value: assetSpecs.names.top
+    //             },
 
-                // boots traits
-                {
-                    trait_type: 'Boots Type',
-                    value: assetSpecs.names.boots
-                },
-                {
-                    trait_type: 'Boots Condition',
-                    value: assetSpecs.conditions.boots
-                },
-                {
-                    trait_type: 'Speed',
-                    value: viking.speed,
-                    max_value: 99
-                },
+    //             // boots traits
+    //             {
+    //                 trait_type: 'Boots Type',
+    //                 value: assetSpecs.names.boots
+    //             },
+    //             {
+    //                 trait_type: 'Boots Condition',
+    //                 value: assetSpecs.conditions.boots
+    //             },
+    //             {
+    //                 trait_type: 'Speed',
+    //                 value: viking.speed,
+    //                 max_value: 99
+    //             },
 
-                // bottoms traits
-                {
-                    trait_type: 'Bottoms Type',
-                    value: assetSpecs.names.bottoms
-                },
-                {
-                    trait_type: 'Bottoms Condition',
-                    value: assetSpecs.conditions.bottoms
-                },
-                {
-                    trait_type: 'Stamina',
-                    value: viking.stamina,
-                    max_value: 99
-                },
+    //             // bottoms traits
+    //             {
+    //                 trait_type: 'Bottoms Type',
+    //                 value: assetSpecs.names.bottoms
+    //             },
+    //             {
+    //                 trait_type: 'Bottoms Condition',
+    //                 value: assetSpecs.conditions.bottoms
+    //             },
+    //             {
+    //                 trait_type: 'Stamina',
+    //                 value: viking.stamina,
+    //                 max_value: 99
+    //             },
 
-                // helmet traits
-                {
-                    trait_type: 'Helmet Type',
-                    value: assetSpecs.names.helmet
-                },
-                {
-                    trait_type: 'Helmet Condition',
-                    value: assetSpecs.conditions.helmet
-                },
-                {
-                    trait_type: 'Intelligence',
-                    value: viking.intelligence,
-                    max_value: 99
-                },
+    //             // helmet traits
+    //             {
+    //                 trait_type: 'Helmet Type',
+    //                 value: assetSpecs.names.helmet
+    //             },
+    //             {
+    //                 trait_type: 'Helmet Condition',
+    //                 value: assetSpecs.conditions.helmet
+    //             },
+    //             {
+    //                 trait_type: 'Intelligence',
+    //                 value: viking.intelligence,
+    //                 max_value: 99
+    //             },
 
-                // shield traits
-                {
-                    trait_type: 'Shield Type',
-                    value: assetSpecs.names.shield
-                },
-                {
-                    trait_type: 'Shield Condition',
-                    value: assetSpecs.conditions.shield
-                },
-                {
-                    trait_type: 'Defence',
-                    value: viking.defence,
-                    max_value: 99
-                },
+    //             // shield traits
+    //             {
+    //                 trait_type: 'Shield Type',
+    //                 value: assetSpecs.names.shield
+    //             },
+    //             {
+    //                 trait_type: 'Shield Condition',
+    //                 value: assetSpecs.conditions.shield
+    //             },
+    //             {
+    //                 trait_type: 'Defence',
+    //                 value: viking.defence,
+    //                 max_value: 99
+    //             },
 
-                // weapon traits
-                {
-                    trait_type: 'Weapon Type',
-                    value: assetSpecs.names.weapon
-                },
-                {
-                    trait_type: 'Weapon Condition',
-                    value: assetSpecs.conditions.weapon
-                },
-                {
-                    trait_type: 'Attack',
-                    value: viking.attack,
-                    max_value: 99
-                }
-            ]
-        };
-    }
+    //             // weapon traits
+    //             {
+    //                 trait_type: 'Weapon Type',
+    //                 value: assetSpecs.names.weapon
+    //             },
+    //             {
+    //                 trait_type: 'Weapon Condition',
+    //                 value: assetSpecs.conditions.weapon
+    //             },
+    //             {
+    //                 trait_type: 'Attack',
+    //                 value: viking.attack,
+    //                 max_value: 99
+    //             }
+    //         ]
+    //     };
+    // }
 
     /**
      * Resolve the name of a Beard Type selected by a number in the range 0-99 by the Viking Contract Data
@@ -402,6 +438,27 @@ export class MetadataHelper {
         }
         else {
             return ItemCondition.PERFECT;
+        }
+    }
+
+    private static resolveClothesCondition(statistic: number): ClothesCondition {
+        if (statistic <= 9) {
+            return ClothesCondition.BASIC;
+        }
+        else if (statistic <= 49) {
+            return ClothesCondition.RAGGED;
+        }
+        else if (statistic <= 74) {
+            return ClothesCondition.WORN;
+        }
+        else if (statistic <= 89) {
+            return ClothesCondition.USED;
+        }
+        else if (statistic <= 96) {
+            return ClothesCondition.GOOD;
+        }
+        else {
+            return ClothesCondition.PRISTINE;
         }
     }
 }

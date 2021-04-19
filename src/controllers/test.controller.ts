@@ -1,6 +1,6 @@
 import { Request } from 'express';
 import { ImageHelper } from '../helpers/image.helper';
-import { MetadataHelper } from '../helpers/metadata.helper';
+import { VikingHelper } from '../helpers/viking.helper';
 import { APIResponse } from '../models/apiResponse.model';
 import { metadataService } from '../services/metadata.service';
 import { HttpSuccessCode } from '../utils/httpSuccessCode.enum';
@@ -13,32 +13,6 @@ import { AbstractController } from './abstract/abstract.controller';
  */
 class TestController extends AbstractController {
 
-    /**
-     * Test the Image Compositor directly by performing the metadata transformation on an incoming Viking Contract Data structure and then
-     *   kicking off the Compositor
-     *
-     * @param req the Express Request
-     */
-    public async makeImage(req: Request): Promise<APIResponse<string>> {
-        const assetSpecs = MetadataHelper.resolveAssetSpecs(req.body);
-
-        const filePath = await ImageHelper.composeImage(assetSpecs);
-
-        return {
-            status: HttpSuccessCode.OK,
-            data: filePath
-        };
-    }
-
-    public async makeAtlas(req: Request): Promise<APIResponse<string>> {
-        const filePath = await ImageHelper.generateAtlas();
-
-        return {
-            status: HttpSuccessCode.OK,
-            data: filePath
-        };
-    }
-
     public async makeMany(req: Request): Promise<APIResponse<{ filePaths: Array<string>; atlasPath: string }>> {
         const count = parseInt(req.params.count, 10);
         const filePaths = [];
@@ -46,17 +20,16 @@ class TestController extends AbstractController {
         ImageHelper.clear();
 
         for (let i = 0; i < count; i++) {
-            const contract = MetadataHelper.generateVikingStruct(i);
+            const contractData = VikingHelper.generateVikingContractData(i);
+            const assetSpecs = VikingHelper.resolveAssetSpecs(contractData);
 
-            const metadata = await MetadataHelper.generateMetadata(contract);
+            const imagePath = await ImageHelper.composeImage(i, assetSpecs);
 
-            await metadataService.create(metadata);
+            const storage = VikingHelper.generateVikingStorage(i, imagePath, contractData);
 
-            const assetSpecs = MetadataHelper.resolveAssetSpecs(contract);
+            await metadataService.create(storage);
 
-            const filePath = await ImageHelper.composeImage(assetSpecs);
-
-            filePaths.push(filePath);
+            filePaths.push(imagePath);
         }
 
         const atlasPath = await ImageHelper.generateAtlas();

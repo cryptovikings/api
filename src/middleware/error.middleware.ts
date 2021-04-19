@@ -4,6 +4,8 @@ import { HttpErrorCode } from '../utils/httpErrorCode.enum';
 
 /**
  * Error Handling middleware for the Application
+ *
+ * // TODO not being hit for GM issues...
  */
 export const error = (err: Error | APIError, req: Request, res: Response): void => {
     switch (err.name) {

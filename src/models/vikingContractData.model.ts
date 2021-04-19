@@ -1,13 +1,12 @@
-/**
- * Model representing the Viking Contract Data that will be received in relation to a given NFT, serving as a generative basis for Viking
- *   Metadata and directing the Compositor to generate an image
- */
+// CONTRACT STORAGE FORMAT,
+//   retrieved on receipt of event `vikingGenerated`
+//   used for generating STORAGE FORMAT
 export interface VikingContractData {
-    /** Number */
-    number: number;
-
     /** Name */
     name: string;
+
+    /** Birthday */
+    birthday: number;
 
     /** Weapon type (style) */
     weapon: number;
@@ -34,7 +33,6 @@ export interface VikingContractData {
     /** Attack statistic (implying Weapon Condition) */
     stamina: number;
 
-    /** Weapon type (style) */
-    /** Attack statistic (implying Weapon Condition) */
+    /** {beard}+{body}+{face}+{top} (style) */
     appearance: number;
 }

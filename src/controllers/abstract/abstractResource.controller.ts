@@ -3,7 +3,8 @@ import { FilterQuery } from 'mongoose';
 import { ErrorHelper } from '../../helpers/error.helper';
 import { APIQuery, Paginate, Select, Sort, Where } from '../../models/apiQuery.model';
 import { APIResponse } from '../../models/apiResponse.model';
-import { ModelWrite, ModelRead } from '../../models/mongoose/base.model';
+import { ModelWrite, ModelRead, ModelBroadcast } from '../../models/mongoose/base.model';
+import { ModelTransformer } from '../../models/transformers/modelTransformer';
 import { AbstractService } from '../../services/abstract/abstract.service';
 import { HttpErrorCode } from '../../utils/httpErrorCode.enum';
 import { HttpSuccessCode } from '../../utils/httpSuccessCode.enum';
@@ -21,7 +22,10 @@ import { AbstractController } from './abstract.controller';
  * @typeparam TWrite the 'writeable' Model representation, to be received in request bodies for create + update
  * @typeparam TRead the 'as-read' Model representation, as read from the database and broadcast in responses
  */
-export abstract class AbstractResourceController<TWrite extends ModelWrite, TRead extends ModelRead> extends AbstractController {
+export abstract class AbstractResourceController<
+    TWrite extends ModelWrite,
+    TRead extends ModelRead,
+    TBroadcast extends ModelBroadcast> extends AbstractController {
 
     /**
      * Constructor. Take and store the Service to use and the name of the Entity's unique identifier to be used in single-Entity lookups
@@ -29,7 +33,12 @@ export abstract class AbstractResourceController<TWrite extends ModelWrite, TRea
      * @param service the Service to use
      * @param identifierName the name the unique identifier, to be matched in request parameters
      */
-    constructor(protected service: AbstractService<TWrite, TRead>, protected identifierName: string) {
+    constructor(
+        protected service: AbstractService<TWrite, TRead>,
+        protected transformer: ModelTransformer<TRead, TBroadcast>,
+        protected identifierName: string
+    ) {
+
         super();
     }
 
@@ -40,7 +49,7 @@ export abstract class AbstractResourceController<TWrite extends ModelWrite, TRea
      *
      * @returns the found Documents
      */
-    public async get(req: Request): Promise<APIResponse<TRead | Array<TRead>>> {
+    public async get(req: Request): Promise<APIResponse<TBroadcast | Array<TBroadcast>>> {
         const { where, select, sort, paginate } = this.parseQuery(req);
 
         if (req.params[this.identifierName]) {
@@ -111,7 +120,7 @@ export abstract class AbstractResourceController<TWrite extends ModelWrite, TRea
      *
      * @returns the found Entity
      */
-    protected async getOne(identifier: string, select: Select): Promise<APIResponse<TRead>> {
+    protected async getOne(identifier: string, select: Select): Promise<APIResponse<TBroadcast>> {
         const identifierQuery = this.buildIdentifierQuery(identifier);
 
         const found = await this.service.findOne(identifierQuery, select);
@@ -125,16 +134,16 @@ export abstract class AbstractResourceController<TWrite extends ModelWrite, TRea
 
         return {
             status: HttpSuccessCode.OK,
-            data: found
+            data: this.transformer.convertForBroadcast(found)
         };
     }
 
-    protected async getMany(where: Where, select: Select, sort: Sort, paginate: Paginate): Promise<APIResponse<Array<TRead>>> {
+    protected async getMany(where: Where, select: Select, sort: Sort, paginate: Paginate): Promise<APIResponse<Array<TBroadcast>>> {
         const result = await this.service.findMany(where, select, sort, paginate);
 
         return {
             status: HttpSuccessCode.OK,
-            data: result.docs,
+            data: this.transformer.convertManyForBroadcast(result.docs),
             paginate: {
                 total: result.totalDocs,
                 count: result.docs.length,

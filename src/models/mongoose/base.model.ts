@@ -10,27 +10,30 @@ interface BaseModel {
 }
 
 /**
- * The base 'writeable' Model representation, signifying the basic makeup of a Model as received in request bodies and to be written to the
- *   database
+ * The base 'writeable' Model representation, signifying the basic makeup of a Model as passed to the Service and written to the database
  *
  * Models should be specified with a Write Type which extends this
  */
 export type ModelWrite = Omit<BaseModel, '_id'>;
 
 /**
- * The base 'readable' Model representation, signifying the basic makeup of a Model as read from the database and to be broadcast to  the
- *   outside world
+ * The base 'readable' Model representation, signifying the basic makeup of a Model as read from the database
  *
  * Models should be specified with a Read Type which extends this
  */
 export type ModelRead = BaseModel & Document;
 
 /**
+ * The base 'broadcast' Model representation, signifying the basic makeup of a Model as broadcast to the outside world
+ */
+export type ModelBroadcast = Omit<BaseModel, '_id'>;
+
+/**
  * A ModelDescriptor for specifying a Model's makeup as passed to _createModel() (below)
  *
  * Incorporates the Model's name + collectionName, as well as its SchemaDefinition and SchemaOptions
  */
-export interface ModelDescriptor {
+interface ModelDescriptor {
     name: string;
     collectionName?: string;
     schemaDefinition: SchemaDefinition;
@@ -52,5 +55,5 @@ export const _createModel = (descriptor: ModelDescriptor): PaginateModel<any> =>
     schema.plugin(mongoosePaginate);
 
     // configure the Model
-    return mongoose.model(descriptor.name, schema, descriptor.collectionName ?? descriptor.name);
+    return mongoose.model(descriptor.name, schema, descriptor.collectionName);
 }

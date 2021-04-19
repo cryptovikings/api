@@ -1,13 +1,40 @@
-import { ModelRead, ModelWrite, _createModel } from './base.model';
-import { Schema } from 'mongoose';
+import { ModelBroadcast, ModelRead, ModelWrite, _createModel } from './base.model';
 import { ItemCondition } from '../../utils/itemCondition.enum';
+import { ClothesCondition } from '../../utils/clothesCondition.enum';
 
-/**
- * Base Model representing the Viking Metadata that will be generated based on Viking Contract Data and provided to OpenSea for Viking
- *   listings
- */
+interface Viking {
+    number: number;
+    name: string;
+    image_uri: string;
+    birthday: number;
+
+    beard_name: string;
+    body_name: string;
+    face_name: string;
+    top_name: string;
+
+    boots_name: string;
+    boots_condition: ClothesCondition;
+    speed: number;
+
+    bottoms_name: string;
+    bottoms_condition: ClothesCondition;
+    stamina: number;
+
+    helmet_name: string;
+    helmet_condition: ItemCondition;
+    intelligence: number;
+
+    shield_name: string;
+    shield_condition: ItemCondition;
+    defence: number;
+
+    weapon_name: string;
+    weapon_condition: ItemCondition;
+    attack: number;
+}
+
 interface VikingMetadata {
-    vikingNumber: number;
     name: string;
     description: string;
     external_link: string;
@@ -18,12 +45,6 @@ interface VikingMetadata {
         {
             display_type: 'date';
             trait_type: 'Birthday';
-            value: number;
-        },
-        // generation
-        {
-            display_type: 'number';
-            trait_type: 'Generation';
             value: number;
         },
 
@@ -56,7 +77,7 @@ interface VikingMetadata {
         // Boots condition
         {
             trait_type: 'Boots Condition',
-            value: ItemCondition
+            value: ClothesCondition
         },
         // speed statistic
         {
@@ -73,7 +94,7 @@ interface VikingMetadata {
         // Bottoms condition
         {
             trait_type: 'Bottoms Condition',
-            value: ItemCondition
+            value: ClothesCondition
         },
         // stamina statistic
         {
@@ -137,27 +158,53 @@ interface VikingMetadata {
 }
 
 /**
- * 'Writeable' type for VikingMetadata, extending the base ModelWrite
+ * 'Writeable' type for Viking, extending the base ModelWrite
  */
-export interface VikingMetadataWrite extends ModelWrite, VikingMetadata { }
+export interface VikingWrite extends ModelWrite, Viking { }
 
 /**
- * 'Readable' type for VikingMetadata, extending the base ModelRead
+ * 'Readable' type for Viking, extending the base ModelRead
  */
-export interface VikingMetadataRead extends ModelRead, VikingMetadata { }
+export interface VikingRead extends ModelRead, Viking { }
+
+/**
+ * 'Broadcast' type for Viking, extending the base ModelBroadcast
+ */
+export interface VikingBroadcast extends ModelBroadcast, VikingMetadata { }
 
 /**
  * Mongoose PaginateModel for the VikingMetadata collection
  */
-export const VikingMetaDataModel = _createModel({
-    name: 'VikingMetadata',
-    collectionName: 'vikingmetadata',
+export const VikingModel = _createModel({
+    name: 'Viking',
     schemaDefinition: {
-        vikingNumber: { type: Number, required: true, unique: true, index: true },
-        name: { type: String, required: true, index: true },
-        description: { type: String, required: true },
-        external_link: { type: String, required: true },
-        image: { type: String, required: true },
-        attributes: [{ type: Schema.Types.Mixed, required: true }]
+        number: { type: Number, required: true, unique: true, index: true },
+        name: { type: String, required: true },
+        birthday: { type: Number, required: true },
+
+        beard_name: { type: String, required: true },
+        body_name: { type: String, required: true },
+        face_name: { type: String, required: true },
+        top_name: { type: String, required: true },
+
+        boots_name: { type: String, required: true },
+        boots_condition: { type: String, required: true, enum: ClothesCondition },
+        speed: { type: Number, required: true },
+
+        bottoms_name: { type: String, required: true },
+        bottoms_condition: { type: String, required: true, enum: ClothesCondition },
+        stamina: { type: Number, required: true },
+
+        helmet_name: { type: String, required: true },
+        helmet_condition: { type: String, required: true, enum: ItemCondition },
+        intelligence: { type: Number, required: true },
+
+        shield_name: { type: String, required: true },
+        shield_condition: { type: String, required: true, enum: ItemCondition },
+        defence: { type: Number, required: true },
+
+        weapon_name: { type: String, required: true },
+        weapon_condition: { type: String, required: true, enum: ItemCondition },
+        attack: { type: Number, required: true },
     }
 });

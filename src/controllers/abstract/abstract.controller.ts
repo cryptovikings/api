@@ -1,5 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
+import { ErrorHelper } from '../../helpers/error.helper';
 import { APIResponse } from '../../models/apiResponse.model';
+import { HttpErrorCode } from '../../utils/httpErrorCode.enum';
 
 /**
  * Utility type representing a properly bound request processor
@@ -20,6 +22,10 @@ type BoundRequestProcessor = (req: Request, res: Response, next: NextFunction) =
  *        `GET /anything => processRequest() => (AnythingController).anything()`
  */
 export abstract class AbstractController {
+
+    protected errors = {
+        notImplemented: ErrorHelper.createError(HttpErrorCode.NOT_IMPLEMENTED, 'Method not implemented')
+    };
 
     /**
      * Take a Controller instance method to be used as a request handler for a given route, and return a bound `processRequest()` which
@@ -55,7 +61,6 @@ export abstract class AbstractController {
             res.status(status).json({ data, paginate });
         }
         catch (e) {
-            // pass any errors to our Express error-handling middleware
             next(e);
         }
     }
