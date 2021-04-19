@@ -53,6 +53,7 @@ export class MetadataHelper {
         const topSelector = parseInt(appearance.slice(6, 8), 10);
 
         return {
+            number: viking.number,
             names: {
                 viking: viking.name,
                 beard: MetadataHelper.resolveBeardType(beardSelector),

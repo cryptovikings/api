@@ -1,5 +1,6 @@
-import { FilterQuery } from 'mongoose';
+import { FilterQuery, PaginateOptions } from 'mongoose';
 import { PaginateModel } from 'mongoose';
+import { Paginate, Select, Sort, Where } from '../../models/apiQuery.model';
 import { ModelRead, ModelWrite } from '../../models/mongoose/base.model';
 
 /**
@@ -28,8 +29,8 @@ export abstract class AbstractService<TWrite extends ModelWrite, TRead extends M
      *
      * @returns the found Document, or null
      */
-    public async findOne(identifierQuery: FilterQuery<TRead>): Promise<TRead | null> {
-        return await this.model.findOne(identifierQuery);
+    public async findOne(identifierQuery: FilterQuery<TRead>, select: Select): Promise<TRead | null> {
+        return await this.model.findOne(identifierQuery, select);
     }
 
     /**
@@ -37,8 +38,23 @@ export abstract class AbstractService<TWrite extends ModelWrite, TRead extends M
      *
      * @returns the Documents
      */
-    public async findMany(): Promise<Array<TRead>> {
-        return await this.model.find();
+    public async findMany(where: Where, select: Select, sort: Sort, paginate: Paginate): Promise<Array<TRead>> {
+        const paginateOptions: PaginateOptions = {
+            collation: { locale: 'en' },
+            select,
+            sort: sort?.join(' ') ?? ''
+        };
+
+        if (paginate) {
+            paginateOptions.page = paginate.page;
+            paginateOptions.limit = paginate.limit;
+        }
+        else {
+            paginateOptions.pagination = false;
+        }
+
+        // TODO return pagination information
+        return (await this.model.paginate(where, paginateOptions)).docs;
     }
 
     /**

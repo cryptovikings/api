@@ -7,6 +7,7 @@ import { ItemCondition } from '../utils/itemCondition.enum';
  * Intermediate transformed data type
  */
 export interface AssetSpecs {
+    number: number;
     names: {
         viking: string;
         beard: string;

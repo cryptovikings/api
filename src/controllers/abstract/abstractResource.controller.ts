@@ -1,6 +1,7 @@
 import { Request } from 'express';
 import { FilterQuery } from 'mongoose';
 import { ErrorHelper } from '../../helpers/error.helper';
+import { APIQuery, Paginate, Select, Sort, Where } from '../../models/apiQuery.model';
 import { APIResponse } from '../../models/apiResponse.model';
 import { ModelWrite, ModelRead } from '../../models/mongoose/base.model';
 import { AbstractService } from '../../services/abstract/abstract.service';
@@ -40,11 +41,17 @@ export abstract class AbstractResourceController<TWrite extends ModelWrite, TRea
      * @returns the found Documents
      */
     public async get(req: Request): Promise<APIResponse<TRead | Array<TRead>>> {
+        const { where, select, sort, paginate } = this.parseQuery(req);
+
         if (req.params[this.identifierName]) {
-            return await this.getOne(req.params[this.identifierName]);
+            return await this.getOne(req.params[this.identifierName], select);
         }
 
-        return await this.getAll();
+        if (where) {
+            return await this.getMany(where, select, sort, paginate);
+        }
+
+        return await this.getAll(select, sort, paginate);
     }
 
     /**
@@ -104,10 +111,10 @@ export abstract class AbstractResourceController<TWrite extends ModelWrite, TRea
      *
      * @returns the found Entity
      */
-    protected async getOne(identifier: string): Promise<APIResponse<TRead>> {
+    protected async getOne(identifier: string, select: Select): Promise<APIResponse<TRead>> {
         const identifierQuery = this.buildIdentifierQuery(identifier);
 
-        const found = await this.service.findOne(identifierQuery);
+        const found = await this.service.findOne(identifierQuery, select);
 
         if (!found) {
             throw ErrorHelper.createError(
@@ -122,15 +129,23 @@ export abstract class AbstractResourceController<TWrite extends ModelWrite, TRea
         };
     }
 
+    protected async getMany(where: Where, select: Select, sort: Sort, paginate: Paginate): Promise<APIResponse<Array<TRead>>> {
+        return {
+            status: HttpSuccessCode.OK,
+            data: await this.service.findMany(where, select, sort, paginate)
+        };
+    }
+
+
     /**
      * Overrideable multi Entity retrieval routine, retrieving all Entities
      *
      * @returns the found Entities
      */
-    protected async getAll(): Promise<APIResponse<Array<TRead>>> {
+    protected async getAll(select: Select, sort: Sort, paginate: Paginate): Promise<APIResponse<Array<TRead>>> {
         return {
             status: HttpSuccessCode.OK,
-            data: await this.service.findMany()
+            data: await this.service.findMany({}, select, sort, paginate)
         };
     }
 
@@ -143,5 +158,34 @@ export abstract class AbstractResourceController<TWrite extends ModelWrite, TRea
      */
     protected buildIdentifierQuery(identifier: string): FilterQuery<TRead> {
         return { [`${this.identifierName}`]: identifier } as FilterQuery<TRead>;
+    }
+
+    /**
+     * Extract and parse the query parts for use in Entity finds
+     *
+     * @param req the Express Request
+     *
+     * @returns the APIQuery
+     */
+    protected parseQuery(req: Request): APIQuery {
+        let where: Where;
+        let select: Select;
+        let sort: Sort;
+        let paginate: Paginate;
+
+        // TODO as string?
+        if (Object.keys(req.query).length) {
+            where = req.query.where ? JSON.parse(req.query.where as string) : undefined;
+            select = req.query.select ? JSON.parse(req.query.select as string) : undefined;
+            sort = req.query.sort ? JSON.parse(req.query.sort as string) : undefined;
+            paginate = req.query.paginate ? JSON.parse(req.query.paginate as string) : undefined;
+        }
+
+        return {
+            where,
+            select,
+            sort,
+            paginate
+        };
     }
 }

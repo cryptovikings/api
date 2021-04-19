@@ -42,9 +42,7 @@ export class ImageHelper {
 
         const paths = ImageHelper.resolveAssetPaths(assetSpecs);
 
-        ImageHelper.generateImage(assetSpecs.names.viking, paths).catch((err) => console.log('ERROR', err));
-
-        const filePath = await ImageHelper.generateImage(assetSpecs.names.viking, paths);
+        const filePath = await ImageHelper.generateImage(`viking_${assetSpecs.number}`, paths);
 
         return filePath;
     }
