@@ -5,7 +5,8 @@
         "lint": "eslint --ext .ts --fix src",
         "dev": "ts-node-dev --cls --notify=false --inspect -T -r ./src/dotenv.ts -- ./src/server.ts",
         "predist": "npm run lint",
-        "dist": "tsc"
+        "dist": "tsc",
+        "listen": "node scripts/listener.js"
     },
     "dependencies": {
         "dotenv-safe": "^8.2.0",
