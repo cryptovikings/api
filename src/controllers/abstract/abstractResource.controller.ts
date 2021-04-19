@@ -29,6 +29,8 @@ export abstract class AbstractResourceController<
     TRead extends ModelRead,
     TBroadcast extends ModelBroadcast> extends AbstractController {
 
+    protected defaultSelect: Select;
+
     /**
      * Constructor. Take and store the Service to use, the ModelTransformer implementing Model conversion routines, and the name of the
      *   Entity's unique identifier to be used in single-Entity lookups
@@ -196,6 +198,9 @@ export abstract class AbstractResourceController<
 
         if (select) {
             this.validateSelect(select);
+            if (this.defaultSelect) {
+                select = select.concat(this.defaultSelect, select);
+            }
         }
 
         return {

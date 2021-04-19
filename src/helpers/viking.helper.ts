@@ -114,11 +114,13 @@ export class VikingHelper {
     }
 
     public static generateVikingMetadata(data: VikingRead): VikingBroadcast {
+        const external_link = `${process.env.FRONT_END_URL!}/viking/${data.number}`;
+
         return {
             name: data.name,
             image: data.image,
             description: data.description,
-            external_link: `https://cryptovikings.io/viking/${data.number}`,
+            external_link,
 
             attributes: [
                 // birthday

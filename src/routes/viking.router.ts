@@ -13,7 +13,7 @@ const boundHandlers = {
 vikingRouter.get('/', boundHandlers.get);
 
 /** GET/:number => (MetadataController.get) */
-vikingRouter.get('/:vikingNumber', boundHandlers.get);
+vikingRouter.get('/:number', boundHandlers.get);
 
 // export the configured Router
 export { vikingRouter };

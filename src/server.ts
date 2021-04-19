@@ -1,12 +1,14 @@
 import express, { Application } from 'express';
 import http from 'http';
+import dotenvSafe from 'dotenv-safe';
+
 import { DBConnectionHelper } from './helpers/dbConnection.helper';
 import { cors } from './middleware/cors.middleware';
 import { error } from './middleware/error.middleware';
 import { apiRouter } from './routes/api.router';
 
 // port
-const port = 8080;
+const port = process.env.SERVER_PORT!;
 
 // app
 const app: Application = express();

@@ -12,13 +12,13 @@ import { HttpErrorCode } from '../enums/httpErrorCode.enum';
  */
 export class ImageHelper {
 
-    private static outRoot = 'out';
+    private static outRoot = process.env.IMAGE_OUTPUT_ROOT!;
 
-    private static vikingOut = path.join(ImageHelper.outRoot, 'vikings');
+    private static vikingOut = process.env.IMAGE_OUTPUT_VIKING!;
 
-    private static atlasOut = path.join(ImageHelper.outRoot, 'atlas');
+    private static atlasOut = process.env.IMAGE_OUTPUT_ATLAS!;
 
-    private static partsRoot = 'res/';
+    private static partsRoot = process.env.IMAGE_INPUT_ROOT!;
 
     private static directories = {
         beards: path.join(ImageHelper.partsRoot, 'beards'),
@@ -142,7 +142,7 @@ export class ImageHelper {
     private static generateImage(fileName: string, paths: AssetPaths): Promise<string> {
         const actualName = `${fileName.replace(/\s/g, '_').toLowerCase()}.png`;
         const filePath = path.join(ImageHelper.vikingOut, actualName);
-        const imageUrl = `https://api.cryptovikings.io/static/${actualName}`;
+        const imageUrl = `${process.env.API_URL!}/static/${actualName}`;
 
         return new Promise((resolve, reject) => {
             const image = gm('');

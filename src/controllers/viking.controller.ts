@@ -11,6 +11,8 @@ import { AbstractResourceController } from './abstract/abstractResource.controll
  */
 class VikingController extends AbstractResourceController<VikingWrite, VikingRead, VikingBroadcast> {
 
+    protected defaultSelect = ['number'];
+
     /**
      * Constructor. Specify the Service as the MetadataService
      */
