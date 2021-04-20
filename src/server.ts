@@ -22,7 +22,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cors);
 
 // Image hosting
-app.use('/static', express.static('out/vikings'));
+app.use('/static', express.static(process.env.IMAGE_OUTPUT_VIKING!));
 
 // API router
 app.use('/api', apiRouter);
