@@ -3,10 +3,9 @@
     "version": "0.0.1",
     "scripts": {
         "lint": "eslint --ext .ts --fix src",
-        "dev": "ts-node-dev --cls --notify=false --inspect -T -r ./src/dotenv.ts -- ./src/server.ts",
+        "dev": "concurrently \"ts-node-dev --cls --notify=false --inspect -T -r ./src/dotenv.ts -- ./src/server.ts\" \"ts-node-dev src/scripts/listener.ts\"",
         "predist": "npm run lint",
-        "dist": "tsc",
-        "listen": "node scripts/listener.js"
+        "dist": "tsc"
     },
     "dependencies": {
         "dotenv-safe": "^8.2.0",
@@ -27,6 +26,7 @@
         "@types/mongoose-paginate-v2": "^1.3.9",
         "@typescript-eslint/eslint-plugin": "^4.22.0",
         "@typescript-eslint/parser": "^4.22.0",
+        "concurrently": "^6.0.2",
         "eslint": "^7.24.0",
         "nodemon": "^2.0.7",
         "ts-node-dev": "^1.1.6",
