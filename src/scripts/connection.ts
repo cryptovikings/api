@@ -21,10 +21,7 @@ async function connect() {
 	const contract = new ethers.Contract(address, abi, wallet);
 
 	// Return the contract and wallet connection
-	return {
-		contract,
-		wallet,
-	};
+	return contract;
 }
 
 module.exports = {
