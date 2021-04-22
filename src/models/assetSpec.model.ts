@@ -9,7 +9,6 @@ import { ItemCondition } from '../enums/itemCondition.enum';
  */
 export interface AssetSpecs {
     names: {
-        viking: string;
         beard: string;
         body: string;
         boots: string;

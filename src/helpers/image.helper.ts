@@ -39,7 +39,7 @@ export class ImageHelper {
      *
      * @returns the file path to the generated image
      */
-    public static composeImage(number: number, assetSpecs: AssetSpecs): Promise<string> {
+    public static async composeImage(number: number, assetSpecs: AssetSpecs): Promise<string> {
         ImageHelper.mkDirOptional(ImageHelper.vikingOut);
 
         const paths = ImageHelper.resolveAssetPaths(assetSpecs);

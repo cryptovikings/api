@@ -1,8 +1,8 @@
 import express, { Application } from 'express';
 import http from 'http';
-import dotenvSafe from 'dotenv-safe';
 
 import { DBConnectionHelper } from './helpers/dbConnection.helper';
+import { listen } from './listener/listener';
 import { cors } from './middleware/cors.middleware';
 import { error } from './middleware/error.middleware';
 import { apiRouter } from './routes/api.router';
@@ -20,9 +20,6 @@ app.use(express.urlencoded({ extended: false }));
 
 // custom cors middleware
 app.use(cors);
-
-// Image hosting
-app.use('/static', express.static(process.env.IMAGE_OUTPUT_VIKING!));
 
 // API router
 app.use('/api', apiRouter);
@@ -87,3 +84,6 @@ server.on('listening', () => {
 
 // start server
 server.listen(port);
+
+// TODO make this into a helper???????
+listen();

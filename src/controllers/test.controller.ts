@@ -13,35 +13,35 @@ import { AbstractController } from './abstract/abstract.controller';
  */
 class TestController extends AbstractController {
 
-    public async makeMany(req: Request): Promise<APIResponse<{ filePaths: Array<string>; atlasPath: string }>> {
-        const count = parseInt(req.params.count, 10);
-        const filePaths = [];
+    // public async makeMany(req: Request): Promise<APIResponse<{ filePaths: Array<string>; atlasPath: string }>> {
+    //     const count = parseInt(req.params.count, 10);
+    //     const filePaths = [];
 
-        ImageHelper.clear();
+    //     ImageHelper.clear();
 
-        for (let i = 0; i < count; i++) {
-            const contractData = VikingHelper.generateVikingContractData(i);
-            const assetSpecs = VikingHelper.resolveAssetSpecs(contractData);
+    //     for (let i = 0; i < count; i++) {
+    //         const contractData = VikingHelper.generateVikingContractData(i);
+    //         const assetSpecs = VikingHelper.resolveAssetSpecs(contractData);
 
-            const imageUrl = await ImageHelper.composeImage(i, assetSpecs);
+    //         const imageUrl = await ImageHelper.composeImage(i, assetSpecs);
 
-            const storage = VikingHelper.generateVikingStorage(i, imageUrl, contractData);
+    //         const storage = VikingHelper.generateVikingStorage(i, imageUrl, contractData);
 
-            await vikingService.create(storage);
+    //         await vikingService.create(storage);
 
-            filePaths.push(imageUrl);
-        }
+    //         filePaths.push(imageUrl);
+    //     }
 
-        const atlasPath = await ImageHelper.composeAtlas();
+    //     const atlasPath = await ImageHelper.composeAtlas();
 
-        return {
-            status: HttpSuccessCode.OK,
-            data: {
-                filePaths,
-                atlasPath
-            }
-        };
-    }
+    //     return {
+    //         status: HttpSuccessCode.OK,
+    //         data: {
+    //             filePaths,
+    //             atlasPath
+    //         }
+    //     };
+    // }
 }
 
 /** Export a singleton of the TestController so that we can reference its instance methods in Router configuration */

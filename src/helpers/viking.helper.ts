@@ -1,8 +1,10 @@
 import { VikingBroadcast, VikingRead, VikingWrite } from '../models/mongoose/viking.model';
-import { VikingContractData } from '../models/vikingContractData.model';
+import { ActualVikingContractData, VikingContractData } from '../models/vikingContractData.model';
 import { AssetSpecs } from '../models/assetSpec.model';
 import { ItemCondition } from '../enums/itemCondition.enum';
 import { ClothesCondition } from '../enums/clothesCondition.enum';
+import { vikingService } from '../services/viking.service';
+import { BigNumber } from '@ethersproject/bignumber';
 
 /**
  * The MetadataHelper, implementing the actual metadata generation functionality, including Type/Style name resolution and ItemCondition
@@ -43,8 +45,12 @@ export class VikingHelper {
         };
     }
 
-    public static resolveAssetSpecs(viking: VikingContractData): AssetSpecs {
-        const appearance = viking.appearance.toString(10);
+    public static async saveViking(storage: VikingWrite): Promise<VikingRead> {
+        return await vikingService.create(storage);
+    }
+
+    public static resolveAssetSpecs(viking: ActualVikingContractData): AssetSpecs {
+        const appearance = viking.appearance.toString();
 
         // TODO beard is special - it can't be below 10. Others can be 0
         const beardSelector = parseInt(appearance.slice(0, 2), 10);
@@ -54,37 +60,36 @@ export class VikingHelper {
 
         return {
             names: {
-                viking: viking.name,
                 beard: VikingHelper.resolveBeardType(beardSelector),
                 body: VikingHelper.resolveBodyType(bodySelector),
-                boots: VikingHelper.resolveBootsType(viking.boots),
-                bottoms: VikingHelper.resolveBottomsType(viking.bottoms),
+                boots: VikingHelper.resolveBootsType(viking.boots.toNumber()),
+                bottoms: VikingHelper.resolveBottomsType(viking.bottoms.toNumber()),
                 face: VikingHelper.resolveFaceType(faceSelector),
-                helmet: VikingHelper.resolveHelmetType(viking.helmet),
-                shield: VikingHelper.resolveShieldType(viking.shield),
+                helmet: VikingHelper.resolveHelmetType(viking.helmet.toNumber()),
+                shield: VikingHelper.resolveShieldType(viking.shield.toNumber()),
                 top: VikingHelper.resolveTopType(topSelector),
-                weapon: VikingHelper.resolveWeaponType(viking.weapon)
+                weapon: VikingHelper.resolveWeaponType(viking.weapon.toNumber())
             },
             conditions: {
-                boots: VikingHelper.resolveClothesCondition(viking.speed),
-                bottoms: VikingHelper.resolveClothesCondition(viking.stamina),
-                helmet: VikingHelper.resolveItemCondition(viking.intelligence),
-                shield: VikingHelper.resolveItemCondition(viking.defence),
-                weapon: VikingHelper.resolveItemCondition(viking.attack)
+                boots: VikingHelper.resolveClothesCondition(viking.speed.toNumber()),
+                bottoms: VikingHelper.resolveClothesCondition(viking.stamina.toNumber()),
+                helmet: VikingHelper.resolveItemCondition(viking.intelligence.toNumber()),
+                shield: VikingHelper.resolveItemCondition(viking.defence.toNumber()),
+                weapon: VikingHelper.resolveItemCondition(viking.attack.toNumber())
             }
         };
     }
 
-    public static generateVikingStorage(number: number, imageUrl: string, viking: VikingContractData): VikingWrite {
+    public static generateVikingStorage(number: number, imageUrl: string, viking: ActualVikingContractData): VikingWrite {
         const assetSpecs = VikingHelper.resolveAssetSpecs(viking);
 
         return {
             number,
-            name: viking.name,
+            name: 'TEST VIKING',
             image: imageUrl,
             description: 'A unique and special viking!',
 
-            birthday: viking.birthday,
+            // birthday: viking.birthday,
 
             beard_name: assetSpecs.names.beard,
             body_name: assetSpecs.names.body,
@@ -93,23 +98,23 @@ export class VikingHelper {
 
             boots_name: assetSpecs.names.boots,
             boots_condition: assetSpecs.conditions.boots,
-            speed: viking.speed,
+            speed: viking.speed.toNumber(),
 
             bottoms_name: assetSpecs.names.bottoms,
             bottoms_condition: assetSpecs.conditions.bottoms,
-            stamina: viking.stamina,
+            stamina: viking.stamina.toNumber(),
 
             helmet_name: assetSpecs.names.helmet,
             helmet_condition: assetSpecs.conditions.helmet,
-            intelligence: viking.intelligence,
+            intelligence: viking.intelligence.toNumber(),
 
             shield_name: assetSpecs.names.shield,
             shield_condition: assetSpecs.conditions.shield,
-            defence: viking.defence,
+            defence: viking.defence.toNumber(),
 
             weapon_name: assetSpecs.names.weapon,
             weapon_condition: assetSpecs.conditions.weapon,
-            attack: viking.attack,
+            attack: viking.attack.toNumber(),
         };
     }
 
@@ -124,11 +129,11 @@ export class VikingHelper {
 
             attributes: [
                 // birthday
-                {
-                    display_type: 'date',
-                    trait_type: 'Birthday',
-                    value: data.birthday,
-                },
+                // {
+                //     display_type: 'date',
+                //     trait_type: 'Birthday',
+                //     value: data.birthday,
+                // },
 
                 // beard appearance
                 {

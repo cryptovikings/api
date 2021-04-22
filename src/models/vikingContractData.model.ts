@@ -1,3 +1,5 @@
+import { BigNumber } from '@ethersproject/bignumber';
+
 // CONTRACT STORAGE FORMAT,
 //   retrieved on receipt of event `vikingGenerated`
 //   used for generating STORAGE FORMAT
@@ -35,4 +37,18 @@ export interface VikingContractData {
 
     /** {beard}+{body}+{face}+{top} (style) */
     appearance: number;
+}
+
+export interface ActualVikingContractData {
+    weapon: BigNumber;
+    attack: BigNumber;
+    shield: BigNumber;
+    defence: BigNumber;
+    boots: BigNumber;
+    speed: BigNumber;
+    helmet: BigNumber;
+    intelligence: BigNumber;
+    bottoms: BigNumber;
+    stamina: BigNumber;
+    appearance: BigNumber;
 }

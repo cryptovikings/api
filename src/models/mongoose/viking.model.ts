@@ -9,7 +9,7 @@ interface Viking {
     image: string;
     description: string;
 
-    birthday: number;
+    // birthday: number;
 
     beard_name: string;
     body_name: string;
@@ -45,11 +45,11 @@ interface VikingMetadata {
 
     attributes: [
         // birthday
-        {
-            display_type: 'date';
-            trait_type: 'Birthday';
-            value: number;
-        },
+        // {
+        //     display_type: 'date';
+        //     trait_type: 'Birthday';
+        //     value: number;
+        // },
 
         // beard appearance
         {
@@ -185,7 +185,7 @@ export const VikingModel = _createModel({
         name: { type: String, required: true },
         image: { type: String, required: true },
         description: { type: String, required: true },
-        birthday: { type: Number, required: true },
+        // birthday: { type: Number, required: true },
 
         beard_name: { type: String, required: true },
         body_name: { type: String, required: true },
