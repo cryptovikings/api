@@ -3,7 +3,7 @@ import { ItemCondition } from '../enums/itemCondition.enum';
 import { ErrorHelper } from '../helpers/error.helper';
 import { ImageHelper } from '../helpers/image.helper';
 import { APIResponse } from '../models/apiResponse.model';
-import { VikingRead, VikingWrite, VikingBroadcast } from '../models/mongoose/viking.model';
+import { Viking } from '../models/mongoose/viking.model';
 import { vikingTransformer } from '../models/transformers/viking.transformer';
 import { vikingService } from '../services/viking.service';
 import { AbstractResourceController } from './abstract/abstractResource.controller';
@@ -13,11 +13,11 @@ import { AbstractResourceController } from './abstract/abstractResource.controll
  *
  * Additionally implements Metadata generation + retrieval functionality, setting up the OpenSea Viking representations
  */
-class VikingController extends AbstractResourceController<VikingWrite, VikingRead, VikingBroadcast> {
+class VikingController extends AbstractResourceController<Viking> {
 
     protected defaultSelect = ['number'];
 
-    protected defaultData: VikingBroadcast = {
+    protected defaultData: Viking['broadcast'] = {
         name: 'Unminted Viking',
         image: ImageHelper.getOutputPaths('unknown').imageUrl,
         description: 'This Viking hasn\'t yet been minted. Come back once he\'s been minted to check his randomly generated stats and appearance!',
@@ -122,14 +122,14 @@ class VikingController extends AbstractResourceController<VikingWrite, VikingRea
     /**
      * Override the abstract create() and throw a NotImplementedError, preventing accidental wiring up of (VikingController).create
      */
-    public create(): Promise<APIResponse<VikingBroadcast>> {
+    public create(): Promise<APIResponse<Viking['broadcast']>> {
         throw ErrorHelper.errors.notImplemented;
     }
 
     /**
      * Override the abstract update() and throw a NotImplementedError, preventing accidental wiring up of (VikingController).update
      */
-    public update(): Promise<APIResponse<VikingBroadcast>> {
+    public update(): Promise<APIResponse<Viking['broadcast']>> {
         throw ErrorHelper.errors.notImplemented;
     }
 

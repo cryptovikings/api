@@ -30,6 +30,20 @@ export type ModelRead = BaseModel & Document;
 export type ModelBroadcast = Omit<BaseModel, '_id' | 'readonly'>;
 
 /**
+ * Supertype for packing the three Model representations into a single type structure for simplifying typeparams throughout the API's abstract classes
+ */
+export interface APIModel<
+    TWrite extends ModelWrite = ModelWrite,
+    TRead extends ModelRead = ModelRead,
+    TBroadcast extends ModelBroadcast = ModelBroadcast
+    > {
+
+    write: TWrite;
+    read: TRead;
+    broadcast: TBroadcast
+}
+
+/**
  * A ModelDescriptor for specifying a Model's makeup as passed to _createModel() (below)
  *
  * Incorporates the Model's name + collectionName, as well as its SchemaDefinition and SchemaOptions

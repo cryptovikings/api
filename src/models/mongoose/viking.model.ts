@@ -1,8 +1,8 @@
-import { ModelBroadcast, ModelRead, ModelWrite, _createModel } from './base.model';
+import { APIModel, ModelBroadcast, ModelRead, ModelWrite, _createModel } from './base.model';
 import { ItemCondition } from '../../enums/itemCondition.enum';
 import { ClothesCondition } from '../../enums/clothesCondition.enum';
 
-interface Viking {
+interface VikingStore {
     number: number;
 
     name: string;
@@ -163,17 +163,22 @@ interface VikingMetadata {
 /**
  * 'Writeable' type for Viking, extending the base ModelWrite
  */
-export interface VikingWrite extends ModelWrite, Viking { }
+interface VikingWrite extends ModelWrite, VikingStore { }
 
 /**
  * 'Readable' type for Viking, extending the base ModelRead
  */
-export interface VikingRead extends ModelRead, Viking { }
+interface VikingRead extends ModelRead, VikingStore { }
 
 /**
  * 'Broadcast' type for Viking, extending the base ModelBroadcast
  */
-export interface VikingBroadcast extends ModelBroadcast, VikingMetadata { }
+interface VikingBroadcast extends ModelBroadcast, VikingMetadata { }
+
+/**
+ * Packed Model supertype for Vikings
+ */
+export interface Viking extends APIModel<VikingWrite, VikingRead, VikingBroadcast> { }
 
 /**
  * Mongoose PaginateModel for the VikingMetadata collection

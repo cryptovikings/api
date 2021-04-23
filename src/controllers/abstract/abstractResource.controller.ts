@@ -3,7 +3,7 @@ import { FilterQuery } from 'mongoose';
 
 import { APIQuery, Paginate, Select, Sort, Where } from '../../models/apiQuery.model';
 import { APIResponse } from '../../models/apiResponse.model';
-import { ModelWrite, ModelRead, ModelBroadcast } from '../../models/mongoose/base.model';
+import { APIModel } from '../../models/mongoose/base.model';
 import { ModelTransformer } from '../../models/transformers/modelTransformer';
 import { AbstractService } from '../../services/abstract/abstract.service';
 import { HttpSuccessCode } from '../../enums/httpSuccessCode.enum';
@@ -22,14 +22,9 @@ import { ErrorHelper } from '../../helpers/error.helper';
  *     - sort => an array of strings defining a Mongo sort
  *     - paginate => an object defining page + limit properties defining a Mongoose Pagination rule
  *
- * @typeparam TWrite the 'writeable' Model representation, to be received in request bodies for create + update
- * @typeparam TRead the 'as-read' Model representation, as read from the database
- * @typeparam TBroadcast the broadcastable Model representation, as sent to the outside world
+ * @typeparam TModel the Model supertype to work with
  */
-export abstract class AbstractResourceController<
-    TWrite extends ModelWrite,
-    TRead extends ModelRead,
-    TBroadcast extends ModelBroadcast> extends AbstractController {
+export abstract class AbstractResourceController<TModel extends APIModel> extends AbstractController {
 
     /**
      * Abstract default selection set to be implemented by the subclass
@@ -43,7 +38,7 @@ export abstract class AbstractResourceController<
      *
      * Enables a Controller to override the default abstract error-throwing behaviour for 404/Not Found errors
      */
-    protected defaultData: TBroadcast | undefined;
+    protected defaultData: TModel['broadcast'] | undefined;
 
     /**
      * Constructor. Take and store the Service to use, the ModelTransformer implementing Model conversion routines, and the name of the
@@ -54,8 +49,8 @@ export abstract class AbstractResourceController<
      * @param identifierName the name the unique identifier, to be matched in request parameters
      */
     constructor(
-        protected service: AbstractService<TWrite, TRead>,
-        protected transformer: ModelTransformer<TRead, TBroadcast>,
+        protected service: AbstractService<TModel>,
+        protected transformer: ModelTransformer<TModel>,
         protected identifierName: string
     ) {
         super();
@@ -68,7 +63,7 @@ export abstract class AbstractResourceController<
      *
      * @returns an APIResponse containing the found Entity/Entities
      */
-    public get(req: Request): Promise<APIResponse<DeepPartial<TBroadcast> | Array<DeepPartial<TBroadcast>>>> {
+    public get(req: Request): Promise<APIResponse<DeepPartial<TModel['broadcast']> | Array<DeepPartial<TModel['broadcast']>>>> {
         const { where, select, sort, paginate } = this.parseQuery(req);
 
         // if our identifierName is found in the request parameters, retrieve a single Entity
@@ -94,7 +89,7 @@ export abstract class AbstractResourceController<
      *
      * @returns an APIResponse containing the created Entity/Entities
      */
-    public create(req: Request): Promise<APIResponse<TBroadcast | Array<TBroadcast>>> {
+    public create(req: Request): Promise<APIResponse<TModel['broadcast'] | Array<TModel['broadcast']>>> {
         // handle an empty body with the appropriate error
         if (!Object.keys(req.body).length) {
             throw ErrorHelper.errors.emptyBody;
@@ -118,7 +113,7 @@ export abstract class AbstractResourceController<
      *
      * @returns an APIResponse containing the updated Entity
      */
-    public update(req: Request): Promise<APIResponse<TBroadcast>> {
+    public update(req: Request): Promise<APIResponse<TModel['broadcast']>> {
         // if our identifierName is found in the request parameters, update a single Entity
         if (req.params[this.identifierName]) {
             return this.updateOne(req.params[this.identifierName], req.body);
@@ -164,7 +159,7 @@ export abstract class AbstractResourceController<
      *
      * @returns An APIResponse containing the found Entity
      */
-    protected async getOne(identifier: string, select: Select): Promise<APIResponse<DeepPartial<TBroadcast>>> {
+    protected async getOne(identifier: string, select: Select): Promise<APIResponse<DeepPartial<TModel['broadcast']>>> {
         const identifierQuery = this.buildIdentifierQuery(identifier);
 
         const found = await this.service.findOne(identifierQuery, select);
@@ -197,7 +192,10 @@ export abstract class AbstractResourceController<
      *
      * @returns An APIResponse containing the found Entities
      */
-    protected async getMany(where: Where, select: Select, sort: Sort, paginate: Paginate): Promise<APIResponse<Array<DeepPartial<TBroadcast>>>> {
+    protected async getMany(
+        where: Where, select: Select, sort: Sort, paginate: Paginate
+    ): Promise<APIResponse<Array<DeepPartial<TModel['broadcast']>>>> {
+
         const result = await this.service.findMany(where, select, sort, paginate);
 
         if (result.docs.length) {
@@ -225,7 +223,7 @@ export abstract class AbstractResourceController<
      *
      * @returns An APIResponse containing the created Entity
      */
-    protected async createOne(body: TWrite): Promise<APIResponse<TBroadcast>> {
+    protected async createOne(body: TModel['write']): Promise<APIResponse<TModel['broadcast']>> {
         const single = await this.service.createOne(body);
 
         return {
@@ -241,7 +239,7 @@ export abstract class AbstractResourceController<
      *
      * @returns an APIResponse containing the created Entities
      */
-    protected async createMany(body: Array<TWrite>): Promise<APIResponse<Array<TBroadcast>>> {
+    protected async createMany(body: Array<TModel['write']>): Promise<APIResponse<Array<TModel['broadcast']>>> {
         const multi = await this.service.createMany(body);
 
         return {
@@ -258,7 +256,7 @@ export abstract class AbstractResourceController<
      *
      * @returns An APIResponse containing the updated Entity
      */
-    protected async updateOne(identifier: string, body: DeepPartial<TWrite>): Promise<APIResponse<TBroadcast>> {
+    protected async updateOne(identifier: string, body: DeepPartial<TModel['write']>): Promise<APIResponse<TModel['broadcast']>> {
         const identifierQuery = this.buildIdentifierQuery(identifier);
 
         const updated = await this.service.updateOne(identifierQuery, body);
@@ -306,8 +304,8 @@ export abstract class AbstractResourceController<
      *
      * @returns the FilterQuery for passing to the Service
      */
-    protected buildIdentifierQuery(identifier: string): FilterQuery<TRead> {
-        return { [`${this.identifierName}`]: identifier } as FilterQuery<TRead>;
+    protected buildIdentifierQuery(identifier: string): FilterQuery<TModel['read']> {
+        return { [`${this.identifierName}`]: identifier } as FilterQuery<TModel['read']>;
     }
 
     /**

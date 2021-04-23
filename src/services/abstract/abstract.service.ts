@@ -1,10 +1,9 @@
 import { FilterQuery, PaginateOptions, PaginateResult, PaginateModel } from 'mongoose';
 import _mergeWith from 'lodash.mergewith';
 
-import { HttpErrorCode } from '../../enums/httpErrorCode.enum';
 import { ErrorHelper } from '../../helpers/error.helper';
 import { Paginate, Select, Sort, Where } from '../../models/apiQuery.model';
-import { ModelRead, ModelWrite } from '../../models/mongoose/base.model';
+import { APIModel } from '../../models/mongoose/base.model';
 
 /**
  * AbstractService, serving as the foundation of the API's Database Interaction layer
@@ -13,10 +12,9 @@ import { ModelRead, ModelWrite } from '../../models/mongoose/base.model';
  *
  * One extending class should exist per Database Collection, associated strongly with a Controller serving the Entity's route collection
  *
- * @typeparam TWrite the 'writeable' Model representation, to be received in request bodies for create + update
- * @typeparam TRead the 'as-read' Model representation, as read from the database
+ * @typeparam TModel the Model supertype to work with
  */
-export abstract class AbstractService<TWrite extends ModelWrite, TRead extends ModelRead> {
+export abstract class AbstractService<TModel extends APIModel> {
 
     /**
      * Model Name
@@ -28,7 +26,7 @@ export abstract class AbstractService<TWrite extends ModelWrite, TRead extends M
      *
      * @param model the Model
      */
-    constructor(public model: PaginateModel<TRead>) {
+    constructor(public model: PaginateModel<TModel['read']>) {
         this.modelName = model.modelName;
     }
 
@@ -40,7 +38,7 @@ export abstract class AbstractService<TWrite extends ModelWrite, TRead extends M
      *
      * @returns the found Document or null if none was found
      */
-    public async findOne(identifierQuery: FilterQuery<TRead>, select: Select): Promise<TRead | null> {
+    public async findOne(identifierQuery: FilterQuery<TModel['read']>, select: Select): Promise<TModel['read'] | null> {
         return await this.model.findOne(identifierQuery, select);
     }
 
@@ -54,7 +52,7 @@ export abstract class AbstractService<TWrite extends ModelWrite, TRead extends M
      *
      * @returns the found Document or null if none were found
      */
-    public async findMany(where: Where, select: Select, sort: Sort, paginate: Paginate): Promise<PaginateResult<TRead>> {
+    public async findMany(where: Where, select: Select, sort: Sort, paginate: Paginate): Promise<PaginateResult<TModel['read']>> {
         // set up some pagination options
         const paginateOptions: PaginateOptions = {
             collation: { locale: 'en' },
@@ -84,7 +82,7 @@ export abstract class AbstractService<TWrite extends ModelWrite, TRead extends M
      *
      * @returns the created Document
      */
-    public async createOne(data: TWrite): Promise<TRead> {
+    public async createOne(data: TModel['write']): Promise<TModel['read']> {
         return await this.model.create(data);
     }
 
@@ -97,7 +95,7 @@ export abstract class AbstractService<TWrite extends ModelWrite, TRead extends M
      *
      * @returns the created Documents
      */
-    public async createMany(data: Array<TWrite>): Promise<Array<TRead>> {
+    public async createMany(data: Array<TModel['write']>): Promise<Array<TModel['read']>> {
         return await this.model.create(data);
     }
 
@@ -112,7 +110,7 @@ export abstract class AbstractService<TWrite extends ModelWrite, TRead extends M
      *
      * @returns the updated Document
      */
-    public async updateOne(identifierQuery: FilterQuery<TRead>, data: DeepPartial<TWrite>): Promise<TRead> {
+    public async updateOne(identifierQuery: FilterQuery<TModel['read']>, data: DeepPartial<TModel['write']>): Promise<TModel['read']> {
         const doc = await this.findOne(identifierQuery, []);
 
         if (!doc) {
@@ -161,7 +159,7 @@ export abstract class AbstractService<TWrite extends ModelWrite, TRead extends M
      *
      * @returns the number of Documents affected
      */
-    public async deleteOne(identifierQuery: FilterQuery<TRead>): Promise<{ deleted: number }> {
+    public async deleteOne(identifierQuery: FilterQuery<TModel['read']>): Promise<{ deleted: number }> {
         const doc = await this.findOne(identifierQuery, []);
 
         if (!doc) {
