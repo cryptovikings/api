@@ -17,35 +17,37 @@ class VikingController extends AbstractResourceController<VikingWrite, VikingRea
     protected defaultSelect = ['number'];
 
     protected defaultData: VikingBroadcast = {
-        name: 'Unknown Viking',
+        name: 'Unminted Viking',
         image: ImageHelper.getOutputPaths('unknown').imageUrl,
-        description: 'An unknown Viking!',
-        external_link: `${process.env.FRONT_END_URL!}/viking/unknown`,
+        description: `
+            This Viking hasn't yet been minted. Come back once he's been minted to check his randomly generated stats and appearance!
+        `,
+        external_link: `${process.env.FRONT_END_URL!}/viking/mint`,
         attributes: [
             {
                 trait_type: 'Beard',
-                value: 'Unknown'
+                value: 'TBC'
             },
             {
                 trait_type: 'Body',
-                value: 'Unknown'
+                value: 'TBC'
             },
             {
                 trait_type: 'Face',
-                value: 'Unknown'
+                value: 'TBC'
             },
             {
                 trait_type: 'Top',
-                value: 'Unknown'
+                value: 'TBC'
             },
 
             {
                 trait_type: 'Boots Type',
-                value: 'Unknown'
+                value: 'TBC'
             },
             {
                 trait_type: 'Boots Condition',
-                value: ClothesCondition.UNKNOWN
+                value: ClothesCondition.TBC
             },
             {
                 trait_type: 'Speed',
@@ -55,11 +57,11 @@ class VikingController extends AbstractResourceController<VikingWrite, VikingRea
 
             {
                 trait_type: 'Bottoms Type',
-                value: 'Unknown'
+                value: 'TBC'
             },
             {
                 trait_type: 'Bottoms Condition',
-                value: ClothesCondition.UNKNOWN
+                value: ClothesCondition.TBC
             },
             {
                 trait_type: 'Stamina',
@@ -69,11 +71,11 @@ class VikingController extends AbstractResourceController<VikingWrite, VikingRea
 
             {
                 trait_type: 'Helmet Type',
-                value: 'Unknown'
+                value: 'TBC'
             },
             {
                 trait_type: 'Helmet Condition',
-                value: ItemCondition.UNKNOWN
+                value: ItemCondition.TBC
             },
             {
                 trait_type: 'Intelligence',
@@ -83,11 +85,11 @@ class VikingController extends AbstractResourceController<VikingWrite, VikingRea
 
             {
                 trait_type: 'Shield Type',
-                value: 'Unknown'
+                value: 'TBC'
             },
             {
                 trait_type: 'Shield Condition',
-                value: ItemCondition.UNKNOWN
+                value: ItemCondition.TBC
             },
             {
                 trait_type: 'Defence',
@@ -97,11 +99,11 @@ class VikingController extends AbstractResourceController<VikingWrite, VikingRea
 
             {
                 trait_type: 'Weapon Type',
-                value: 'Unknown'
+                value: 'TBC'
             },
             {
                 trait_type: 'Weapon Condition',
-                value: ItemCondition.UNKNOWN
+                value: ItemCondition.TBC
             },
             {
                 trait_type: 'Attack',

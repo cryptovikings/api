@@ -2,7 +2,7 @@
  * Enum specifying all valid Clothes Conditions as represented in VikingMetaData
  */
 export enum ClothesCondition {
-    UNKNOWN = 'Unknown',
+    TBC = 'TBC',
     BASIC = 'Basic',
     RAGGED = 'Ragged',
     WORN = 'Worn',
