@@ -1,4 +1,4 @@
-import express, { Request, Response, Router } from 'express';
+import { Request, Response, Router } from 'express';
 import { vikingRouter } from './viking.router';
 import { testRouter } from './test.router';
 
@@ -10,9 +10,6 @@ apiRouter.use('/viking', vikingRouter);
 
 // /test collection is handled by the testRouter
 apiRouter.use('/test', testRouter);
-
-// Image hosting
-apiRouter.use('/static', express.static(process.env.IMAGE_OUTPUT_VIKING!));
 
 // configure a fallback route clearly stating that a route was invalid
 apiRouter.use('*', (req: Request, res: Response): void => {
