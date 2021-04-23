@@ -1,7 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
-import { ErrorHelper } from '../../helpers/error.helper';
+
 import { APIResponse } from '../../models/apiResponse.model';
-import { HttpErrorCode } from '../../enums/httpErrorCode.enum';
 
 /**
  * Utility type representing a properly bound request processor
@@ -23,10 +22,6 @@ type BoundRequestProcessor = (req: Request, res: Response, next: NextFunction) =
  */
 export abstract class AbstractController {
 
-    protected errors = {
-        notImplemented: ErrorHelper.createError(HttpErrorCode.NOT_IMPLEMENTED, 'Method not implemented')
-    };
-
     /**
      * Take a Controller instance method to be used as a request handler for a given route, and return a bound `processRequest()` which
      *   takes that method as its callback, retaining the `this` for both `processRequest()` and the callback itself
@@ -44,7 +39,8 @@ export abstract class AbstractController {
      *   representing the specific Controller instance method which implements the API's response
      *
      * By having things set up this way, we gain the ability to handle concerns associated with all request handling in this one place -
-     *   this could include error handlign, permision management, and more
+     *   this could include error handlign, permision management, and more. We also allow Controller instance methods to return values and
+     *   throw errors in an Express-agnostic fashion
      *
      * @param cb the actual request handler, to be executed to serve the request
      * @param req the Express Request
@@ -54,13 +50,15 @@ export abstract class AbstractController {
     public async processRequest(
         cb: (req: Request) => Promise<APIResponse<any>>, req: Request, res: Response, next: NextFunction
     ): Promise<void> {
-
         try {
+            // TODO this is where authorisation may go
+
             const { status, data, paginate } = await cb(req);
 
             res.status(status).json({ data, paginate });
         }
         catch (e) {
+            // pipe any thrown errors directly through to our Error Handling Middleware
             next(e);
         }
     }

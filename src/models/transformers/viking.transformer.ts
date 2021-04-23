@@ -6,7 +6,7 @@ import { ModelTransformer } from './modelTransformer';
 
 class VikingTransformer extends ModelTransformer<VikingRead, VikingBroadcast> {
 
-    public convertForBroadcast(data: VikingRead, select: Select): DeepPartial<VikingBroadcast> {
+    public convertForBroadcast<T = DeepPartial<VikingBroadcast> | VikingBroadcast>(data: VikingRead, select: Select): T {
         let keys: Array<keyof VikingBroadcast> = [
             'name',
             'image',
@@ -27,7 +27,7 @@ class VikingTransformer extends ModelTransformer<VikingRead, VikingBroadcast> {
             }
         }
 
-        return _pick(VikingHelper.generateVikingMetadata(data), keys);
+        return _pick(VikingHelper.generateVikingMetadata(data), keys) as unknown as T;
     }
 }
 

@@ -1,5 +1,6 @@
 import { ClothesCondition } from '../enums/clothesCondition.enum';
 import { ItemCondition } from '../enums/itemCondition.enum';
+import { ErrorHelper } from '../helpers/error.helper';
 import { ImageHelper } from '../helpers/image.helper';
 import { APIResponse } from '../models/apiResponse.model';
 import { VikingRead, VikingWrite, VikingBroadcast } from '../models/mongoose/viking.model';
@@ -19,9 +20,7 @@ class VikingController extends AbstractResourceController<VikingWrite, VikingRea
     protected defaultData: VikingBroadcast = {
         name: 'Unminted Viking',
         image: ImageHelper.getOutputPaths('unknown').imageUrl,
-        description: `
-            This Viking hasn't yet been minted. Come back once he's been minted to check his randomly generated stats and appearance!
-        `,
+        description: 'This Viking hasn\'t yet been minted. Come back once he\'s been minted to check his randomly generated stats and appearance!',
         external_link: `${process.env.FRONT_END_URL!}/viking/mint`,
         attributes: [
             {
@@ -123,22 +122,22 @@ class VikingController extends AbstractResourceController<VikingWrite, VikingRea
     /**
      * Override the abstract create() and throw a NotImplementedError, preventing accidental wiring up of (VikingController).create
      */
-    public create(): Promise<APIResponse<VikingRead>> {
-        throw this.errors.notImplemented;
+    public create(): Promise<APIResponse<VikingBroadcast>> {
+        throw ErrorHelper.errors.notImplemented;
     }
 
     /**
      * Override the abstract update() and throw a NotImplementedError, preventing accidental wiring up of (VikingController).update
      */
-    public update(): Promise<APIResponse<VikingRead>> {
-        throw this.errors.notImplemented;
+    public update(): Promise<APIResponse<VikingBroadcast>> {
+        throw ErrorHelper.errors.notImplemented;
     }
 
     /**
      * Override the abstract delete() and throw a NotImplementedError, preventing accidental wiring up of (VikingController).delete
      */
-    public delete(): Promise<APIResponse<boolean>> {
-        throw this.errors.notImplemented;
+    public delete(): Promise<APIResponse<{ deleted: number }>> {
+        throw ErrorHelper.errors.notImplemented;
     }
 }
 

@@ -1,24 +1,26 @@
 import { Request } from 'express';
 import { FilterQuery } from 'mongoose';
 
-import { ErrorHelper } from '../../helpers/error.helper';
 import { APIQuery, Paginate, Select, Sort, Where } from '../../models/apiQuery.model';
 import { APIResponse } from '../../models/apiResponse.model';
 import { ModelWrite, ModelRead, ModelBroadcast } from '../../models/mongoose/base.model';
 import { ModelTransformer } from '../../models/transformers/modelTransformer';
 import { AbstractService } from '../../services/abstract/abstract.service';
-import { HttpErrorCode } from '../../enums/httpErrorCode.enum';
 import { HttpSuccessCode } from '../../enums/httpSuccessCode.enum';
 import { AbstractController } from './abstract.controller';
+import { ErrorHelper } from '../../helpers/error.helper';
 
 /**
- * Abstract Resource Controller, serving as the foundation of the API's Entity-CRUD request processing layer
+ * Abstract Resource Controller, generically implementing CRUD routines, validation and model transformation for Entity-related Request
+ *   Processing
  *
- * Implements GET, POST, PUT and DELETE handlers for a single given Model, deferring database interactivity to a single Service
+ * Controllers which serve a route collection associated with a particular database collection should extend from this class
  *
- * Implements validation
- *
- * Controllers which serve a particular Model should extend this class
+ * Provides support for a series of query parameters which expose Mongo/Mongoose functionality to the outside world:
+ *     - where => a Mongo query object
+ *     - select => an array of strings defining a Mongo projection set
+ *     - sort => an array of strings defining a Mongo sort
+ *     - paginate => an object defining page + limit properties defining a Mongoose Pagination rule
  *
  * @typeparam TWrite the 'writeable' Model representation, to be received in request bodies for create + update
  * @typeparam TRead the 'as-read' Model representation, as read from the database
@@ -29,8 +31,18 @@ export abstract class AbstractResourceController<
     TRead extends ModelRead,
     TBroadcast extends ModelBroadcast> extends AbstractController {
 
+    /**
+     * Abstract default selection set to be implemented by the subclass
+     *
+     * Enables the assurance that a particular field or field set will always be retrieved on GETs, allowing for Transformer confidence
+     */
     protected defaultSelect: NonNullable<Select> = [];
 
+    /**
+     * Abstract optional default data set to be returned on single-Entity GETs which do not match any Document
+     *
+     * Enables a Controller to override the default abstract error-throwing behaviour for 404/Not Found errors
+     */
     protected defaultData: TBroadcast | undefined;
 
     /**
@@ -46,7 +58,6 @@ export abstract class AbstractResourceController<
         protected transformer: ModelTransformer<TRead, TBroadcast>,
         protected identifierName: string
     ) {
-
         super();
     }
 
@@ -55,78 +66,103 @@ export abstract class AbstractResourceController<
      *
      * @param req the Express Request
      *
-     * @returns the found Documents
+     * @returns an APIResponse containing the found Entity/Entities
      */
-    public async get(req: Request): Promise<APIResponse<DeepPartial<TBroadcast> | Array<DeepPartial<TBroadcast>>>> {
+    public get(req: Request): Promise<APIResponse<DeepPartial<TBroadcast> | Array<DeepPartial<TBroadcast>>>> {
         const { where, select, sort, paginate } = this.parseQuery(req);
 
+        // if our identifierName is found in the request parameters, retrieve a single Entity
         if (req.params[this.identifierName]) {
-            return await this.getOne(req.params[this.identifierName], select);
+            return this.getOne(req.params[this.identifierName], select);
         }
 
+        // if there is a where in the query params, retrieve "some" Entities
         if (where) {
-            return await this.getMany(where, select, sort, paginate);
+            return this.getMany(where, select, sort, paginate);
         }
 
-        return await this.getMany({}, select, sort, paginate);
+        // retrieve all Entities
+        return this.getMany({}, select, sort, paginate);
     }
 
     /**
-     * // TODO
+     * Generic POST handler, supporting both single and multi Entity creation
      *
-     * @param req
-     * @returns
-     */
-    public async create(req: Request): Promise<APIResponse<TRead>> {
-        // TODO validate req.body
-
-        const data = await this.service.create(req.body);
-
-        return {
-            status: HttpSuccessCode.CREATED,
-            data
-        };
-    }
-
-    /**
-     * // TODO
+     * // TODO Implements validation for the incoming data
      *
-     * @param req
-     * @returns
+     * @param req the Express Request
+     *
+     * @returns an APIResponse containing the created Entity/Entities
      */
-    public async update(req: Request): Promise<APIResponse<TRead>> {
-        // TODO validate req.body
-        const data = await this.service.update(req.body);
-
-        await new Promise((r) => r(true));
-
-        return {
-            status: HttpSuccessCode.OK,
-            data: { _id: '23458234823' } as TRead
+    public create(req: Request): Promise<APIResponse<TBroadcast | Array<TBroadcast>>> {
+        // handle an empty body with the appropriate error
+        if (!Object.keys(req.body).length) {
+            throw ErrorHelper.errors.emptyBody;
         }
+
+        // if the body is an array, create many Entities
+        if (Array.isArray(req.body)) {
+            return this.createMany(req.body);
+        }
+
+        // create one Entity
+        return this.createOne(req.body);
     }
 
     /**
-     * // TODO
+     * Generic PUT handler, supporting single Entity updates (no multi Entity for now)
      *
-     * @param req
-     * @returns
+     * // TODO Implements validation for the incoming data
+     *
+     * @param req the Express Request
+     *
+     * @returns an APIResponse containing the updated Entity
      */
-    public async delete(req: Request): Promise<APIResponse<boolean>> {
-        await new Promise((r) => r(true));
+    public update(req: Request): Promise<APIResponse<TBroadcast>> {
+        // if our identifierName is found in the request parameters, update a single Entity
+        if (req.params[this.identifierName]) {
+            return this.updateOne(req.params[this.identifierName], req.body);
+        }
 
-        return {
-            status: HttpSuccessCode.OK,
-            data: true
-        };
+        // if not, for now, error
+        throw ErrorHelper.errors.notImplemented;
+    }
+
+    /**
+     * Generic DELETE handler, supporting both single Entity deletion and queried multi Entity deletion
+     *
+     * Does not support unqueried (all) Entity deletion
+     *
+     * @param req the Express Request
+     *
+     * @returns an APIResponse containing a deletion success flag
+     */
+    public delete(req: Request): Promise<APIResponse<{ deleted: number }>> {
+        const { where } = this.parseQuery(req);
+
+        // if our identifierName is found in the request parameters, delete a single Entity
+        if (req.params[this.identifierName]) {
+            return this.deleteOne(req.params[this.identifierName]);
+        }
+
+        // if there is a where in the query params, delete "some" Entities
+        if (where) {
+            return this.deleteMany(where);
+        }
+
+        // do not allow deleting all Entities by way of unqueried/unparameterised DELETEs
+        throw ErrorHelper.errors.notImplemented;
     }
 
     /**
      * Overrideable single Entity retrieval routine, querying by the identifier name to return one result
      *
-     * @param identifier the value of the identifier as supplied in query params
+     * Potentially returns the Controller's defaultData if the query does not find an Entity
      *
-     * @returns the found Entity
+     * @param identifier the value of the identifier as supplied in query params
+     * @param select the Mongo Projection set
+     *
+     * @returns An APIResponse containing the found Entity
      */
     protected async getOne(identifier: string, select: Select): Promise<APIResponse<DeepPartial<TBroadcast>>> {
         const identifierQuery = this.buildIdentifierQuery(identifier);
@@ -140,6 +176,7 @@ export abstract class AbstractResourceController<
             };
         }
 
+        // fall back to defaultData before resorting to throwing a NOT_FOUND
         if (this.defaultData) {
             return {
                 status: HttpSuccessCode.OK,
@@ -147,16 +184,20 @@ export abstract class AbstractResourceController<
             };
         }
 
-        throw ErrorHelper.createError(
-            HttpErrorCode.NOT_FOUND,
-            `No ${this.service.modelName} found with identifier ${JSON.stringify(identifierQuery)}`
-        );
+        throw ErrorHelper.errors.notFound(`No ${this.service.modelName} found with identifier ${JSON.stringify(identifierQuery)}`);
     }
 
-    protected async getMany(
-        where: Where, select: Select, sort: Sort, paginate: Paginate
-    ): Promise<APIResponse<Array<DeepPartial<TBroadcast>>>> {
-
+    /**
+     * Overrideable multi Entity retrieval routine, querying by a given where to return many results
+     *
+     * @param where the Mongo query
+     * @param select the Mongo Projection set
+     * @param sort the Mongo Sort set
+     * @param paginate pagination rules
+     *
+     * @returns An APIResponse containing the found Entities
+     */
+    protected async getMany(where: Where, select: Select, sort: Sort, paginate: Paginate): Promise<APIResponse<Array<DeepPartial<TBroadcast>>>> {
         const result = await this.service.findMany(where, select, sort, paginate);
 
         if (result.docs.length) {
@@ -174,10 +215,88 @@ export abstract class AbstractResourceController<
             };
         }
 
-        throw ErrorHelper.createError(
-            HttpErrorCode.NOT_FOUND,
-            `No ${this.service.modelName} found with query ${JSON.stringify(where)}`
-        );
+        throw ErrorHelper.errors.notFound(`No ${this.service.modelName} found with query ${JSON.stringify(where)}`);
+    }
+
+    /**
+     * Overrideable single Entity creation routine
+     *
+     * @param body the data representing the Entity to create
+     *
+     * @returns An APIResponse containing the created Entity
+     */
+    protected async createOne(body: TWrite): Promise<APIResponse<TBroadcast>> {
+        const single = await this.service.createOne(body);
+
+        return {
+            status: HttpSuccessCode.CREATED,
+            data: this.transformer.convertForBroadcast(single)
+        };
+    }
+
+    /**
+     * Overrideable multi Entity creation routine
+     *
+     * @param body an array of data representing the Entities to create
+     *
+     * @returns an APIResponse containing the created Entities
+     */
+    protected async createMany(body: Array<TWrite>): Promise<APIResponse<Array<TBroadcast>>> {
+        const multi = await this.service.createMany(body);
+
+        return {
+            status: HttpSuccessCode.CREATED,
+            data: this.transformer.convertManyForBroadcast(multi)
+        };
+    }
+
+    /**
+     * Overrideable single Entity update routine
+     *
+     * @param identifier the value of the identifier as supplied in query params
+     * @param body the data representing the changes to make to the Entity
+     *
+     * @returns An APIResponse containing the updated Entity
+     */
+    protected async updateOne(identifier: string, body: DeepPartial<TWrite>): Promise<APIResponse<TBroadcast>> {
+        const identifierQuery = this.buildIdentifierQuery(identifier);
+
+        const updated = await this.service.updateOne(identifierQuery, body);
+
+        return {
+            status: HttpSuccessCode.OK,
+            data: this.transformer.convertForBroadcast(updated)
+        };
+    }
+
+    /**
+     * Overrideable single Entity deletion routine
+     *
+     * @param identifier the value of the identifier as supplied in query params
+     *
+     * @returns An APIResponse containing a deletion success flag
+     */
+    protected async deleteOne(identifier: string): Promise<APIResponse<{ deleted: number }>> {
+        const identifierQuery = this.buildIdentifierQuery(identifier);
+
+        return {
+            status: HttpSuccessCode.OK,
+            data: await this.service.deleteOne(identifierQuery)
+        }
+    }
+
+    /**
+     * Overrideable multi Entity deletion routine
+     *
+     * @param where the Mongo query matching Entities to delete
+     *
+     * @returns An APIResponse containing a deletion success flag
+     */
+    protected async deleteMany(where: Where): Promise<APIResponse<{ deleted: number }>> {
+        return {
+            status: HttpSuccessCode.OK,
+            data: await this.service.deleteMany(where)
+        };
     }
 
     /**
@@ -211,6 +330,7 @@ export abstract class AbstractResourceController<
             paginate = req.query.paginate ? JSON.parse(req.query.paginate as string) : undefined;
         }
 
+        // if there's a selection, combine it with our optional default selection set and then validate it
         if (select) {
             select = select.concat(this.defaultSelect);
             this.validateSelect(select);
@@ -224,26 +344,34 @@ export abstract class AbstractResourceController<
         };
     }
 
-    protected validateSelect(select: Select): void {
-        if (select) {
-            let last = undefined;
+    /**
+     * Selection set validation routine. Validate that the set includes only inclusions *or* exclusions, ensuring that it's compatible with
+     *   Mongo
+     *
+     * Allows for the provision of a nicer and more specific Controller-level error than we'd get if we passed a mixed projection set down
+     *   to the Service layer
+     *
+     * In line with Mongo Projection rules, allow for _id inclusion or exclusion regardless of the rest of the set
+     *
+     * Pass-through validation method; throws an error if validation fails
+     *
+     * @param select the Select to validate
+     */
+    protected validateSelect(select: NonNullable<Select>): void {
+        let last = undefined;
 
-            for (const s of select) {
-                if (s.includes('_id')) {
-                    continue;
-                }
-
-                const current = s.startsWith('-');
-
-                if (last !== undefined && current !== last) {
-                    throw ErrorHelper.createError(
-                        HttpErrorCode.BAD_REQUEST,
-                        `Cannot mix includes and excludes in select: [${select.join(', ')}]`
-                    );
-                }
-
-                last = current;
+        for (const s of select) {
+            if (s.includes('_id')) {
+                continue;
             }
+
+            const current = s.startsWith('-');
+
+            if (last !== undefined && current !== last) {
+                throw ErrorHelper.errors.badRequest(`Cannot mix includes and excludes in select: [${select.join(', ')}]`);
+            }
+
+            last = current;
         }
     }
 }

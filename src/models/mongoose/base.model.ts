@@ -7,6 +7,7 @@ import mongoosePaginate from 'mongoose-paginate-v2';
  */
 interface BaseModel {
     _id: Schema.Types.ObjectId;
+    readonly: boolean;
 }
 
 /**
@@ -26,7 +27,7 @@ export type ModelRead = BaseModel & Document;
 /**
  * The base 'broadcast' Model representation, signifying the basic makeup of a Model as broadcast to the outside world
  */
-export type ModelBroadcast = Omit<BaseModel, '_id'>;
+export type ModelBroadcast = Omit<BaseModel, '_id' | 'readonly'>;
 
 /**
  * A ModelDescriptor for specifying a Model's makeup as passed to _createModel() (below)
@@ -35,8 +36,9 @@ export type ModelBroadcast = Omit<BaseModel, '_id'>;
  */
 interface ModelDescriptor {
     name: string;
-    collectionName?: string;
     schemaDefinition: SchemaDefinition;
+    readonly?: boolean;
+    collectionName?: string;
     schemaOptions?: SchemaOptions;
 }
 
@@ -49,8 +51,14 @@ interface ModelDescriptor {
  * @returns the PaginateModel
  */
 export const _createModel = (descriptor: ModelDescriptor): PaginateModel<any> => {
+    // base schema, defining properties all models will have
+    const baseSchema: SchemaDefinition = {
+        // allow a model to define readonly as default true in the descriptor
+        readonly: { type: Boolean, default: descriptor.readonly ?? false }
+    };
+
     // set up the Schema to incoroporate the MongooosePaginate and BeautifulUniqueValidation plugins
-    const schema = new Schema(descriptor.schemaDefinition, descriptor.schemaOptions);
+    const schema = new Schema(Object.assign(baseSchema, descriptor.schemaDefinition), descriptor.schemaOptions);
     schema.plugin(beautifyUnique);
     schema.plugin(mongoosePaginate);
 

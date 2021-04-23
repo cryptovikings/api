@@ -180,6 +180,7 @@ export interface VikingBroadcast extends ModelBroadcast, VikingMetadata { }
  */
 export const VikingModel = _createModel({
     name: 'Viking',
+    readonly: true,
     schemaDefinition: {
         number: { type: Number, required: true, unique: true, index: true },
         name: { type: String, required: true },
