@@ -29,7 +29,9 @@ export abstract class AbstractResourceController<
     TRead extends ModelRead,
     TBroadcast extends ModelBroadcast> extends AbstractController {
 
-    protected defaultSelect: Select;
+    protected defaultSelect: NonNullable<Select> = [];
+
+    protected defaultData: TBroadcast | undefined;
 
     /**
      * Constructor. Take and store the Service to use, the ModelTransformer implementing Model conversion routines, and the name of the
@@ -131,17 +133,24 @@ export abstract class AbstractResourceController<
 
         const found = await this.service.findOne(identifierQuery, select);
 
-        if (!found) {
-            throw ErrorHelper.createError(
-                HttpErrorCode.NOT_FOUND,
-                `No Entity found with identifier ${JSON.stringify(identifierQuery)}`
-            );
+        if (found) {
+            return {
+                status: HttpSuccessCode.OK,
+                data: this.transformer.convertForBroadcast(found, select)
+            };
         }
 
-        return {
-            status: HttpSuccessCode.OK,
-            data: this.transformer.convertForBroadcast(found, select)
-        };
+        if (this.defaultData) {
+            return {
+                status: HttpSuccessCode.OK,
+                data: this.defaultData
+            };
+        }
+
+        throw ErrorHelper.createError(
+            HttpErrorCode.NOT_FOUND,
+            `No ${this.service.modelName} found with identifier ${JSON.stringify(identifierQuery)}`
+        );
     }
 
     protected async getMany(
@@ -150,18 +159,25 @@ export abstract class AbstractResourceController<
 
         const result = await this.service.findMany(where, select, sort, paginate);
 
-        return {
-            status: HttpSuccessCode.OK,
-            data: this.transformer.convertManyForBroadcast(result.docs, select),
-            paginate: {
-                total: result.totalDocs,
-                count: result.docs.length,
-                page: result.page ?? 1,
-                pages: result.totalPages,
-                hasNext: result.hasNextPage,
-                hasPrev: result.hasPrevPage
-            }
-        };
+        if (result.docs.length) {
+            return {
+                status: HttpSuccessCode.OK,
+                data: this.transformer.convertManyForBroadcast(result.docs, select),
+                paginate: {
+                    total: result.totalDocs,
+                    count: result.docs.length,
+                    page: result.page ?? 1,
+                    pages: result.totalPages,
+                    hasNext: result.hasNextPage,
+                    hasPrev: result.hasPrevPage
+                }
+            };
+        }
+
+        throw ErrorHelper.createError(
+            HttpErrorCode.NOT_FOUND,
+            `No ${this.service.modelName} found with query ${JSON.stringify(where)}`
+        );
     }
 
     /**
@@ -188,7 +204,6 @@ export abstract class AbstractResourceController<
         let sort: Sort;
         let paginate: Paginate;
 
-        // TODO as string?
         if (Object.keys(req.query).length) {
             where = req.query.where ? JSON.parse(req.query.where as string) : undefined;
             select = req.query.select ? JSON.parse(req.query.select as string) : undefined;
@@ -197,10 +212,8 @@ export abstract class AbstractResourceController<
         }
 
         if (select) {
+            select = select.concat(this.defaultSelect);
             this.validateSelect(select);
-            if (this.defaultSelect) {
-                select = select.concat(this.defaultSelect, select);
-            }
         }
 
         return {

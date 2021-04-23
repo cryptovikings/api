@@ -15,12 +15,16 @@ import { ModelRead, ModelWrite } from '../../models/mongoose/base.model';
  */
 export abstract class AbstractService<TWrite extends ModelWrite, TRead extends ModelRead> {
 
+    public modelName: string;
+
     /**
      * Constructor. Take and store the Mongoose Model to use
      *
      * @param model the Model
      */
-    constructor(public model: PaginateModel<TRead>) { }
+    constructor(public model: PaginateModel<TRead>) {
+        this.modelName = model.modelName;
+    }
 
     /**
      * Find one Document with a given query, based off the Entity's unique identifier

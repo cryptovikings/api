@@ -61,6 +61,15 @@ export class ImageHelper {
         fs.rmSync(ImageHelper.outRoot, { recursive: true, force: true });
     }
 
+    public static getOutputPaths(fileName: string): { imageUrl: string, filePath: string } {
+        const actualFileName = `${fileName.replace(/\s-/g, '_').toLowerCase()}.png`;
+
+        return {
+            imageUrl: `${process.env.API_URL!}/static/${actualFileName}`,
+            filePath: path.join(ImageHelper.vikingOut, actualFileName)
+        };
+    }
+
     private static mkDirOptional(dir: string): void {
         if (!fs.existsSync(dir)) {
             fs.mkdirSync(dir, { recursive: true });
@@ -140,9 +149,7 @@ export class ImageHelper {
     }
 
     private static generateImage(fileName: string, paths: AssetPaths): Promise<string> {
-        const actualName = `${fileName.replace(/\s/g, '_').toLowerCase()}.png`;
-        const filePath = path.join(ImageHelper.vikingOut, actualName);
-        const imageUrl = `${process.env.API_URL!}/static/${actualName}`;
+        const { imageUrl, filePath } = ImageHelper.getOutputPaths(fileName);
 
         return new Promise((resolve, reject) => {
             const image = gm('');

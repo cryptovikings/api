@@ -1,3 +1,6 @@
+import { ClothesCondition } from '../enums/clothesCondition.enum';
+import { ItemCondition } from '../enums/itemCondition.enum';
+import { ImageHelper } from '../helpers/image.helper';
 import { APIResponse } from '../models/apiResponse.model';
 import { VikingRead, VikingWrite, VikingBroadcast } from '../models/mongoose/viking.model';
 import { vikingTransformer } from '../models/transformers/viking.transformer';
@@ -12,6 +15,101 @@ import { AbstractResourceController } from './abstract/abstractResource.controll
 class VikingController extends AbstractResourceController<VikingWrite, VikingRead, VikingBroadcast> {
 
     protected defaultSelect = ['number'];
+
+    protected defaultData: VikingBroadcast = {
+        name: 'Unknown Viking',
+        image: ImageHelper.getOutputPaths('unknown').imageUrl,
+        description: 'An unknown Viking!',
+        external_link: `${process.env.FRONT_END_URL!}/viking/unknown`,
+        attributes: [
+            {
+                trait_type: 'Beard',
+                value: 'Unknown'
+            },
+            {
+                trait_type: 'Body',
+                value: 'Unknown'
+            },
+            {
+                trait_type: 'Face',
+                value: 'Unknown'
+            },
+            {
+                trait_type: 'Top',
+                value: 'Unknown'
+            },
+
+            {
+                trait_type: 'Boots Type',
+                value: 'Unknown'
+            },
+            {
+                trait_type: 'Boots Condition',
+                value: ClothesCondition.UNKNOWN
+            },
+            {
+                trait_type: 'Speed',
+                value: 0,
+                max_value: 99
+            },
+
+            {
+                trait_type: 'Bottoms Type',
+                value: 'Unknown'
+            },
+            {
+                trait_type: 'Bottoms Condition',
+                value: ClothesCondition.UNKNOWN
+            },
+            {
+                trait_type: 'Stamina',
+                value: 0,
+                max_value: 99
+            },
+
+            {
+                trait_type: 'Helmet Type',
+                value: 'Unknown'
+            },
+            {
+                trait_type: 'Helmet Condition',
+                value: ItemCondition.UNKNOWN
+            },
+            {
+                trait_type: 'Intelligence',
+                value: 0,
+                max_value: 99
+            },
+
+            {
+                trait_type: 'Shield Type',
+                value: 'Unknown'
+            },
+            {
+                trait_type: 'Shield Condition',
+                value: ItemCondition.UNKNOWN
+            },
+            {
+                trait_type: 'Defence',
+                value: 0,
+                max_value: 99
+            },
+
+            {
+                trait_type: 'Weapon Type',
+                value: 'Unknown'
+            },
+            {
+                trait_type: 'Weapon Condition',
+                value: ItemCondition.UNKNOWN
+            },
+            {
+                trait_type: 'Attack',
+                value: 0,
+                max_value: 99
+            }
+        ]
+    }
 
     /**
      * Constructor. Specify the Service as the MetadataService
