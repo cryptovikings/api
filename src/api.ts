@@ -2,10 +2,10 @@ import express, { Application } from 'express';
 import http from 'http';
 
 import { DBConnectionHelper } from './helpers/dbConnection.helper';
-import { listen } from './listener/listener';
 import { cors } from './middleware/cors.middleware';
 import { error } from './middleware/error.middleware';
 import { apiRouter } from './routes/api.router';
+import { EthInterface } from './eth/ethInterface';
 
 // port
 const port = process.env.SERVER_PORT!;
@@ -73,7 +73,10 @@ server.on('listening', () => {
                 str = `Port ${addr.port}`;
             }
 
-            console.log(`Listening on ${str}`)
+            console.log(`Listening on ${str}`);
+
+            // kick off our Contract Event Listener
+            EthInterface.initialize();
         },
         (err) => {
             console.log('Database connection error:', err);
@@ -87,6 +90,3 @@ server.on('listening', () => {
 
 // start server
 server.listen(port);
-
-// TODO make this into a helper???????
-listen();

@@ -12,6 +12,19 @@
         "plugin:@typescript-eslint/recommended-requiring-type-checking"
     ],
     "rules": {
+        "quotes": [
+            "error",
+            "single",
+            {
+                "avoidEscape": true
+            }
+        ],
+        "max-len": [
+            "error",
+            {
+                "code": 150
+            }
+        ],
         "@typescript-eslint/unbound-method": [
             "off"
         ],
@@ -29,19 +42,6 @@
         ],
         "@typescript-eslint/no-empty-interface": [
             "off"
-        ],
-        "quotes": [
-            "error",
-            "single",
-            {
-                "avoidEscape": true
-            }
-        ],
-        "max-len": [
-            "error",
-            {
-                "code": 150
-            }
         ],
         "@typescript-eslint/restrict-template-expressions": [
             "error"
