@@ -1,4 +1,3 @@
-declare type Contract = import('@ethersproject/contracts').Contract;
 declare type Schema = import('mongoose').Schema;
 
 /**
@@ -14,14 +13,6 @@ declare type DeepPartial<T> = {
 declare type DeepRequired<T> = {
     [K in keyof T]-?: DeepRequired<T[K]>;
 }
-
-/**
- * // TODO
- */
-declare interface NornirContract extends Contract {
-    generateViking(requestId: number, overrides: { gasPrice: number }): void;
-}
-
 
 /**
  * // TODO

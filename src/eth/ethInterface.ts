@@ -13,22 +13,32 @@ export class EthInterface {
     /**
      * Contract Address, copied over from the environment
      */
-    private static readonly CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS!;
+    private static readonly CONTRACT_ADDRESS = process.env.ETH_CONTRACT_ADDRESS!;
 
     /**
      * Eth Provider
      */
-    private static readonly PROVIDER = new providers.JsonRpcProvider(process.env.PROVIDER_URL);
+    private static readonly PROVIDER = new providers.JsonRpcProvider(process.env.ETH_PROVIDER_URL);
 
     /**
      * Wallet which will be used as the transaction signer
      */
-    private static readonly WALLET = new Wallet(process.env.WALLET_SECRET!, EthInterface.PROVIDER);
+    private static readonly WALLET = new Wallet(process.env.ETH_WALLET_SECRET!, EthInterface.PROVIDER);
 
     /**
      * Contract instantiation; a NornirContract for type safety
      */
-    private static readonly CONTRACT: NornirContract = new Contract(EthInterface.CONTRACT_ADDRESS, abi, EthInterface.WALLET) as NornirContract;
+    private static readonly CONTRACT = new Contract(EthInterface.CONTRACT_ADDRESS, abi, EthInterface.WALLET);
+
+    /**
+     * Whether or not to run Contract event listeners
+     */
+    private static LISTEN = process.env.ETH_EVENT_LISTENERS === 'true' ?? false;
+
+    /**
+     * Polling Interval for Contract event listeners
+     */
+    private static LISTENER_POLLING_INTERVAL = parseInt(process.env.ETH_PROVIDER_POLLING_INTERVAL!, 10);
 
     /**
      * Expandable map of event name => event listener
@@ -42,10 +52,15 @@ export class EthInterface {
      * Initialize all Event Handlers
      */
     public static initialize(): void {
-        console.log(`EthInterface: Listening for Contract Events on ${process.env.PROVIDER_URL!}`);
+        EthInterface.PROVIDER.pollingInterval = EthInterface.LISTENER_POLLING_INTERVAL;
 
-        for (const [eventName, responder] of Object.entries(EthInterface.EVENT_MAP)) {
-            EthInterface.CONTRACT.on(eventName, responder);
+        if (EthInterface.LISTEN) {
+            console.log(`EthInterface: Listening for Contract Events on ${process.env.ETH_PROVIDER_URL!}`);
+
+            for (const [event, listener] of Object.entries(EthInterface.EVENT_MAP)) {
+                // TODO make whether or not these are registered configurable in .env
+                EthInterface.CONTRACT.on(event, listener);
+            }
         }
     }
 
@@ -57,7 +72,14 @@ export class EthInterface {
     private static onVikingReady(requestId: number): void {
         console.log(`VikingReady - Request ID: ${requestId}`);
 
-        EthInterface.CONTRACT.generateViking(requestId, { gasPrice: 1000000000 });
+        EthInterface.CONTRACT.functions.generateViking(requestId, { gasPrice: 1000000000 }).then(
+            () => {
+                console.log('Sent generateViking() call request')
+            },
+            (err) => {
+                console.log('Error occurred with sending generateViking() call request:', err);
+            }
+        );
     }
 
     /**
