@@ -60,31 +60,30 @@ export class EthInterface {
             console.log('EthInterface: Contract Event Listeners disabled');
         }
 
-        await EthInterface.counts().then(
-            async (counts) => {
-                console.log('EthInterface: Local Viking count:', counts.local);
-                console.log('EthInterface: Remote Viking count:', counts.remote);
-
-                if (counts.local !== counts.remote) {
-                    await EthInterface.catchUp(counts.local, counts.remote).then(
-                        () => {
-                            console.log('EthInterface: Local Vikings synchronized');
-                        },
-                        (err) => {
-                            console.error('EthInterface: error during catchup');
-                            throw err;
-                        }
-                    )
-                }
-                else {
-                    console.log('EthInterface: No catchup necessary');
-                }
-            },
+        const counts = await EthInterface.counts().catch(
             (err) => {
-                console.error('EthInterface: Error during status check');
+                console.error('EthInterface: error during status check');
                 throw err;
             }
         );
+
+        console.log('EthInterface: local Viking count:', counts.local);
+        console.log('EthInterface: remote Viking count:', counts.remote);
+
+        if (counts.local !== counts.remote) {
+            await EthInterface.synchronize(counts.remote).then(
+                () => {
+                    console.log('EthInterface: Local Vikings synchronized');
+                },
+                (err) => {
+                    console.error('EthInterface: error during synchronization');
+                    throw err;
+                }
+            );
+        }
+        else {
+            console.log('EthInterface: no synchronization necessary');
+        }
     }
 
     private static async counts(): Promise<{ local: number, remote: number }> {
@@ -115,14 +114,14 @@ export class EthInterface {
      * @param requestId the requestId emitted with the VikingReady event
      */
     private static onVikingReady(requestId: number): void {
-        console.log(`VikingReady - Request ID: ${requestId}`);
+        console.log(`EthInterface: VikingReady - Request ID: ${requestId}`);
 
         EthInterface.CONTRACT.functions.generateViking(requestId, { gasPrice: 1000000000 }).then(
             () => {
-                console.log('Sent generateViking() call request')
+                console.log('EthInterface: sent generateViking() call request');
             },
             (err) => {
-                console.error('Error occurred with sending generateViking() call request:', err);
+                console.error('EthInterface: error sending generateViking() call request:', err);
             }
         );
     }
@@ -137,7 +136,7 @@ export class EthInterface {
     private static onVikingGenerated(id: BigNumber, vikingData: ActualVikingContractData): void {
         const number = id.toNumber();
 
-        console.log(`VikingGenerated - ID: ${number}`);
+        console.log(`EthInterface: VikingGenerated - ID: ${number}`);
 
         EthInterface.generateViking(number, vikingData).then(
             () => {
@@ -150,33 +149,40 @@ export class EthInterface {
     }
 
     private static async generateViking(id: number, vikingData: ActualVikingContractData): Promise<void> {
-        console.log(`Generating Viking with ID ${id}`);
+        console.log(`EthInterfadce: generating Viking with ID ${id}`);
 
         const assetSpecs = VikingHelper.resolveAssetSpecs(vikingData);
 
-        await ImageHelper.composeImage(id, assetSpecs).then(
-            async (imageUrl: string) => {
-                const storage = VikingHelper.generateVikingStorage(id, imageUrl, vikingData);
-
-                await VikingHelper.saveViking(storage);
-
-                console.log(`EthInterface: generated Viking with ID ${id}`);
-            },
+        const imageUrl = await ImageHelper.composeImage(id, assetSpecs).catch(
             (err) => {
-                console.error('EthInterface: Error during image composition:', err);
+                console.error('EthInterface: error during image composition');
+                throw err;
             }
         );
+
+        const storage = VikingHelper.generateVikingStorage(id, imageUrl, vikingData);
+
+        await VikingHelper.saveViking(storage).catch(
+            (err) => {
+                console.error('EthInterface: error during Viking database write');
+                throw err;
+            }
+        );
+
+        console.log(`EthInterface: generated Viking with ID ${id}`);
     }
 
-    // TODO handle the case where a *past* Viking was deleted - this just assumed all missing Vikings are sequential
-    // TODO handle the case where only images were deleted...
-    private static async catchUp(start: number, end: number): Promise<void> {
-        console.log(`EthInterface: catching up (generating ${end - start} Vikings)...`);
+    // TODO still need to handle the case where just images are missing...
+    private static async synchronize(remoteCount: number): Promise<void> {
+        const numbers = (await vikingService.findMany({}, ['number'])).docs.map((v) => v.number);
 
-        for (let i = start; i < end; i++) {
-            const vikingData = await EthInterface.CONTRACT.functions.vikings(i);
+        for (let i = 0; i < remoteCount; i++) {
+            if (!numbers.includes(i)) {
+                // this viking is missing from the database
+                const vikingData = await EthInterface.CONTRACT.functions.vikings(i);
 
-            await EthInterface.generateViking(i, vikingData);
+                await EthInterface.generateViking(i, vikingData);
+            }
         }
     }
 }

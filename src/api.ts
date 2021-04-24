@@ -59,7 +59,7 @@ server.on('error', (error: NodeJS.ErrnoException) => {
 server.on('listening', () => {
     // connect to the database
     DBConnectionHelper.initialize().then(
-        () => {
+        async () => {
             console.log('Database connection successful');
 
             const addr = server.address();
@@ -75,8 +75,7 @@ server.on('listening', () => {
 
             console.log(`Listening on ${str}`);
 
-            // kick off our Contract Event Listener
-            EthInterface.initialize().then(
+            await EthInterface.initialize().then(
                 () => {
                     console.log('EthInterface: initialized');
                 },
