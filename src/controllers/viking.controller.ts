@@ -17,6 +17,8 @@ class VikingController extends AbstractResourceController<Viking> {
 
     protected defaultSelect = ['number'];
 
+    protected defaultSort = ['number'];
+
     protected defaultData: Viking['broadcast'] = {
         name: 'Unminted Viking',
         image: ImageHelper.getOutputPaths('unknown').imageUrl,

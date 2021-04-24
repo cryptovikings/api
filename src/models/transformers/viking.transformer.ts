@@ -1,12 +1,12 @@
 import _pick from 'lodash.pick';
 import { VikingHelper } from '../../helpers/viking.helper';
-import { Select } from '../apiQuery.model';
+import { APIQuery } from '../apiQuery.model';
 import { Viking } from '../mongoose/viking.model';
 import { ModelTransformer } from './modelTransformer';
 
 class VikingTransformer extends ModelTransformer<Viking> {
 
-    public convertForBroadcast<T = DeepPartial<Viking['broadcast']> | Viking['broadcast']>(data: Viking['read'], select: Select): T {
+    public convertForBroadcast<T = DeepPartial<Viking['broadcast']> | Viking['broadcast']>(data: Viking['read'], select?: APIQuery['select']): T {
         let keys: Array<keyof Viking['broadcast']> = [
             'name',
             'image',

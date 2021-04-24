@@ -27,14 +27,21 @@ import { ErrorHelper } from '../../helpers/error.helper';
 export abstract class AbstractResourceController<TModel extends APIModel> extends AbstractController {
 
     /**
-     * Abstract default selection set to be implemented by the subclass
+     * Optional default Mongo selection set implementable in the subclass
      *
      * Enables the assurance that a particular field or field set will always be retrieved on GETs, allowing for Transformer confidence
      */
     protected defaultSelect: APIQuery['select'] | undefined;
 
     /**
-     * Abstract optional default data set to be returned on single-Entity GETs which do not match any Document
+     * Optional default Mongo sort set implementable in the subclass
+     *
+     * Enables a Controller to define *primary* sort rule(s) for all multi-Entity GETs
+     */
+    protected defaultSort: APIQuery['sort'] | undefined;
+
+    /**
+     * Optional default data structure to be returned on single-Entity GETs which do not match any Document
      *
      * Enables a Controller to override the default abstract error-throwing behaviour for 404/Not Found errors
      */
@@ -318,13 +325,13 @@ export abstract class AbstractResourceController<TModel extends APIModel> extend
     protected parseQuery(req: Request): APIQuery {
         let where: APIQuery['where'];
         let select: APIQuery['select'];
-        let sort: APIQuery['sort'];
+        let sort: APIQuery['sort'] = this.defaultSort ?? [];
         let paginate: APIQuery['paginate'];
 
         if (Object.keys(req.query).length) {
             where = req.query.where ? JSON.parse(req.query.where as string) : undefined;
             select = req.query.select ? JSON.parse(req.query.select as string) : undefined;
-            sort = req.query.sort ? JSON.parse(req.query.sort as string) : undefined;
+            sort = req.query.sort ? sort.concat(JSON.parse(req.query.sort as string)) : undefined;
             paginate = req.query.paginate ? JSON.parse(req.query.paginate as string) : undefined;
         }
 

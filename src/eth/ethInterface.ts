@@ -7,7 +7,10 @@ import { vikingService } from '../services/viking.service';
 import abi from './abi.json';
 
 /**
- * Class encapsulating all Ethereum-related functionality, including Contract instantiation and interaction, as well as Contract Event Listeners
+ * Class encapsulating all Ethereum-related functionality, including Contract instantiation and interaction, Contract data synchronization, and
+ *   Contract Event Listeners
+ *
+ * // TODO recovery: still need to handle the use-case where just images are missing...
  */
 export class EthInterface {
 
@@ -17,32 +20,32 @@ export class EthInterface {
     private static readonly CONTRACT_ADDRESS = process.env.ETH_CONTRACT_ADDRESS!;
 
     /**
-     * Eth Provider
+     * Eth Provider, with URL copied over from the environment
      */
     private static readonly PROVIDER = new providers.JsonRpcProvider(process.env.ETH_PROVIDER_URL);
 
     /**
-     * Wallet which will be used as the transaction signer
+     * Wallet based on a secret copied over from the environment
      */
     private static readonly WALLET = new Wallet(process.env.ETH_WALLET_SECRET!, EthInterface.PROVIDER);
 
     /**
-     * Contract instantiation; a NornirContract for type safety
+     * Contract instance; a NornirContract for type safety
      */
     private static readonly CONTRACT: NornirContract = new Contract(EthInterface.CONTRACT_ADDRESS, abi, EthInterface.WALLET) as NornirContract;
 
     /**
      * Whether or not to run Contract event listeners
      */
-    private static LISTEN = process.env.ETH_EVENT_LISTENERS === 'true' ?? false;
+    private static readonly LISTEN = process.env.ETH_EVENT_LISTENERS === 'true' ?? false;
 
     /**
      * Polling Interval for Contract event listeners
      */
-    private static LISTENER_POLLING_INTERVAL = parseInt(process.env.ETH_PROVIDER_POLLING_INTERVAL!, 10);
+    private static readonly LISTENER_POLLING_INTERVAL = parseInt(process.env.ETH_PROVIDER_POLLING_INTERVAL!, 10);
 
     /**
-     * Expandable map of event name => event listener
+     * Map of event name => event listener
      */
     private static readonly EVENT_MAP = {
         VikingReady: EthInterface.onVikingReady,
@@ -50,9 +53,10 @@ export class EthInterface {
     };
 
     /**
-     * Initialize all Event Handlers
+     * Initialize by registering all event listeners if required and synchronizing local data with Contract data if necessary
      */
     public static async initialize(): Promise<void> {
+        // handle event listeners
         if (EthInterface.LISTEN) {
             EthInterface.registerListeners();
         }
@@ -60,6 +64,7 @@ export class EthInterface {
             console.log('EthInterface: Contract Event Listeners disabled');
         }
 
+        // retrieve the number of local + remote Vikings
         const counts = await EthInterface.counts().catch(
             (err) => {
                 console.error('EthInterface: error during status check');
@@ -70,6 +75,7 @@ export class EthInterface {
         console.log('EthInterface: local Viking count:', counts.local);
         console.log('EthInterface: remote Viking count:', counts.remote);
 
+        // synchronize if necessary
         if (counts.local !== counts.remote) {
             await EthInterface.synchronize(counts.remote).then(
                 () => {
@@ -86,15 +92,10 @@ export class EthInterface {
         }
     }
 
-    private static async counts(): Promise<{ local: number, remote: number }> {
-        return {
-            local: await vikingService.count(),
-            remote: (await EthInterface.CONTRACT.functions.totalSupply())[0]?.toNumber()
-        };
-    }
-
+    /**
+     * Configure the Provider's polling interval and then register all event listeners upon the Contract
+     */
     private static registerListeners(): void {
-        // set the Provider's PollingInterval
         EthInterface.PROVIDER.pollingInterval = EthInterface.LISTENER_POLLING_INTERVAL;
 
         // eslint-disable-next-line
@@ -105,6 +106,73 @@ export class EthInterface {
             console.log(`EthInterface: registering listener for event [${event}]`);
 
             EthInterface.CONTRACT.on(event, listener);
+        }
+    }
+
+    /**
+     * Retrieve the number of locally-stored Vikings as well as the Contract's `totalSupply`
+     *
+     * @returns the local and remote Viking counts
+     */
+    private static async counts(): Promise<{ local: number, remote: number }> {
+        return {
+            local: await vikingService.count(),
+            remote: (await EthInterface.CONTRACT.functions.totalSupply())[0]?.toNumber()
+        };
+    }
+
+    /**
+     * Generate a single Viking (image + database) with a given numerical ID based on some given Viking Contract Data
+     *
+     * @param id the number of the Viking to generate
+     * @param vikingData the Contract Data representing the Viking
+     */
+    private static async generateViking(id: number, vikingData: ActualVikingContractData): Promise<void> {
+        console.log(`EthInterfadce: generating Viking with ID ${id}`);
+
+        // TODO redesign this procedure
+        const assetSpecs = VikingHelper.resolveAssetSpecs(vikingData);
+
+        const imageUrl = await ImageHelper.composeImage(id, assetSpecs).catch(
+            (err) => {
+                console.error('EthInterface: error during image composition');
+                throw err;
+            }
+        );
+
+        const storage = VikingHelper.generateVikingStorage(id, imageUrl, vikingData);
+
+        await VikingHelper.saveViking(storage).catch(
+            (err) => {
+                console.error('EthInterface: error during Viking database write');
+                throw err;
+            }
+        );
+
+        console.log(`EthInterface: generated Viking with ID ${id}`);
+    }
+
+    /**
+     * Synchronize the API with the Contract in the event that the local Viking count is lower than the Contract's `totalSupply()`
+     *
+     * Capable of "filling gaps" in our database - working on the knowledge that Viking Numbers are sequential on the Contract side, only generates
+     *   Vikings which do not have an associated data structure in the database
+     *
+     * @param remoteCount the Contract's `totalSupply`
+     */
+    private static async synchronize(remoteCount: number): Promise<void> {
+        // get a list of all database-stored Viking Numbers
+        const numbers = (await vikingService.findMany({}, ['number'])).docs.map((v) => v.number);
+
+        for (let i = 0; i < remoteCount; i++) {
+            // if this number does not exist in the database, then the Viking is missing locally
+            if (!numbers.includes(i)) {
+                // retrieve the Viking's data from the Contract
+                const vikingData = await EthInterface.CONTRACT.functions.vikings(i);
+
+                // generate the Viking
+                await EthInterface.generateViking(i, vikingData);
+            }
         }
     }
 
@@ -127,8 +195,7 @@ export class EthInterface {
     }
 
     /**
-     * VikingGenerated event handler - generate a Viking image and resolve + store the Viking's database representation based on the received
-     *   vikingData
+     * VikingGenerated event handler - generate a local Viking representation based on the Viking Contract Data
      *
      * @param id the Viking's number emitted with the VikingGenerated event
      * @param vikingData the Viking's Contract-generated data emitted with the VikingGenerated event
@@ -146,43 +213,5 @@ export class EthInterface {
                 console.error('EthInterface: Error during Viking generation:', err);
             }
         );
-    }
-
-    private static async generateViking(id: number, vikingData: ActualVikingContractData): Promise<void> {
-        console.log(`EthInterfadce: generating Viking with ID ${id}`);
-
-        const assetSpecs = VikingHelper.resolveAssetSpecs(vikingData);
-
-        const imageUrl = await ImageHelper.composeImage(id, assetSpecs).catch(
-            (err) => {
-                console.error('EthInterface: error during image composition');
-                throw err;
-            }
-        );
-
-        const storage = VikingHelper.generateVikingStorage(id, imageUrl, vikingData);
-
-        await VikingHelper.saveViking(storage).catch(
-            (err) => {
-                console.error('EthInterface: error during Viking database write');
-                throw err;
-            }
-        );
-
-        console.log(`EthInterface: generated Viking with ID ${id}`);
-    }
-
-    // TODO still need to handle the case where just images are missing...
-    private static async synchronize(remoteCount: number): Promise<void> {
-        const numbers = (await vikingService.findMany({}, ['number'])).docs.map((v) => v.number);
-
-        for (let i = 0; i < remoteCount; i++) {
-            if (!numbers.includes(i)) {
-                // this viking is missing from the database
-                const vikingData = await EthInterface.CONTRACT.functions.vikings(i);
-
-                await EthInterface.generateViking(i, vikingData);
-            }
-        }
     }
 }
