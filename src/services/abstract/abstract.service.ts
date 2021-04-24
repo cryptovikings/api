@@ -2,8 +2,8 @@ import { PaginateOptions, PaginateResult, PaginateModel } from 'mongoose';
 import _mergeWith from 'lodash.mergewith';
 
 import { ErrorHelper } from '../../helpers/error.helper';
-import { APIQuery } from '../../models/apiQuery.model';
-import { APIModel } from '../../models/mongoose/base.model';
+import { APIQuery } from '../../models/utils/apiQuery.model';
+import { APIModel } from '../../models/base.model';
 
 /**
  * AbstractService, serving as the foundation of the API's Database Interaction layer

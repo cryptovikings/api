@@ -1,7 +1,7 @@
 import { BigNumber, Contract, providers, Wallet } from 'ethers';
 import { ImageHelper } from '../helpers/image.helper';
 import { VikingHelper } from '../helpers/viking.helper';
-import { ActualVikingContractData } from '../models/vikingContractData.model';
+import { VikingContractData } from '../models/utils/vikingContractData.model';
 import { vikingService } from '../services/viking.service';
 
 import abi from './abi.json';
@@ -127,7 +127,7 @@ export class EthInterface {
      * @param id the number of the Viking to generate
      * @param vikingData the Contract Data representing the Viking
      */
-    private static async generateViking(id: number, vikingData: ActualVikingContractData): Promise<void> {
+    private static async generateViking(id: number, vikingData: VikingContractData): Promise<void> {
         console.log(`EthInterfadce: generating Viking with ID ${id}`);
 
         // TODO redesign this procedure
@@ -200,7 +200,7 @@ export class EthInterface {
      * @param id the Viking's number emitted with the VikingGenerated event
      * @param vikingData the Viking's Contract-generated data emitted with the VikingGenerated event
      */
-    private static onVikingGenerated(id: BigNumber, vikingData: ActualVikingContractData): void {
+    private static onVikingGenerated(id: BigNumber, vikingData: VikingContractData): void {
         const number = id.toNumber();
 
         console.log(`EthInterface: VikingGenerated - ID: ${number}`);

@@ -1,14 +1,14 @@
 import { Request } from 'express';
 import { FilterQuery } from 'mongoose';
 
-import { APIQuery } from '../../models/apiQuery.model';
-import { APIResponse } from '../../models/apiResponse.model';
-import { APIModel } from '../../models/mongoose/base.model';
-import { ModelTransformer } from '../../models/transformers/modelTransformer';
+import { APIQuery } from '../../models/utils/apiQuery.model';
+import { APIModel } from '../../models/base.model';
+import { ModelTransformer } from '../../models/model.transformer';
 import { AbstractService } from '../../services/abstract/abstract.service';
 import { HttpSuccessCode } from '../../enums/httpSuccessCode.enum';
 import { AbstractController } from './abstract.controller';
 import { ErrorHelper } from '../../helpers/error.helper';
+import { APIResponse } from '../../models/utils/apiResponse.model';
 
 /**
  * Abstract Resource Controller, generically implementing CRUD routines, validation and model transformation for Entity-related Request

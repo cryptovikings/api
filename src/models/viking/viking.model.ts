@@ -1,15 +1,16 @@
-import { APIModel, ModelBroadcast, ModelRead, ModelWrite, _createModel } from './base.model';
+import { APIModel, ModelBroadcast, ModelRead, ModelWrite, _createModel } from '../base.model';
 import { ItemCondition } from '../../enums/itemCondition.enum';
 import { ClothesCondition } from '../../enums/clothesCondition.enum';
 
+/**
+ * Local Viking Storage format to be used as the basis for Viking Read + Write models
+ */
 interface VikingStore {
     number: number;
 
     name: string;
     image: string;
     description: string;
-
-    // birthday: number;
 
     beard_name: string;
     body_name: string;
@@ -37,6 +38,9 @@ interface VikingStore {
     attack: number;
 }
 
+/**
+ * Viking Metadata (OpenSea) format to be used as the basis for Viking Broadcast model
+ */
 interface VikingMetadata {
     name: string;
     image: string;
@@ -44,13 +48,6 @@ interface VikingMetadata {
     external_link: string;
 
     attributes: [
-        // birthday
-        // {
-        //     display_type: 'date';
-        //     trait_type: 'Birthday';
-        //     value: number;
-        // },
-
         // beard appearance
         {
             trait_type: 'Beard';
@@ -176,12 +173,12 @@ interface VikingRead extends ModelRead, VikingStore { }
 interface VikingBroadcast extends ModelBroadcast, VikingMetadata { }
 
 /**
- * Packed Model supertype for Vikings
+ * Packed Model supertype for Viking
  */
 export interface Viking extends APIModel<VikingWrite, VikingRead, VikingBroadcast> { }
 
 /**
- * Mongoose PaginateModel for the VikingMetadata collection
+ * Mongoose PaginateModel for the VikingMetadata collection, based on the VikingWrite/Read model
  */
 export const VikingModel = _createModel({
     name: 'Viking',
@@ -191,7 +188,6 @@ export const VikingModel = _createModel({
         name: { type: String, required: true },
         image: { type: String, required: true },
         description: { type: String, required: true },
-        // birthday: { type: Number, required: true },
 
         beard_name: { type: String, required: true },
         body_name: { type: String, required: true },

@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
+import { APIResponse } from '../../models/utils/apiResponse.model';
 
-import { APIResponse } from '../../models/apiResponse.model';
 
 /**
  * Utility type representing a properly bound request processor

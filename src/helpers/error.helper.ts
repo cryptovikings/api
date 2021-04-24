@@ -1,4 +1,4 @@
-import { APIError } from '../models/apiError.model';
+import { APIError } from '../models/utils/apiError.model';
 import { HttpErrorCode } from '../enums/httpErrorCode.enum';
 
 /**

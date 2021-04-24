@@ -2,23 +2,30 @@ import { ClothesCondition } from '../enums/clothesCondition.enum';
 import { ItemCondition } from '../enums/itemCondition.enum';
 import { ErrorHelper } from '../helpers/error.helper';
 import { ImageHelper } from '../helpers/image.helper';
-import { APIResponse } from '../models/apiResponse.model';
-import { Viking } from '../models/mongoose/viking.model';
-import { vikingTransformer } from '../models/transformers/viking.transformer';
+import { APIResponse } from '../models/utils/apiResponse.model';
+import { Viking } from '../models/viking/viking.model';
+import { vikingTransformer } from '../models/viking/viking.transformer';
 import { vikingService } from '../services/viking.service';
 import { AbstractResourceController } from './abstract/abstractResource.controller';
 
 /**
  * The VikingController, designed to handle the /viking route collection and the viking metadata database Entity
- *
- * Additionally implements Metadata generation + retrieval functionality, setting up the OpenSea Viking representations
  */
 class VikingController extends AbstractResourceController<Viking> {
 
+    /**
+     * Default Mongo selection set, ensuring that Viking Number is always present in Viking data retrieved by find*()
+     */
     protected defaultSelect = ['number'];
 
+    /**
+     * Default Mongo sort set, ordering all multi-Viking finds by Viking Number
+     */
     protected defaultSort = ['number'];
 
+    /**
+     * Default Viking Broadcast structure to be returned instead of a 404/Not Found on `GET /viking/{invalidNumber}`
+     */
     protected defaultData: Viking['broadcast'] = {
         name: 'Unminted Viking',
         image: ImageHelper.getOutputPaths('unknown').imageUrl,
@@ -115,7 +122,7 @@ class VikingController extends AbstractResourceController<Viking> {
     }
 
     /**
-     * Constructor. Specify the Service as the MetadataService
+     * Constructor. Specify the use of the VikingService, VikingTransformer and set the unique identifier as 'number'
      */
     constructor() {
         super(vikingService, vikingTransformer, 'number');

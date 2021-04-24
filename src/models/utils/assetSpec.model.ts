@@ -1,5 +1,6 @@
-import { ClothesCondition } from '../enums/clothesCondition.enum';
-import { ItemCondition } from '../enums/itemCondition.enum';
+import { ClothesCondition } from '../../enums/clothesCondition.enum';
+import { ItemCondition } from '../../enums/itemCondition.enum';
+
 
 /**
  * Model representing the collection of Asset Names and Conditions inferred based on Viking Contract Data and used by the MetadataHelper and

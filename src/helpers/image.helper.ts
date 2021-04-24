@@ -2,13 +2,15 @@ import path from 'path';
 import fs from 'fs';
 import gm from 'gm';
 
-import { AssetSpecs } from '../models/assetSpec.model';
-import { AssetPaths } from '../models/assetPaths.model';
+import { AssetSpecs } from '../models/utils/assetSpec.model';
+import { AssetPaths } from '../models/utils/assetPaths.model';
 import { ErrorHelper } from './error.helper';
 import { HttpErrorCode } from '../enums/httpErrorCode.enum';
 
 /**
  * The ImageHelper, implementing the asset composition routine so as to produce Viking Images based on generated Viking Metadata
+ *
+ * // TODO
  */
 export class ImageHelper {
 

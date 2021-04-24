@@ -1,46 +1,47 @@
-import { Viking } from '../models/mongoose/viking.model';
-import { ActualVikingContractData, VikingContractData } from '../models/vikingContractData.model';
-import { AssetSpecs } from '../models/assetSpec.model';
+import { Viking } from '../models/viking/viking.model';
+import { VikingContractData } from '../models/utils/vikingContractData.model';
 import { ItemCondition } from '../enums/itemCondition.enum';
 import { ClothesCondition } from '../enums/clothesCondition.enum';
 import { vikingService } from '../services/viking.service';
+import { BigNumber } from '@ethersproject/bignumber';
+import { AssetSpecs } from '../models/utils/assetSpec.model';
 
 /**
  * The MetadataHelper, implementing the actual metadata generation functionality, including Type/Style name resolution and ItemCondition
  *   mappings
+ *
+ * // TODO
  */
 export class VikingHelper {
 
     public static generateVikingContractData(n: number): VikingContractData {
-        const random = (max: number): number => Math.round(Math.random() * (max - 1) + 1);
+        const random = (max: number): BigNumber => BigNumber.from(Math.round(Math.random() * (max - 1) + 1));
 
-        const beard = random(89) + 10;
+        const beard = random(89).add(10);
         const body = random(99);
         const face = random(99);
         const top = random(99);
 
-        /* eslint-disable max-len */
-        const appearance = `${beard.toString()}${body < 10 ? `0${body.toString()}` : body.toString()}${face < 10 ? `0${face.toString()}` : face.toString()}${top < 10 ? `0${top.toString()}` : top.toString()}`;
+        // eslint-disable-next-line
+        const appearance = `${beard.toString()}${body.lt(10) ? `0${body.toString()}` : body.toString()}${face.lt(10) ? `0${face.toString()}` : face.toString()}${top.lt(10) ? `0${top.toString()}` : top.toString()}`;
 
         return {
-            name: `viking_${n}`,
-            birthday: Date.now(),
-            weapon: random(99),
-            attack: random(99),
-
-            shield: random(99),
-            defence: random(99),
+            appearance: BigNumber.from(appearance),
 
             boots: random(99),
             speed: random(99),
 
-            helmet: random(99),
-            intelligence: random(99),
-
             bottoms: random(99),
             stamina: random(99),
 
-            appearance: parseInt(appearance, 10)
+            helmet: random(99),
+            intelligence: random(99),
+
+            shield: random(99),
+            defence: random(99),
+
+            weapon: random(99),
+            attack: random(99)
         };
     }
 
@@ -48,7 +49,7 @@ export class VikingHelper {
         return await vikingService.createOne(storage);
     }
 
-    public static resolveAssetSpecs(viking: ActualVikingContractData): AssetSpecs {
+    public static resolveAssetSpecs(viking: VikingContractData): AssetSpecs {
         const appearance = viking.appearance.toString();
 
         // TODO beard is special - it can't be below 10. Others can be 0
@@ -79,7 +80,7 @@ export class VikingHelper {
         };
     }
 
-    public static generateVikingStorage(number: number, imageUrl: string, viking: ActualVikingContractData): Viking['write'] {
+    public static generateVikingStorage(number: number, imageUrl: string, viking: VikingContractData): Viking['write'] {
         const assetSpecs = VikingHelper.resolveAssetSpecs(viking);
 
         return {

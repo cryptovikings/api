@@ -1,9 +1,3 @@
-import { Request } from 'express';
-import { ImageHelper } from '../helpers/image.helper';
-import { VikingHelper } from '../helpers/viking.helper';
-import { APIResponse } from '../models/apiResponse.model';
-import { vikingService } from '../services/viking.service';
-import { HttpSuccessCode } from '../enums/httpSuccessCode.enum';
 import { AbstractController } from './abstract/abstract.controller';
 
 /**
@@ -12,36 +6,7 @@ import { AbstractController } from './abstract/abstract.controller';
  * Implements temporary response handlers for testing internal functionality
  */
 class TestController extends AbstractController {
-
-    // public async makeMany(req: Request): Promise<APIResponse<{ filePaths: Array<string>; atlasPath: string }>> {
-    //     const count = parseInt(req.params.count, 10);
-    //     const filePaths = [];
-
-    //     ImageHelper.clear();
-
-    //     for (let i = 0; i < count; i++) {
-    //         const contractData = VikingHelper.generateVikingContractData(i);
-    //         const assetSpecs = VikingHelper.resolveAssetSpecs(contractData);
-
-    //         const imageUrl = await ImageHelper.composeImage(i, assetSpecs);
-
-    //         const storage = VikingHelper.generateVikingStorage(i, imageUrl, contractData);
-
-    //         await vikingService.create(storage);
-
-    //         filePaths.push(imageUrl);
-    //     }
-
-    //     const atlasPath = await ImageHelper.composeAtlas();
-
-    //     return {
-    //         status: HttpSuccessCode.OK,
-    //         data: {
-    //             filePaths,
-    //             atlasPath
-    //         }
-    //     };
-    // }
+    // currently empty
 }
 
 /** Export a singleton of the TestController so that we can reference its instance methods in Router configuration */

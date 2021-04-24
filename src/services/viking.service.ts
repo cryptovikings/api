@@ -1,4 +1,4 @@
-import { Viking, VikingModel } from '../models/mongoose/viking.model';
+import { Viking, VikingModel } from '../models/viking/viking.model';
 import { AbstractService } from './abstract/abstract.service';
 
 /**
