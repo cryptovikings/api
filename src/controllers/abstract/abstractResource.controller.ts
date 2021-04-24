@@ -1,7 +1,7 @@
 import { Request } from 'express';
 import { FilterQuery } from 'mongoose';
 
-import { APIQuery, Paginate, Select, Sort, Where } from '../../models/apiQuery.model';
+import { APIQuery } from '../../models/apiQuery.model';
 import { APIResponse } from '../../models/apiResponse.model';
 import { APIModel } from '../../models/mongoose/base.model';
 import { ModelTransformer } from '../../models/transformers/modelTransformer';
@@ -31,7 +31,7 @@ export abstract class AbstractResourceController<TModel extends APIModel> extend
      *
      * Enables the assurance that a particular field or field set will always be retrieved on GETs, allowing for Transformer confidence
      */
-    protected defaultSelect: NonNullable<Select> = [];
+    protected defaultSelect: APIQuery['select'] | undefined;
 
     /**
      * Abstract optional default data set to be returned on single-Entity GETs which do not match any Document
@@ -159,7 +159,7 @@ export abstract class AbstractResourceController<TModel extends APIModel> extend
      *
      * @returns An APIResponse containing the found Entity
      */
-    protected async getOne(identifier: string, select: Select): Promise<APIResponse<DeepPartial<TModel['broadcast']>>> {
+    protected async getOne(identifier: string, select?: APIQuery['select']): Promise<APIResponse<DeepPartial<TModel['broadcast']>>> {
         const identifierQuery = this.buildIdentifierQuery(identifier);
 
         const found = await this.service.findOne(identifierQuery, select);
@@ -193,7 +193,7 @@ export abstract class AbstractResourceController<TModel extends APIModel> extend
      * @returns An APIResponse containing the found Entities
      */
     protected async getMany(
-        where: Where, select: Select, sort: Sort, paginate: Paginate
+        where: NonNullable<APIQuery['where']>, select?: APIQuery['select'], sort?: APIQuery['sort'], paginate?: APIQuery['paginate']
     ): Promise<APIResponse<Array<DeepPartial<TModel['broadcast']>>>> {
 
         const result = await this.service.findMany(where, select, sort, paginate);
@@ -290,7 +290,7 @@ export abstract class AbstractResourceController<TModel extends APIModel> extend
      *
      * @returns An APIResponse containing a deletion success flag
      */
-    protected async deleteMany(where: Where): Promise<APIResponse<{ deleted: number }>> {
+    protected async deleteMany(where: NonNullable<APIQuery['where']>): Promise<APIResponse<{ deleted: number }>> {
         return {
             status: HttpSuccessCode.OK,
             data: await this.service.deleteMany(where)
@@ -316,10 +316,10 @@ export abstract class AbstractResourceController<TModel extends APIModel> extend
      * @returns the APIQuery
      */
     protected parseQuery(req: Request): APIQuery {
-        let where: Where;
-        let select: Select;
-        let sort: Sort;
-        let paginate: Paginate;
+        let where: APIQuery['where'];
+        let select: APIQuery['select'];
+        let sort: APIQuery['sort'];
+        let paginate: APIQuery['paginate'];
 
         if (Object.keys(req.query).length) {
             where = req.query.where ? JSON.parse(req.query.where as string) : undefined;
@@ -330,7 +330,7 @@ export abstract class AbstractResourceController<TModel extends APIModel> extend
 
         // if there's a selection, combine it with our optional default selection set and then validate it
         if (select) {
-            select = select.concat(this.defaultSelect);
+            select = select.concat(this.defaultSelect ?? []);
             this.validateSelect(select);
         }
 
@@ -355,7 +355,7 @@ export abstract class AbstractResourceController<TModel extends APIModel> extend
      *
      * @param select the Select to validate
      */
-    protected validateSelect(select: NonNullable<Select>): void {
+    protected validateSelect(select: NonNullable<APIQuery['select']>): void {
         let last = undefined;
 
         for (const s of select) {

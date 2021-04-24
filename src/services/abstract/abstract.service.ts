@@ -1,8 +1,8 @@
-import { FilterQuery, PaginateOptions, PaginateResult, PaginateModel } from 'mongoose';
+import { PaginateOptions, PaginateResult, PaginateModel } from 'mongoose';
 import _mergeWith from 'lodash.mergewith';
 
 import { ErrorHelper } from '../../helpers/error.helper';
-import { Paginate, Select, Sort, Where } from '../../models/apiQuery.model';
+import { APIQuery } from '../../models/apiQuery.model';
 import { APIModel } from '../../models/mongoose/base.model';
 
 /**
@@ -47,7 +47,7 @@ export abstract class AbstractService<TModel extends APIModel> {
      *
      * @returns the found Document or null if none was found
      */
-    public async findOne(identifierQuery: FilterQuery<TModel['read']>, select: Select): Promise<TModel['read'] | null> {
+    public async findOne(identifierQuery: NonNullable<APIQuery['where']>, select?: APIQuery['select']): Promise<TModel['read'] | null> {
         return await this.model.findOne(identifierQuery, select);
     }
 
@@ -61,7 +61,10 @@ export abstract class AbstractService<TModel extends APIModel> {
      *
      * @returns the found Document or null if none were found
      */
-    public async findMany(where: Where, select: Select, sort: Sort, paginate: Paginate): Promise<PaginateResult<TModel['read']>> {
+    public async findMany(
+        where?: APIQuery['where'], select?: APIQuery['select'], sort?: APIQuery['sort'], paginate?: APIQuery['paginate']
+    ): Promise<PaginateResult<TModel['read']>> {
+
         // set up some pagination options
         const paginateOptions: PaginateOptions = {
             collation: { locale: 'en' },
@@ -119,7 +122,7 @@ export abstract class AbstractService<TModel extends APIModel> {
      *
      * @returns the updated Document
      */
-    public async updateOne(identifierQuery: FilterQuery<TModel['read']>, data: DeepPartial<TModel['write']>): Promise<TModel['read']> {
+    public async updateOne(identifierQuery: NonNullable<APIQuery['where']>, data: DeepPartial<TModel['write']>): Promise<TModel['read']> {
         const doc = await this.findOne(identifierQuery, []);
 
         if (!doc) {
@@ -168,7 +171,7 @@ export abstract class AbstractService<TModel extends APIModel> {
      *
      * @returns the number of Documents affected
      */
-    public async deleteOne(identifierQuery: FilterQuery<TModel['read']>): Promise<{ deleted: number }> {
+    public async deleteOne(identifierQuery: NonNullable<APIQuery['where']>): Promise<{ deleted: number }> {
         const doc = await this.findOne(identifierQuery, []);
 
         if (!doc) {
@@ -199,7 +202,7 @@ export abstract class AbstractService<TModel extends APIModel> {
      *
      * @param where the query matching Documents to delete
      */
-    public async deleteMany(where: Where): Promise<{ deleted: number }> {
+    public async deleteMany(where: NonNullable<APIQuery['where']>): Promise<{ deleted: number }> {
         // add { readonly: false } to the query to prevent deletes on readonly Documents
         const deleted = await this.model.deleteMany(Object.assign({ readonly: false }, where));
 
