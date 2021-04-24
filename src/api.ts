@@ -6,6 +6,7 @@ import { cors } from './middleware/cors.middleware';
 import { error } from './middleware/error.middleware';
 import { apiRouter } from './routes/api.router';
 import { EthInterface } from './eth/ethInterface';
+import { ImageHelper } from './helpers/image.helper';
 
 // port
 const port = process.env.SERVER_PORT!;
@@ -22,7 +23,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cors);
 
 // Image hosting
-apiRouter.use('/static', express.static(process.env.IMAGE_OUTPUT_VIKING!));
+apiRouter.use('/static', express.static(ImageHelper.VIKING_OUT));
 
 // API router
 app.use('/', apiRouter);

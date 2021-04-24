@@ -14,24 +14,24 @@ import { HttpErrorCode } from '../enums/httpErrorCode.enum';
  */
 export class ImageHelper {
 
-    private static outRoot = process.env.IMAGE_OUTPUT_ROOT!;
+    public static readonly VIKING_OUT = path.join(process.env.IMAGE_OUTPUT_ROOT!, 'vikings');
 
-    private static vikingOut = process.env.IMAGE_OUTPUT_VIKING!;
+    private static readonly OUT_ROOT = process.env.IMAGE_OUTPUT_ROOT!;
 
-    private static atlasOut = process.env.IMAGE_OUTPUT_ATLAS!;
+    private static readonly ATLAS_OUT = path.join(ImageHelper.OUT_ROOT, 'atlas');
 
-    private static partsRoot = process.env.IMAGE_INPUT_ROOT!;
+    private static readonly PARTS_ROOT = process.env.IMAGE_INPUT_ROOT!;
 
     private static directories = {
-        beards: path.join(ImageHelper.partsRoot, 'beards'),
-        bodies: path.join(ImageHelper.partsRoot, 'bodies'),
-        boots: path.join(ImageHelper.partsRoot, 'boots'),
-        bottoms: path.join(ImageHelper.partsRoot, 'bottoms'),
-        faces: path.join(ImageHelper.partsRoot, 'faces'),
-        helmets: path.join(ImageHelper.partsRoot, 'helmets'),
-        shields: path.join(ImageHelper.partsRoot, 'shields'),
-        tops: path.join(ImageHelper.partsRoot, 'tops'),
-        weapons: path.join(ImageHelper.partsRoot, 'weapons')
+        beards: path.join(ImageHelper.PARTS_ROOT, 'beards'),
+        bodies: path.join(ImageHelper.PARTS_ROOT, 'bodies'),
+        boots: path.join(ImageHelper.PARTS_ROOT, 'boots'),
+        bottoms: path.join(ImageHelper.PARTS_ROOT, 'bottoms'),
+        faces: path.join(ImageHelper.PARTS_ROOT, 'faces'),
+        helmets: path.join(ImageHelper.PARTS_ROOT, 'helmets'),
+        shields: path.join(ImageHelper.PARTS_ROOT, 'shields'),
+        tops: path.join(ImageHelper.PARTS_ROOT, 'tops'),
+        weapons: path.join(ImageHelper.PARTS_ROOT, 'weapons')
     };
 
     /**
@@ -42,7 +42,7 @@ export class ImageHelper {
      * @returns the file path to the generated image
      */
     public static async composeImage(number: number, assetSpecs: AssetSpecs): Promise<string> {
-        ImageHelper.mkDirOptional(ImageHelper.vikingOut);
+        ImageHelper.mkDirOptional(ImageHelper.VIKING_OUT);
 
         const paths = ImageHelper.resolveAssetPaths(assetSpecs);
 
@@ -52,7 +52,7 @@ export class ImageHelper {
     }
 
     public static composeAtlas(): Promise<string> {
-        ImageHelper.mkDirOptional(ImageHelper.atlasOut);
+        ImageHelper.mkDirOptional(ImageHelper.ATLAS_OUT);
 
         return ImageHelper.generateAtlas().catch(() => {
             throw ErrorHelper.createError(HttpErrorCode.INTERNAL_SERVER_ERROR, 'Atlas generation failed');
@@ -60,7 +60,7 @@ export class ImageHelper {
     }
 
     public static clear(): void {
-        fs.rmSync(ImageHelper.outRoot, { recursive: true, force: true });
+        fs.rmSync(ImageHelper.OUT_ROOT, { recursive: true, force: true });
     }
 
     public static getOutputPaths(fileName: string): { imageUrl: string, filePath: string } {
@@ -68,7 +68,7 @@ export class ImageHelper {
 
         return {
             imageUrl: `${process.env.API_URL!}/static/${actualFileName}`,
-            filePath: path.join(ImageHelper.vikingOut, actualFileName)
+            filePath: path.join(ImageHelper.VIKING_OUT, actualFileName)
         };
     }
 
@@ -187,11 +187,11 @@ export class ImageHelper {
 
     private static generateAtlas(): Promise<string> {
         return new Promise((resolve, reject) => {
-            const outPath = path.join(ImageHelper.atlasOut, 'atlas.png');
+            const outPath = path.join(ImageHelper.ATLAS_OUT, 'atlas.png');
             const image = gm('');
 
-            for (const file of fs.readdirSync(ImageHelper.vikingOut)) {
-                image.montage(path.join(ImageHelper.vikingOut, file));
+            for (const file of fs.readdirSync(ImageHelper.VIKING_OUT)) {
+                image.montage(path.join(ImageHelper.VIKING_OUT, file));
             }
 
             image
