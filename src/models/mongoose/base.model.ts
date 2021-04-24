@@ -15,7 +15,7 @@ interface BaseModel {
  *
  * Models should be specified with a Write Type which extends this
  */
-export type ModelWrite = Omit<BaseModel, '_id'>;
+export type ModelWrite = Omit<BaseModel, '_id' | 'readonly'> & { readonly?: boolean };
 
 /**
  * The base 'readable' Model representation, signifying the basic makeup of a Model as read from the database

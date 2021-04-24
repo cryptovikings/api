@@ -76,16 +76,21 @@ server.on('listening', () => {
             console.log(`Listening on ${str}`);
 
             // kick off our Contract Event Listener
-            EthInterface.initialize();
+            EthInterface.initialize().then(
+                () => {
+                    console.log('EthInterface: initialized');
+                },
+                (err) => {
+                    console.error('EthInterface: initialization failed:', err);
+                    process.exit(1);
+                }
+            );
         },
         (err) => {
-            console.log('Database connection error:', err);
+            console.error('Database connection error:', err);
             process.exit(1);
         }
-    ).catch((err) => {
-        console.log('Database connection error:', err);
-        process.exit(1);
-    });
+    );
 });
 
 // start server

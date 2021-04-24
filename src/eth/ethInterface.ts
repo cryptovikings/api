@@ -2,6 +2,7 @@ import { BigNumber, Contract, providers, Wallet } from 'ethers';
 import { ImageHelper } from '../helpers/image.helper';
 import { VikingHelper } from '../helpers/viking.helper';
 import { ActualVikingContractData } from '../models/vikingContractData.model';
+import { vikingService } from '../services/viking.service';
 
 import abi from './abi.json';
 
@@ -28,7 +29,7 @@ export class EthInterface {
     /**
      * Contract instantiation; a NornirContract for type safety
      */
-    private static readonly CONTRACT = new Contract(EthInterface.CONTRACT_ADDRESS, abi, EthInterface.WALLET);
+    private static readonly CONTRACT: NornirContract = new Contract(EthInterface.CONTRACT_ADDRESS, abi, EthInterface.WALLET) as NornirContract;
 
     /**
      * Whether or not to run Contract event listeners
@@ -51,16 +52,60 @@ export class EthInterface {
     /**
      * Initialize all Event Handlers
      */
-    public static initialize(): void {
+    public static async initialize(): Promise<void> {
+        if (EthInterface.LISTEN) {
+            EthInterface.registerListeners();
+        }
+        else {
+            console.log('EthInterface: Contract Event Listeners disabled');
+        }
+
+        await EthInterface.counts().then(
+            async (counts) => {
+                console.log('EthInterface: Local Viking count:', counts.local);
+                console.log('EthInterface: Remote Viking count:', counts.remote);
+
+                if (counts.local !== counts.remote) {
+                    await EthInterface.catchUp(counts.local, counts.remote).then(
+                        () => {
+                            console.log('EthInterface: Local Vikings synchronized');
+                        },
+                        (err) => {
+                            console.error('EthInterface: error during catchup');
+                            throw err;
+                        }
+                    )
+                }
+                else {
+                    console.log('EthInterface: No catchup necessary');
+                }
+            },
+            (err) => {
+                console.error('EthInterface: Error during status check');
+                throw err;
+            }
+        );
+    }
+
+    private static async counts(): Promise<{ local: number, remote: number }> {
+        return {
+            local: await vikingService.count(),
+            remote: (await EthInterface.CONTRACT.functions.totalSupply())[0]?.toNumber()
+        };
+    }
+
+    private static registerListeners(): void {
+        // set the Provider's PollingInterval
         EthInterface.PROVIDER.pollingInterval = EthInterface.LISTENER_POLLING_INTERVAL;
 
-        if (EthInterface.LISTEN) {
-            console.log(`EthInterface: Listening for Contract Events on ${process.env.ETH_PROVIDER_URL!}`);
+        // eslint-disable-next-line
+        console.log(`EthInterface: listening for Contract Events with Polling Interval [${EthInterface.LISTENER_POLLING_INTERVAL}] on ${process.env.ETH_PROVIDER_URL!}`);
 
-            for (const [event, listener] of Object.entries(EthInterface.EVENT_MAP)) {
-                // TODO make whether or not these are registered configurable in .env
-                EthInterface.CONTRACT.on(event, listener);
-            }
+        // register all listeners
+        for (const [event, listener] of Object.entries(EthInterface.EVENT_MAP)) {
+            console.log(`EthInterface: registering listener for event [${event}]`);
+
+            EthInterface.CONTRACT.on(event, listener);
         }
     }
 
@@ -77,7 +122,7 @@ export class EthInterface {
                 console.log('Sent generateViking() call request')
             },
             (err) => {
-                console.log('Error occurred with sending generateViking() call request:', err);
+                console.error('Error occurred with sending generateViking() call request:', err);
             }
         );
     }
@@ -93,16 +138,45 @@ export class EthInterface {
         const number = id.toNumber();
 
         console.log(`VikingGenerated - ID: ${number}`);
-        console.log('Generating Viking based on Contract Data...', vikingData);
+
+        EthInterface.generateViking(number, vikingData).then(
+            () => {
+                console.log(`EthInterface: Viking with ID ${number} generated`);
+            },
+            (err) => {
+                console.error('EthInterface: Error during Viking generation:', err);
+            }
+        );
+    }
+
+    private static async generateViking(id: number, vikingData: ActualVikingContractData): Promise<void> {
+        console.log(`Generating Viking with ID ${id}`);
 
         const assetSpecs = VikingHelper.resolveAssetSpecs(vikingData);
 
-        ImageHelper.composeImage(number, assetSpecs).then(async (imageUrl: string) => {
-            const storage = VikingHelper.generateVikingStorage(number, imageUrl, vikingData);
+        await ImageHelper.composeImage(id, assetSpecs).then(
+            async (imageUrl: string) => {
+                const storage = VikingHelper.generateVikingStorage(id, imageUrl, vikingData);
 
-            await VikingHelper.saveViking(storage);
-        }, (err) => {
-            console.error('COMPOSE IMAGE FAILED', err);
-        });
+                await VikingHelper.saveViking(storage);
+
+                console.log(`EthInterface: generated Viking with ID ${id}`);
+            },
+            (err) => {
+                console.error('EthInterface: Error during image composition:', err);
+            }
+        );
+    }
+
+    // TODO handle the case where a *past* Viking was deleted - this just assumed all missing Vikings are sequential
+    // TODO handle the case where only images were deleted...
+    private static async catchUp(start: number, end: number): Promise<void> {
+        console.log(`EthInterface: catching up (generating ${end - start} Vikings)...`);
+
+        for (let i = start; i < end; i++) {
+            const vikingData = await EthInterface.CONTRACT.functions.vikings(i);
+
+            await EthInterface.generateViking(i, vikingData);
+        }
     }
 }

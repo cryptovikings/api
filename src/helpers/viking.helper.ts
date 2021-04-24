@@ -1,10 +1,9 @@
-import { VikingBroadcast, VikingRead, VikingWrite } from '../models/mongoose/viking.model';
+import { Viking } from '../models/mongoose/viking.model';
 import { ActualVikingContractData, VikingContractData } from '../models/vikingContractData.model';
 import { AssetSpecs } from '../models/assetSpec.model';
 import { ItemCondition } from '../enums/itemCondition.enum';
 import { ClothesCondition } from '../enums/clothesCondition.enum';
 import { vikingService } from '../services/viking.service';
-import { BigNumber } from '@ethersproject/bignumber';
 
 /**
  * The MetadataHelper, implementing the actual metadata generation functionality, including Type/Style name resolution and ItemCondition
@@ -45,8 +44,8 @@ export class VikingHelper {
         };
     }
 
-    public static async saveViking(storage: VikingWrite): Promise<VikingRead> {
-        return await vikingService.create(storage);
+    public static async saveViking(storage: Viking['write']): Promise<Viking['read']> {
+        return await vikingService.createOne(storage);
     }
 
     public static resolveAssetSpecs(viking: ActualVikingContractData): AssetSpecs {
@@ -80,7 +79,7 @@ export class VikingHelper {
         };
     }
 
-    public static generateVikingStorage(number: number, imageUrl: string, viking: ActualVikingContractData): VikingWrite {
+    public static generateVikingStorage(number: number, imageUrl: string, viking: ActualVikingContractData): Viking['write'] {
         const assetSpecs = VikingHelper.resolveAssetSpecs(viking);
 
         return {
@@ -118,7 +117,7 @@ export class VikingHelper {
         };
     }
 
-    public static generateVikingMetadata(data: VikingRead): VikingBroadcast {
+    public static generateVikingMetadata(data: Viking['read']): Viking['broadcast'] {
         const external_link = `${process.env.FRONT_END_URL!}/viking/${data.number}`;
 
         return {
@@ -128,13 +127,6 @@ export class VikingHelper {
             external_link,
 
             attributes: [
-                // birthday
-                // {
-                //     display_type: 'date',
-                //     trait_type: 'Birthday',
-                //     value: data.birthday,
-                // },
-
                 // beard appearance
                 {
                     trait_type: 'Beard',

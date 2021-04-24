@@ -31,6 +31,15 @@ export abstract class AbstractService<TModel extends APIModel> {
     }
 
     /**
+     * Count all Documents in the collection
+     *
+     * @returns the number of Documents in the collection
+     */
+    public async count(): Promise<number> {
+        return await this.model.countDocuments();
+    }
+
+    /**
      * Find one Document with a given identifier-based query
      *
      * @param identifierQuery the query
