@@ -16,17 +16,17 @@ class VikingController extends AbstractResourceController<Viking> {
     /**
      * Default Mongo selection set, ensuring that Viking Number is always present in Viking data retrieved by find*()
      */
-    protected defaultSelect = ['number'];
+    protected readonly defaultSelect = ['number'];
 
     /**
      * Default Mongo sort set, ordering all multi-Viking finds by Viking Number
      */
-    protected defaultSort = ['number'];
+    protected readonly defaultSort = ['number'];
 
     /**
      * Default Viking Broadcast structure to be returned instead of a 404/Not Found on `GET /viking/{invalidNumber}`
      */
-    protected defaultData: Viking['broadcast'] = {
+    protected readonly defaultData: Viking['broadcast'] = {
         name: 'Unminted Viking',
         image: ImageHelper.getOutputPaths('unknown').imageUrl,
         description: 'This Viking hasn\'t yet been minted. Come back once he\'s been minted to check his randomly generated stats and appearance!',

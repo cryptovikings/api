@@ -5,30 +5,30 @@ import { BigNumber } from '@ethersproject/bignumber';
  */
 export interface VikingContractData {
     /** 8-digit 4-component Beard+Body+Face+Top style selectors - 0 -> 99 each */
-    appearance: BigNumber;
+    readonly appearance: BigNumber;
 
     /** Boots style selector - 0 -> 99 */
-    boots: BigNumber;
+    readonly boots: BigNumber;
     /** Speed statistic + Boots Condition selector - 0 -> 99 */
-    speed: BigNumber;
+    readonly speed: BigNumber;
 
     /** Bottoms style selector - 0 -> 99 */
-    bottoms: BigNumber;
+    readonly bottoms: BigNumber;
     /** Stamina statistic + Bottoms Condition selector - 0 -> 99 */
-    stamina: BigNumber;
+    readonly stamina: BigNumber;
 
     /** Helmet style selector - 0 -> 99 */
-    helmet: BigNumber;
+    readonly helmet: BigNumber;
     /** Intelligence statistic + Helmet Condition selector - 0 -> 99 */
-    intelligence: BigNumber;
+    readonly intelligence: BigNumber;
 
     /** Shield style selector - 0 -> 99 */
-    shield: BigNumber;
+    readonly shield: BigNumber;
     /** Defence statistic + Shield Condition selector - 0 -> 99 */
-    defence: BigNumber;
+    readonly defence: BigNumber;
 
     /** Weapon style selector - 0 -> 99 */
-    weapon: BigNumber;
+    readonly weapon: BigNumber;
     /** Attack statistic + Weapon Condition selector - 0 -> 99 */
-    attack: BigNumber;
+    readonly attack: BigNumber;
 }

@@ -6,8 +6,8 @@ import mongoosePaginate from 'mongoose-paginate-v2';
  * Base Entity Model, specifying the existence of a Mongo ID
  */
 interface BaseModel {
-    _id: Schema.Types.ObjectId;
-    readonly: boolean;
+    readonly _id: Schema.Types.ObjectId;
+    readonly readonly: boolean;
 }
 
 /**
@@ -38,9 +38,9 @@ export interface APIModel<
     TBroadcast extends ModelBroadcast = ModelBroadcast
     > {
 
-    write: TWrite;
-    read: TRead;
-    broadcast: TBroadcast
+    readonly write: TWrite;
+    readonly read: TRead;
+    readonly broadcast: TBroadcast
 }
 
 /**
@@ -49,11 +49,11 @@ export interface APIModel<
  * Incorporates the Model's name + collectionName, as well as its SchemaDefinition and SchemaOptions
  */
 interface ModelDescriptor {
-    name: string;
-    schemaDefinition: SchemaDefinition;
-    readonly?: boolean;
-    collectionName?: string;
-    schemaOptions?: SchemaOptions;
+    readonly name: string;
+    readonly schemaDefinition: SchemaDefinition;
+    readonly readonly?: boolean;
+    readonly collectionName?: string;
+    readonly schemaOptions?: SchemaOptions;
 }
 
 /**

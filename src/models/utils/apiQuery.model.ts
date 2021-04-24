@@ -5,11 +5,11 @@ import { FilterQuery, PaginateOptions } from 'mongoose';
  */
 export interface APIQuery {
     /** Mongo Query Object */
-    where?: FilterQuery<any>;
+    readonly where?: FilterQuery<any>;
     /** Mongo Projection set (inclusive or exclusive) */
-    select?: Array<string>;
+    readonly select?: Array<string>;
     /** Mongo Sort set */
-    sort?: Array<string>;
+    readonly sort?: Array<string>;
     /** Pagination options */
-    paginate?: PaginateOptions;
+    readonly paginate?: PaginateOptions;
 }

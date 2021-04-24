@@ -12,7 +12,7 @@ export class ErrorHelper {
     /**
      * List of prefab errors + error factories for shorthand throwing throughout the API
      */
-    public static errors = {
+    public static readonly errors = {
         notImplemented: ErrorHelper.createError(HttpErrorCode.NOT_IMPLEMENTED, 'Method not implemented'),
         emptyBody: ErrorHelper.createError(HttpErrorCode.BAD_REQUEST, 'No data provided in Request Body'),
         forbidden: (message: string): APIError => ErrorHelper.createError(HttpErrorCode.FORBIDDEN, message),

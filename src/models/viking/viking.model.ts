@@ -6,48 +6,48 @@ import { ClothesCondition } from '../../enums/clothesCondition.enum';
  * Local Viking Storage format to be used as the basis for Viking Read + Write models
  */
 interface VikingStore {
-    number: number;
+    readonly number: number;
 
-    name: string;
-    image: string;
-    description: string;
+    readonly name: string;
+    readonly image: string;
+    readonly description: string;
 
-    beard_name: string;
-    body_name: string;
-    face_name: string;
-    top_name: string;
+    readonly beard_name: string;
+    readonly body_name: string;
+    readonly face_name: string;
+    readonly top_name: string;
 
-    boots_name: string;
-    boots_condition: ClothesCondition;
-    speed: number;
+    readonly boots_name: string;
+    readonly boots_condition: ClothesCondition;
+    readonly speed: number;
 
-    bottoms_name: string;
-    bottoms_condition: ClothesCondition;
-    stamina: number;
+    readonly bottoms_name: string;
+    readonly bottoms_condition: ClothesCondition;
+    readonly stamina: number;
 
-    helmet_name: string;
-    helmet_condition: ItemCondition;
-    intelligence: number;
+    readonly helmet_name: string;
+    readonly helmet_condition: ItemCondition;
+    readonly intelligence: number;
 
-    shield_name: string;
-    shield_condition: ItemCondition;
-    defence: number;
+    readonly shield_name: string;
+    readonly shield_condition: ItemCondition;
+    readonly defence: number;
 
-    weapon_name: string;
-    weapon_condition: ItemCondition;
-    attack: number;
+    readonly weapon_name: string;
+    readonly weapon_condition: ItemCondition;
+    readonly attack: number;
 }
 
 /**
  * Viking Metadata (OpenSea) format to be used as the basis for Viking Broadcast model
  */
 interface VikingMetadata {
-    name: string;
-    image: string;
-    description: string;
-    external_link: string;
+    readonly name: string;
+    readonly image: string;
+    readonly description: string;
+    readonly external_link: string;
 
-    attributes: [
+    readonly attributes: [
         // beard appearance
         {
             trait_type: 'Beard';

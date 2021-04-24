@@ -31,21 +31,21 @@ export abstract class AbstractResourceController<TModel extends APIModel> extend
      *
      * Enables the assurance that a particular field or field set will always be retrieved on GETs, allowing for Transformer confidence
      */
-    protected defaultSelect: APIQuery['select'] | undefined;
+    protected readonly defaultSelect: APIQuery['select'] | undefined;
 
     /**
      * Optional default Mongo sort set implementable in the subclass
      *
      * Enables a Controller to define *primary* sort rule(s) for all multi-Entity GETs
      */
-    protected defaultSort: APIQuery['sort'] | undefined;
+    protected readonly defaultSort: APIQuery['sort'] | undefined;
 
     /**
      * Optional default data structure to be returned on single-Entity GETs which do not match any Document
      *
      * Enables a Controller to override the default abstract error-throwing behaviour for 404/Not Found errors
      */
-    protected defaultData: TModel['broadcast'] | undefined;
+    protected readonly defaultData: TModel['broadcast'] | undefined;
 
     /**
      * Constructor. Take and store the Service to use, the ModelTransformer implementing Model conversion routines, and the name of the
@@ -56,9 +56,9 @@ export abstract class AbstractResourceController<TModel extends APIModel> extend
      * @param identifierName the name the unique identifier, to be matched in request parameters
      */
     constructor(
-        protected service: AbstractService<TModel>,
-        protected transformer: ModelTransformer<TModel>,
-        protected identifierName: string
+        protected readonly service: AbstractService<TModel>,
+        protected readonly transformer: ModelTransformer<TModel>,
+        protected readonly identifierName: string
     ) {
         super();
     }

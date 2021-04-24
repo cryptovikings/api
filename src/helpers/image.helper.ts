@@ -22,7 +22,7 @@ export class ImageHelper {
 
     private static readonly PARTS_ROOT = process.env.IMAGE_INPUT_ROOT!;
 
-    private static directories = {
+    private static readonly directories = {
         beards: path.join(ImageHelper.PARTS_ROOT, 'beards'),
         bodies: path.join(ImageHelper.PARTS_ROOT, 'bodies'),
         boots: path.join(ImageHelper.PARTS_ROOT, 'boots'),

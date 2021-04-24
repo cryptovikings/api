@@ -19,14 +19,14 @@ export abstract class AbstractService<TModel extends APIModel> {
     /**
      * Model Name
      */
-    public modelName: string;
+    public readonly modelName: string;
 
     /**
      * Constructor. Take and store the Mongoose PaginateModel to use
      *
      * @param model the Model
      */
-    constructor(public model: PaginateModel<TModel['read']>) {
+    constructor(public readonly model: PaginateModel<TModel['read']>) {
         this.modelName = model.modelName;
     }
 

@@ -14,7 +14,7 @@ import { AssetSpecs } from '../models/utils/assetSpec.model';
  */
 export class VikingHelper {
 
-    public static generateVikingContractData(n: number): VikingContractData {
+    public static generateVikingContractData(): VikingContractData {
         const random = (max: number): BigNumber => BigNumber.from(Math.round(Math.random() * (max - 1) + 1));
 
         const beard = random(89).add(10);
