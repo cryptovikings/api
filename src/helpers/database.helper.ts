@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 /**
  * Database Connection Helper, centralising database connection management concerns
  */
-export class DBConnectionHelper {
+export class DatabaseHelper {
 
     /**
      * Name of the Database to connect to, copied over from the environment
@@ -16,7 +16,7 @@ export class DBConnectionHelper {
      * @returns the default Mongoose database connection
      */
     public static initialize(): Promise<typeof mongoose> {
-        return mongoose.connect(`mongodb://127.0.0.1:27017/${DBConnectionHelper.DATABASE_NAME}`, {
+        return mongoose.connect(`mongodb://127.0.0.1:27017/${DatabaseHelper.DATABASE_NAME}`, {
             useNewUrlParser: true,
             useUnifiedTopology: true,
             useCreateIndex: true

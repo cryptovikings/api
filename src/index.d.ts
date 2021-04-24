@@ -2,7 +2,7 @@ declare type Schema = import('mongoose').Schema;
 declare type Contract = import('ethers').Contract;
 declare type BigNumber = import('ethers').BigNumber;
 declare type ContractFunction = import('ethers').ContractFunction;
-declare type VikingContractData = import('./models/utils/vikingContractData.model').VikingContractData;
+declare type VikingContractData = import('./models/viking/vikingContract.model').VikingContractModel;
 
 /**
  * Recursive Partial for making deeply nested properties optional

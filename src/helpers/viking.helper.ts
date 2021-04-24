@@ -1,5 +1,5 @@
 import { Viking } from '../models/viking/viking.model';
-import { VikingContractData } from '../models/utils/vikingContractData.model';
+import { VikingContractModel } from '../models/viking/vikingContract.model';
 import { ItemCondition } from '../enums/itemCondition.enum';
 import { ClothesCondition } from '../enums/clothesCondition.enum';
 import { vikingService } from '../services/viking.service';
@@ -14,7 +14,7 @@ import { AssetSpecs } from '../models/utils/assetSpec.model';
  */
 export class VikingHelper {
 
-    public static generateVikingContractData(): VikingContractData {
+    public static generateVikingContractData(): VikingContractModel {
         const random = (max: number): BigNumber => BigNumber.from(Math.round(Math.random() * (max - 1) + 1));
 
         const beard = random(89).add(10);
@@ -49,7 +49,7 @@ export class VikingHelper {
         return await vikingService.createOne(storage);
     }
 
-    public static resolveAssetSpecs(viking: VikingContractData): AssetSpecs {
+    public static resolveAssetSpecs(viking: VikingContractModel): AssetSpecs {
         const appearance = viking.appearance.toString();
 
         // TODO beard is special - it can't be below 10. Others can be 0
@@ -80,7 +80,7 @@ export class VikingHelper {
         };
     }
 
-    public static generateVikingStorage(number: number, imageUrl: string, viking: VikingContractData): Viking['write'] {
+    public static generateVikingStorage(number: number, imageUrl: string, viking: VikingContractModel): Viking['write'] {
         const assetSpecs = VikingHelper.resolveAssetSpecs(viking);
 
         return {

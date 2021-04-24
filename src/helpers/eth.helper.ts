@@ -1,18 +1,18 @@
 import { BigNumber, Contract, providers, Wallet } from 'ethers';
-import { ImageHelper } from '../helpers/image.helper';
-import { VikingHelper } from '../helpers/viking.helper';
-import { VikingContractData } from '../models/utils/vikingContractData.model';
+import { ImageHelper } from './image.helper';
+import { VikingHelper } from './viking.helper';
+import { VikingContractModel } from '../models/viking/vikingContract.model';
 import { vikingService } from '../services/viking.service';
 
-import abi from './abi.json';
+import nornirABI from '../nornir.abi.json';
 
 /**
- * Class encapsulating all Ethereum-related functionality, including Contract instantiation and interaction, Contract data synchronization, and
+ * EthHelper, encapsulating all Ethereum-related functionality, including Contract instantiation and interaction, Contract data synchronization, and
  *   Contract Event Listeners
  *
  * // TODO recovery: still need to handle the use-case where just images are missing...
  */
-export class EthInterface {
+export class EthHelper {
 
     /**
      * Contract Address, copied over from the environment
@@ -27,12 +27,12 @@ export class EthInterface {
     /**
      * Wallet based on a secret copied over from the environment
      */
-    private static readonly WALLET = new Wallet(process.env.ETH_WALLET_SECRET!, EthInterface.PROVIDER);
+    private static readonly WALLET = new Wallet(process.env.ETH_WALLET_SECRET!, EthHelper.PROVIDER);
 
     /**
      * Contract instance; a NornirContract for type safety
      */
-    private static readonly CONTRACT: NornirContract = new Contract(EthInterface.CONTRACT_ADDRESS, abi, EthInterface.WALLET) as NornirContract;
+    private static readonly CONTRACT: NornirContract = new Contract(EthHelper.CONTRACT_ADDRESS, nornirABI, EthHelper.WALLET) as NornirContract;
 
     /**
      * Whether or not to run Contract event listeners
@@ -48,8 +48,8 @@ export class EthInterface {
      * Map of event name => event listener
      */
     private static readonly EVENT_MAP = {
-        VikingReady: EthInterface.onVikingReady,
-        VikingGenerated: EthInterface.onVikingGenerated
+        VikingReady: EthHelper.onVikingReady,
+        VikingGenerated: EthHelper.onVikingGenerated
     };
 
     /**
@@ -57,15 +57,15 @@ export class EthInterface {
      */
     public static async initialize(): Promise<void> {
         // handle event listeners
-        if (EthInterface.LISTEN) {
-            EthInterface.registerListeners();
+        if (EthHelper.LISTEN) {
+            EthHelper.registerListeners();
         }
         else {
             console.log('EthInterface: Contract Event Listeners disabled');
         }
 
         // retrieve the number of local + remote Vikings
-        const counts = await EthInterface.counts().catch(
+        const counts = await EthHelper.counts().catch(
             (err) => {
                 console.error('EthInterface: error during status check');
                 throw err;
@@ -77,7 +77,7 @@ export class EthInterface {
 
         // synchronize if necessary
         if (counts.local !== counts.remote) {
-            await EthInterface.synchronize(counts.remote).then(
+            await EthHelper.synchronize(counts.remote).then(
                 () => {
                     console.log('EthInterface: Local Vikings synchronized');
                 },
@@ -96,16 +96,16 @@ export class EthInterface {
      * Configure the Provider's polling interval and then register all event listeners upon the Contract
      */
     private static registerListeners(): void {
-        EthInterface.PROVIDER.pollingInterval = EthInterface.LISTENER_POLLING_INTERVAL;
+        EthHelper.PROVIDER.pollingInterval = EthHelper.LISTENER_POLLING_INTERVAL;
 
         // eslint-disable-next-line
-        console.log(`EthInterface: listening for Contract Events with Polling Interval [${EthInterface.LISTENER_POLLING_INTERVAL}] on ${process.env.ETH_PROVIDER_URL!}`);
+        console.log(`EthInterface: listening for Contract Events with Polling Interval [${EthHelper.LISTENER_POLLING_INTERVAL}] on ${process.env.ETH_PROVIDER_URL!}`);
 
         // register all listeners
-        for (const [event, listener] of Object.entries(EthInterface.EVENT_MAP)) {
+        for (const [event, listener] of Object.entries(EthHelper.EVENT_MAP)) {
             console.log(`EthInterface: registering listener for event [${event}]`);
 
-            EthInterface.CONTRACT.on(event, listener);
+            EthHelper.CONTRACT.on(event, listener);
         }
     }
 
@@ -117,7 +117,7 @@ export class EthInterface {
     private static async counts(): Promise<{ local: number, remote: number }> {
         return {
             local: await vikingService.count(),
-            remote: (await EthInterface.CONTRACT.functions.totalSupply())[0]?.toNumber()
+            remote: (await EthHelper.CONTRACT.functions.totalSupply())[0]?.toNumber()
         };
     }
 
@@ -127,7 +127,7 @@ export class EthInterface {
      * @param id the number of the Viking to generate
      * @param vikingData the Contract Data representing the Viking
      */
-    private static async generateViking(id: number, vikingData: VikingContractData): Promise<void> {
+    private static async generateViking(id: number, vikingData: VikingContractModel): Promise<void> {
         console.log(`EthInterfadce: generating Viking with ID ${id}`);
 
         // TODO redesign this procedure
@@ -168,10 +168,10 @@ export class EthInterface {
             // if this number does not exist in the database, then the Viking is missing locally
             if (!numbers.includes(i)) {
                 // retrieve the Viking's data from the Contract
-                const vikingData = await EthInterface.CONTRACT.functions.vikings(i);
+                const vikingData = await EthHelper.CONTRACT.functions.vikings(i);
 
                 // generate the Viking
-                await EthInterface.generateViking(i, vikingData);
+                await EthHelper.generateViking(i, vikingData);
             }
         }
     }
@@ -184,7 +184,7 @@ export class EthInterface {
     private static onVikingReady(requestId: number): void {
         console.log(`EthInterface: VikingReady - Request ID: ${requestId}`);
 
-        EthInterface.CONTRACT.functions.generateViking(requestId, { gasPrice: 1000000000 }).then(
+        EthHelper.CONTRACT.functions.generateViking(requestId, { gasPrice: 1000000000 }).then(
             () => {
                 console.log('EthInterface: sent generateViking() call request');
             },
@@ -200,12 +200,12 @@ export class EthInterface {
      * @param id the Viking's number emitted with the VikingGenerated event
      * @param vikingData the Viking's Contract-generated data emitted with the VikingGenerated event
      */
-    private static onVikingGenerated(id: BigNumber, vikingData: VikingContractData): void {
+    private static onVikingGenerated(id: BigNumber, vikingData: VikingContractModel): void {
         const number = id.toNumber();
 
         console.log(`EthInterface: VikingGenerated - ID: ${number}`);
 
-        EthInterface.generateViking(number, vikingData).then(
+        EthHelper.generateViking(number, vikingData).then(
             () => {
                 console.log(`EthInterface: Viking with ID ${number} generated`);
             },

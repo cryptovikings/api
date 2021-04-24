@@ -1,11 +1,11 @@
 import express, { Application } from 'express';
 import http from 'http';
 
-import { DBConnectionHelper } from './helpers/dbConnection.helper';
+import { DatabaseHelper } from './helpers/database.helper';
 import { cors } from './middleware/cors.middleware';
 import { error } from './middleware/error.middleware';
 import { apiRouter } from './routes/api.router';
-import { EthInterface } from './eth/ethInterface';
+import { EthHelper } from './helpers/eth.helper';
 import { ImageHelper } from './helpers/image.helper';
 
 // port
@@ -59,7 +59,7 @@ server.on('error', (error: NodeJS.ErrnoException) => {
 // server listening handler
 server.on('listening', () => {
     // connect to the database
-    DBConnectionHelper.initialize().then(
+    DatabaseHelper.initialize().then(
         async () => {
             console.log('Database connection successful');
 
@@ -76,7 +76,7 @@ server.on('listening', () => {
 
             console.log(`Listening on ${str}`);
 
-            await EthInterface.initialize().then(
+            await EthHelper.initialize().then(
                 () => {
                     console.log('EthInterface: initialized');
                 },

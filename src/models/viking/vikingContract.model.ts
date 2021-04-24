@@ -1,9 +1,9 @@
 import { BigNumber } from '@ethersproject/bignumber';
 
 /**
- * Interface representing the Viking Contract Data Storage format, retrieved from the Contract as the source of truth for local Viking generation
+ * Interface representing the Contract-level Viking Storage format, retrieved from the Contract as the source of truth for local Viking generation
  */
-export interface VikingContractData {
+export interface VikingContractModel {
     /** 8-digit 4-component Beard+Body+Face+Top style selectors - 0 -> 99 each */
     readonly appearance: BigNumber;
 
