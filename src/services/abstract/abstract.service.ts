@@ -35,8 +35,8 @@ export abstract class AbstractService<TModel extends APIModel> {
      *
      * @returns the number of Documents in the collection
      */
-    public async count(): Promise<number> {
-        return await this.model.countDocuments();
+    public async count(where: NonNullable<APIQuery['where']>): Promise<number> {
+        return await this.model.countDocuments(where);
     }
 
     /**

@@ -72,8 +72,14 @@ export class ImageHelper {
             const outPath = path.join(ImageHelper.ATLAS_OUT, 'atlas.png');
             const image = gm('');
 
+            let i = 0;
             for (const file of fs.readdirSync(ImageHelper.VIKING_OUT)) {
                 image.montage(path.join(ImageHelper.VIKING_OUT, file));
+
+                i++;
+                if (i === 12) {
+                    break;
+                }
             }
 
             image

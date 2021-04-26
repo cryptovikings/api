@@ -160,6 +160,7 @@ export class AssetHelper {
             return '04';
         }
 
+        // TODO this is too unlikely - about half the prevalence of the others...
         return '05';
     }
 
