@@ -1,11 +1,9 @@
 import { NextFunction, Request, Response } from 'express';
-import { APIError } from '../models/apiError.model';
+import { APIError } from '../models/utils/apiError.model';
 import { HttpErrorCode } from '../enums/httpErrorCode.enum';
 
 /**
  * Error Handling middleware for the Application
- *
- * // TODO not being hit for GM issues...
  */
 export const error = (err: Error | APIError, req: Request, res: Response, next: NextFunction): void => {
     switch (err.name) {

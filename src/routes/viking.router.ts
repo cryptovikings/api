@@ -9,10 +9,10 @@ const boundHandlers = {
     get: vikingController.bindRequestHandler(vikingController.get)
 };
 
-/** GET / => (MetadataController.get) */
+/** GET /viking => (VikingController).get */
 vikingRouter.get('/', boundHandlers.get);
 
-/** GET/:number => (MetadataController.get) */
+/** GET /viking/:number => (VikingController).get */
 vikingRouter.get('/:number', boundHandlers.get);
 
 // export the configured Router

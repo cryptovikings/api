@@ -1,56 +1,53 @@
-import { ModelBroadcast, ModelRead, ModelWrite, _createModel } from './base.model';
+import { APIModel, ModelBroadcast, ModelRead, ModelWrite, _createModel } from '../base.model';
 import { ItemCondition } from '../../enums/itemCondition.enum';
 import { ClothesCondition } from '../../enums/clothesCondition.enum';
 
-interface Viking {
-    number: number;
+/**
+ * Local Viking Storage format to be used as the basis for Viking Read + Write models
+ */
+interface VikingStore {
+    readonly number: number;
 
-    name: string;
-    image: string;
-    description: string;
+    readonly name: string;
+    readonly image: string;
+    readonly description: string;
 
-    birthday: number;
+    readonly beard_name: string;
+    readonly body_name: string;
+    readonly face_name: string;
+    readonly top_name: string;
 
-    beard_name: string;
-    body_name: string;
-    face_name: string;
-    top_name: string;
+    readonly boots_name: string;
+    readonly boots_condition: ClothesCondition;
+    readonly speed: number;
 
-    boots_name: string;
-    boots_condition: ClothesCondition;
-    speed: number;
+    readonly bottoms_name: string;
+    readonly bottoms_condition: ClothesCondition;
+    readonly stamina: number;
 
-    bottoms_name: string;
-    bottoms_condition: ClothesCondition;
-    stamina: number;
+    readonly helmet_name: string;
+    readonly helmet_condition: ItemCondition;
+    readonly intelligence: number;
 
-    helmet_name: string;
-    helmet_condition: ItemCondition;
-    intelligence: number;
+    readonly shield_name: string;
+    readonly shield_condition: ItemCondition;
+    readonly defence: number;
 
-    shield_name: string;
-    shield_condition: ItemCondition;
-    defence: number;
-
-    weapon_name: string;
-    weapon_condition: ItemCondition;
-    attack: number;
+    readonly weapon_name: string;
+    readonly weapon_condition: ItemCondition;
+    readonly attack: number;
 }
 
+/**
+ * Viking Metadata (OpenSea) format to be used as the basis for Viking Broadcast model
+ */
 interface VikingMetadata {
-    name: string;
-    image: string;
-    description: string;
-    external_link: string;
+    readonly name: string;
+    readonly image: string;
+    readonly description: string;
+    readonly external_link: string;
 
-    attributes: [
-        // birthday
-        {
-            display_type: 'date';
-            trait_type: 'Birthday';
-            value: number;
-        },
-
+    readonly attributes: [
         // beard appearance
         {
             trait_type: 'Beard';
@@ -163,29 +160,34 @@ interface VikingMetadata {
 /**
  * 'Writeable' type for Viking, extending the base ModelWrite
  */
-export interface VikingWrite extends ModelWrite, Viking { }
+interface VikingWrite extends ModelWrite, VikingStore { }
 
 /**
  * 'Readable' type for Viking, extending the base ModelRead
  */
-export interface VikingRead extends ModelRead, Viking { }
+interface VikingRead extends ModelRead, VikingStore { }
 
 /**
  * 'Broadcast' type for Viking, extending the base ModelBroadcast
  */
-export interface VikingBroadcast extends ModelBroadcast, VikingMetadata { }
+interface VikingBroadcast extends ModelBroadcast, VikingMetadata { }
 
 /**
- * Mongoose PaginateModel for the VikingMetadata collection
+ * Packed Model supertype for Viking
+ */
+export interface Viking extends APIModel<VikingWrite, VikingRead, VikingBroadcast> { }
+
+/**
+ * Mongoose PaginateModel for the VikingMetadata collection, based on the VikingWrite/Read model
  */
 export const VikingModel = _createModel({
     name: 'Viking',
+    readonly: true,
     schemaDefinition: {
         number: { type: Number, required: true, unique: true, index: true },
         name: { type: String, required: true },
         image: { type: String, required: true },
         description: { type: String, required: true },
-        birthday: { type: Number, required: true },
 
         beard_name: { type: String, required: true },
         body_name: { type: String, required: true },

@@ -1,11 +1,12 @@
 import express, { Application } from 'express';
 import http from 'http';
-import dotenvSafe from 'dotenv-safe';
 
-import { DBConnectionHelper } from './helpers/dbConnection.helper';
+import { DatabaseHelper } from './helpers/database.helper';
 import { cors } from './middleware/cors.middleware';
 import { error } from './middleware/error.middleware';
 import { apiRouter } from './routes/api.router';
+import { EthHelper } from './helpers/eth.helper';
+import { ImageHelper } from './helpers/image.helper';
 
 // port
 const port = process.env.SERVER_PORT!;
@@ -22,10 +23,10 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cors);
 
 // Image hosting
-app.use('/static', express.static(process.env.IMAGE_OUTPUT_VIKING!));
+app.use('/static', express.static(ImageHelper.VIKING_OUT));
 
 // API router
-app.use('/api', apiRouter);
+app.use('/', apiRouter);
 
 // custom error handling middleware
 app.use(error);
@@ -57,9 +58,12 @@ server.on('error', (error: NodeJS.ErrnoException) => {
 
 // server listening handler
 server.on('listening', () => {
+    // create image output directories
+    ImageHelper.initialize();
+
     // connect to the database
-    DBConnectionHelper.initialize().then(
-        () => {
+    DatabaseHelper.initialize().then(
+        async () => {
             console.log('Database connection successful');
 
             const addr = server.address();
@@ -73,16 +77,24 @@ server.on('listening', () => {
                 str = `Port ${addr.port}`;
             }
 
-            console.log(`Listening on ${str}`)
+            console.log(`Listening on ${str}`);
+
+            // initialize our Ethereum interface
+            await EthHelper.initialize().then(
+                () => {
+                    console.log('EthInterface: initialized');
+                },
+                (err) => {
+                    console.error('EthInterface: initialization failed:', err);
+                    process.exit(1);
+                }
+            );
         },
         (err) => {
-            console.log('Database connection error:', err);
+            console.error('Database connection error:', err);
             process.exit(1);
         }
-    ).catch((err) => {
-        console.log('Database connection error:', err);
-        process.exit(1);
-    });
+    );
 });
 
 // start server

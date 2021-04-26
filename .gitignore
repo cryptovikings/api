@@ -4,3 +4,4 @@ dist
 out
 
 src/.env
+scripts/.env

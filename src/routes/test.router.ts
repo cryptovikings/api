@@ -4,6 +4,14 @@ import { testController } from '../controllers/test.controller';
 /** The Router handling the /test route collection */
 const testRouter = Router();
 
-testRouter.post('/many/:count', testController.bindRequestHandler(testController.makeMany));
+/** POST /test/make:count => (TestController).makeVikings */
+testRouter.post('/make/:count', testController.bindRequestHandler(testController.makeVikings));
 
+/** POST /test/reset => (TestController).reset */
+testRouter.post('/reset', testController.bindRequestHandler(testController.reset));
+
+/** GET /test/stats => (TestController).statistics */
+testRouter.get('/stats', testController.bindRequestHandler(testController.statistics));
+
+// export the configured Router
 export { testRouter };
