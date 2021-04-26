@@ -5,6 +5,11 @@ import { VikingContractModel } from '../models/viking/vikingContract.model';
 import { vikingService } from '../services/viking.service';
 
 import nornirABI from '../nornir.abi.json';
+import { AssetHelper } from './asset.helper';
+import { NewVikingHelper } from './new.viking.helper';
+import { NewImageHelper } from './new.image.helper';
+import { ErrorHelper } from './error.helper';
+import { HttpErrorCode } from '../enums/httpErrorCode.enum';
 
 /**
  * EthHelper, encapsulating all Ethereum-related functionality, including Contract instantiation and interaction, Contract data synchronization, and
@@ -106,24 +111,41 @@ export class EthHelper {
     public static async generateViking(id: number, vikingData: VikingContractModel): Promise<void> {
         console.log(`EthHelper: generating Viking with ID ${id}`);
 
-        // TODO redesign this procedure
-        const assetSpecs = VikingHelper.resolveAssetSpecs(vikingData);
+        const assetSpecifications = AssetHelper.buildAssetSpecifications(id, vikingData);
 
-        const imageUrl = await ImageHelper.composeImage(id, assetSpecs).catch(
-            (err) => {
-                console.error('EthHelper: error during image composition');
-                throw err;
-            }
-        );
+        const imageUrl = await NewImageHelper.generateImage(assetSpecifications).catch((err) => {
+            console.error('EthHelper: error during image generation');
+            // error will be a GraphicsMagick error - wrap it into an APIError
+            throw ErrorHelper.createError(
+                HttpErrorCode.INTERNAL_SERVER_ERROR,
+                `Failed to generate image for Viking with ID ${id} : ${JSON.stringify(err)}`
+            );
+        });
 
-        const storage = VikingHelper.generateVikingStorage(id, imageUrl, vikingData);
+        await NewVikingHelper.createViking(assetSpecifications, imageUrl).catch((err) => {
+            console.error('EthHelper: error during viking generation');
+            // error will already be an APIError
+            throw err;
+        });
 
-        await VikingHelper.saveViking(storage).catch(
-            (err) => {
-                console.error('EthHelper: error during Viking database write');
-                throw err;
-            }
-        );
+        // // TODO redesign this procedure
+        // const assetSpecs = VikingHelper.resolveAssetSpecs(vikingData);
+
+        // const imageUrl = await ImageHelper.composeImage(id, assetSpecs).catch(
+        //     (err) => {
+        //         console.error('EthHelper: error during image composition');
+        //         throw err;
+        //     }
+        // );
+
+        // const storage = VikingHelper.generateVikingStorage(id, imageUrl, vikingData);
+
+        // await VikingHelper.saveViking(storage).catch(
+        //     (err) => {
+        //         console.error('EthHelper: error during Viking database write');
+        //         throw err;
+        //     }
+        // );
 
         console.log(`EthHelper: generated Viking with ID ${id}`);
     }
