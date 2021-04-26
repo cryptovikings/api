@@ -2,7 +2,7 @@ import path from 'path';
 
 import { ClothesCondition } from '../enums/clothesCondition.enum';
 import { ItemCondition } from '../enums/itemCondition.enum';
-import { NewAssetSpecs } from '../models/utils/assetSpec.model';
+import { AssetSpecs } from '../models/utils/assetSpec.model';
 import { VikingContractModel } from '../models/viking/vikingContract.model';
 
 export class AssetHelper {
@@ -21,7 +21,7 @@ export class AssetHelper {
         weapons: path.join(AssetHelper.PARTS_ROOT, 'weapons')
     };
 
-    public static buildAssetSpecifications(number: number, data: VikingContractModel): NewAssetSpecs {
+    public static buildAssetSpecifications(number: number, data: VikingContractModel): AssetSpecs {
         const cleanName = (name: string): string => name.replace(/[\s-]/g, '_').toLowerCase();
 
         const appearance = data.appearance.toString();

@@ -1,9 +1,8 @@
 import _pick from 'lodash.pick';
-import { VikingHelper } from '../../helpers/viking.helper';
 import { APIQuery } from '../utils/apiQuery.model';
 import { Viking } from './viking.model';
 import { ModelTransformer } from '../model.transformer';
-import { NewVikingHelper } from '../../helpers/new.viking.helper';
+import { VikingHelper } from '../../helpers/viking.helper';
 
 /**
  * VikingTransformer, handling the conversion of Viking Read-format data to Viking Broadcast-format data
@@ -44,7 +43,7 @@ class VikingTransformer extends ModelTransformer<Viking> {
         }
 
         // return a VikingMetadata (Broadcast-format) structure with appropriate picked keys
-        return _pick(NewVikingHelper.resolveMetadata(data), keys) as unknown as T;
+        return _pick(VikingHelper.resolveMetadata(data), keys) as unknown as T;
     }
 }
 

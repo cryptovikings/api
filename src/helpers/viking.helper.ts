@@ -1,17 +1,10 @@
+import { BigNumber } from '@ethersproject/bignumber';
+
+import { AssetSpecs } from '../models/utils/assetSpec.model';
 import { Viking } from '../models/viking/viking.model';
 import { VikingContractModel } from '../models/viking/vikingContract.model';
-import { ItemCondition } from '../enums/itemCondition.enum';
-import { ClothesCondition } from '../enums/clothesCondition.enum';
 import { vikingService } from '../services/viking.service';
-import { BigNumber } from '@ethersproject/bignumber';
-import { AssetSpecs } from '../models/utils/assetSpec.model';
 
-/**
- * The MetadataHelper, implementing the actual metadata generation functionality, including Type/Style name resolution and ItemCondition
- *   mappings
- *
- * // TODO
- */
 export class VikingHelper {
 
     public static generateVikingContractData(): VikingContractModel {
@@ -45,87 +38,46 @@ export class VikingHelper {
         };
     }
 
-    public static async saveViking(storage: Viking['write']): Promise<Viking['read']> {
-        return await vikingService.createOne(storage);
-    }
-
-    public static resolveAssetSpecs(viking: VikingContractModel): AssetSpecs {
-        const appearance = viking.appearance.toString();
-
-        // TODO beard is special - it can't be below 10. Others can be 0
-        const beardSelector = parseInt(appearance.slice(0, 2), 10);
-        const bodySelector = parseInt(appearance.slice(2, 4), 10);
-        const faceSelector = parseInt(appearance.slice(4, 6), 10);
-        const topSelector = parseInt(appearance.slice(6, 8), 10);
-
-        return {
-            names: {
-                beard: VikingHelper.resolveBeardType(beardSelector),
-                body: VikingHelper.resolveBodyType(bodySelector),
-                boots: VikingHelper.resolveBootsType(viking.boots.toNumber()),
-                bottoms: VikingHelper.resolveBottomsType(viking.bottoms.toNumber()),
-                face: VikingHelper.resolveFaceType(faceSelector),
-                helmet: VikingHelper.resolveHelmetType(viking.helmet.toNumber()),
-                shield: VikingHelper.resolveShieldType(viking.shield.toNumber()),
-                top: VikingHelper.resolveTopType(topSelector),
-                weapon: VikingHelper.resolveWeaponType(viking.weapon.toNumber())
-            },
-            conditions: {
-                boots: VikingHelper.resolveClothesCondition(viking.speed.toNumber()),
-                bottoms: VikingHelper.resolveClothesCondition(viking.stamina.toNumber()),
-                helmet: VikingHelper.resolveItemCondition(viking.intelligence.toNumber()),
-                shield: VikingHelper.resolveItemCondition(viking.defence.toNumber()),
-                weapon: VikingHelper.resolveItemCondition(viking.attack.toNumber())
-            }
-        };
-    }
-
-    public static generateVikingStorage(number: number, imageUrl: string, viking: VikingContractModel): Viking['write'] {
-        const assetSpecs = VikingHelper.resolveAssetSpecs(viking);
-
-        return {
-            number,
-            name: 'TEST VIKING',
+    public static async createViking(assetSpecifications: AssetSpecs, imageUrl: string): Promise<void> {
+        await vikingService.createOne({
+            number: assetSpecifications.number,
+            name: `Test Viking (#${assetSpecifications.number})`,
             image: imageUrl,
-            description: 'A unique and special viking!',
+            description: 'A unique and special viking',
 
-            // birthday: viking.birthday,
+            beard_name: assetSpecifications.names.beard,
+            body_name: assetSpecifications.names.body,
+            face_name: assetSpecifications.names.face,
+            top_name: assetSpecifications.names.top,
 
-            beard_name: assetSpecs.names.beard,
-            body_name: assetSpecs.names.body,
-            face_name: assetSpecs.names.face,
-            top_name: assetSpecs.names.top,
+            boots_name: assetSpecifications.names.boots,
+            boots_condition: assetSpecifications.conditions.boots,
+            speed: assetSpecifications.stats.speed,
 
-            boots_name: assetSpecs.names.boots,
-            boots_condition: assetSpecs.conditions.boots,
-            speed: viking.speed.toNumber(),
+            bottoms_name: assetSpecifications.names.bottoms,
+            bottoms_condition: assetSpecifications.conditions.bottoms,
+            stamina: assetSpecifications.stats.stamina,
 
-            bottoms_name: assetSpecs.names.bottoms,
-            bottoms_condition: assetSpecs.conditions.bottoms,
-            stamina: viking.stamina.toNumber(),
+            helmet_name: assetSpecifications.names.helmet,
+            helmet_condition: assetSpecifications.conditions.helmet,
+            intelligence: assetSpecifications.stats.intelligence,
 
-            helmet_name: assetSpecs.names.helmet,
-            helmet_condition: assetSpecs.conditions.helmet,
-            intelligence: viking.intelligence.toNumber(),
+            shield_name: assetSpecifications.names.shield,
+            shield_condition: assetSpecifications.conditions.shield,
+            defence: assetSpecifications.stats.defence,
 
-            shield_name: assetSpecs.names.shield,
-            shield_condition: assetSpecs.conditions.shield,
-            defence: viking.defence.toNumber(),
-
-            weapon_name: assetSpecs.names.weapon,
-            weapon_condition: assetSpecs.conditions.weapon,
-            attack: viking.attack.toNumber(),
-        };
+            weapon_name: assetSpecifications.names.weapon,
+            weapon_condition: assetSpecifications.conditions.weapon,
+            attack: assetSpecifications.stats.attack,
+        });
     }
 
-    public static generateVikingMetadata(data: Viking['read']): Viking['broadcast'] {
-        const external_link = `${process.env.FRONT_END_URL!}/viking/${data.number}`;
-
+    public static resolveMetadata(data: Viking['read']): Viking['broadcast'] {
         return {
             name: data.name,
             image: data.image,
             description: data.description,
-            external_link,
+            external_link: `${process.env.FRONT_END_URL!}/viking/${data.number}`,
 
             attributes: [
                 // beard appearance
@@ -236,238 +188,5 @@ export class VikingHelper {
                 }
             ]
         };
-    }
-
-    /**
-     * Resolve the name of a Beard Type selected by a number in the range 0-99 by the Viking Contract Data
-     *
-     * // TODO beard is special - it can't be below 10
-     *
-     * @param selector the numerical Beard Type value
-     *
-     * @returns the name of the Beard Type
-     */
-    private static resolveBeardType(selector: number): string {
-        if (selector <= 29) {
-            return '01';
-        }
-        else if (selector <= 49) {
-            return '02';
-        }
-        else if (selector <= 69) {
-            return '03';
-        }
-        else if (selector <= 89) {
-            return '04';
-        }
-        else {
-            return '05';
-        }
-    }
-
-    /**
-     * Resolve the name of a Body Type selected by a number in the range 0-99 by the Viking Contract Data
-     *
-     * @param selector the numerical Body Type value
-     *
-     * @returns the name of the Body Type
-     */
-    private static resolveBodyType(selector: number): string {
-        if (selector <= 19) {
-            return 'Devil';
-        }
-        else if (selector <= 39) {
-            return 'Pink';
-        }
-        else if (selector <= 59) {
-            return 'Robot';
-        }
-        else if (selector <= 79) {
-            return 'White';
-        }
-        else {
-            return 'Zombie';
-        }
-    }
-
-    /**
-     * Resolve the name of a Boots Type selected by a number in the range 0-99 by the Viking Contract Data
-     *
-     * @param selector the numerical Boots Type value
-     *
-     * @returns the name of the Boots Type
-     */
-    private static resolveBootsType(selector: number): string {
-        if (selector <= 32) {
-            return 'Blue';
-        }
-        else if (selector <= 65) {
-            return 'Green';
-        }
-        else {
-            return 'Red';
-        }
-    }
-
-    /**
-     * Resolve the name of a Bottoms Type selected by a number in the range 0-99 by the Viking Contract Data
-     *
-     * @param selector the numerical Bottoms Type value
-     *
-     * @returns the name of the Bottoms Type
-     */
-    private static resolveBottomsType(selector: number): string {
-        if (selector <= 32) {
-            return 'Blue';
-        }
-        else if (selector <= 65) {
-            return 'Green';
-        }
-        else {
-            return 'Red';
-        }
-    }
-
-    /**
-     * Resolve the name of a Face Type selected by a number in the range 0-99 by the Viking Contract Data
-     *
-     * @param selector the numerical Face Type value
-     *
-     * @returns the name of the Face Type
-     */
-    private static resolveFaceType(selector: number): string {
-        if (selector <= 19) {
-            return '01';
-        }
-        else if (selector <= 39) {
-            return '02';
-        }
-        else if (selector <= 59) {
-            return '03';
-        }
-        else if (selector <= 79) {
-            return '04';
-        }
-        else {
-            return '05';
-        }
-    }
-
-    /**
-     * Resolve the name of a Helmet Type selected by a number in the range 0-99 by the Viking Contract Data
-     *
-     * @param selector the numerical Helmet Type value
-     *
-     * @returns the name of the Helmet Type
-     */
-    private static resolveHelmetType(selector: number): string {
-        if (selector <= 32) {
-            return 'Green Horned';
-        }
-        else if (selector <= 65) {
-            return 'Green';
-        }
-        else {
-            return 'Red Horned';
-        }
-    }
-
-    /**
-    * Resolve the name of a Shield Type selected by a number in the range 0-99 by the Viking Contract Data
-    *
-    * @param selector the numerical Shield Type value
-    *
-    * @returns the name of the Shield Type
-    */
-    private static resolveShieldType(selector: number): string {
-        return 'Circle';
-    }
-
-
-    /**
-     * Resolve the name of a Top Type selected by a number in the range 0-99 by the Viking Contract Data
-     *
-     * @param selector the numerical Top Type value
-     *
-     * @returns the name of the Top Type
-     */
-    private static resolveTopType(selector: number): string {
-        if (selector <= 29) {
-            return '01';
-        }
-        else if (selector <= 49) {
-            return '02';
-        }
-        else if (selector <= 69) {
-            return '03';
-        }
-        else if (selector <= 89) {
-            return '04';
-        }
-        else {
-            return '05';
-        }
-    }
-
-    /**
-     * Resolve the name of a Weapon Type selected by a number in the range 0-99 by the Viking Contract Data
-     *
-     * @param selector the numerical Weapon Type value
-     *
-     * @returns the name of the Weapon Type
-     */
-    private static resolveWeaponType(selector: number): string {
-        return 'Axe';
-    }
-
-    /**
-     * Resolve the name of an Item's Condition selected by a number in the range 0-99 by the Viking Contract Data
-     *
-     * The statistic associated with an Item (eg, Weapon => Attack) determines the Condition
-     *
-     * @param statistic the numerical Statistic value
-     *
-     * @returns the name of the Condition for the associated Item
-     */
-    private static resolveItemCondition(statistic: number): ItemCondition {
-        if (statistic <= 9) {
-            return ItemCondition.NONE;
-        }
-        else if (statistic <= 49) {
-            return ItemCondition.BROKEN;
-        }
-        else if (statistic <= 74) {
-            return ItemCondition.DAMAGED;
-        }
-        else if (statistic <= 89) {
-            return ItemCondition.WORN;
-        }
-        else if (statistic <= 96) {
-            return ItemCondition.GOOD;
-        }
-        else {
-            return ItemCondition.PERFECT;
-        }
-    }
-
-    private static resolveClothesCondition(statistic: number): ClothesCondition {
-        if (statistic <= 9) {
-            return ClothesCondition.BASIC;
-        }
-        else if (statistic <= 49) {
-            return ClothesCondition.RAGGED;
-        }
-        else if (statistic <= 74) {
-            return ClothesCondition.WORN;
-        }
-        else if (statistic <= 89) {
-            return ClothesCondition.USED;
-        }
-        else if (statistic <= 96) {
-            return ClothesCondition.GOOD;
-        }
-        else {
-            return ClothesCondition.PRISTINE;
-        }
     }
 }

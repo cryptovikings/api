@@ -21,7 +21,7 @@ class TestController extends AbstractController {
             await EthHelper.generateViking(i, data);
         }
 
-        await ImageHelper.composeAtlas();
+        await ImageHelper.generateAtlas();
 
         return {
             status: HttpSuccessCode.OK,

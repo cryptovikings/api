@@ -8,7 +8,7 @@ import { ItemCondition } from '../../enums/itemCondition.enum';
  *
  * Intermediate transformed data type
  */
-export interface NewAssetSpecs {
+export interface AssetSpecs {
     number: number;
     names: {
         beard: string;
@@ -45,26 +45,5 @@ export interface NewAssetSpecs {
         helmet?: string;
         shield?: string;
         weapon?: string;
-    };
-}
-
-export interface AssetSpecs {
-    names: {
-        beard: string;
-        body: string;
-        boots: string;
-        bottoms: string;
-        face: string;
-        helmet: string;
-        shield: string;
-        top: string;
-        weapon: string;
-    };
-    conditions: {
-        boots: ClothesCondition;
-        bottoms: ClothesCondition;
-        helmet: ItemCondition;
-        shield: ItemCondition;
-        weapon: ItemCondition;
     };
 }

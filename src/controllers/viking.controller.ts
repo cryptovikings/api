@@ -28,7 +28,7 @@ class VikingController extends AbstractResourceController<Viking> {
      */
     protected readonly defaultData: Viking['broadcast'] = {
         name: 'Unminted Viking',
-        image: ImageHelper.getOutputPaths('unknown').imageUrl,
+        image: ImageHelper.getImageUrl('viking_unknown'),
         description: 'This Viking hasn\'t yet been minted. Come back once he\'s been minted to check his randomly generated stats and appearance!',
         external_link: `${process.env.FRONT_END_URL!}/viking/mint`,
         attributes: [

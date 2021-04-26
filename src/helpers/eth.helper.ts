@@ -1,13 +1,11 @@
 import { BigNumber, Contract, providers, Wallet } from 'ethers';
-import { ImageHelper } from './image.helper';
-import { VikingHelper } from './viking.helper';
 import { VikingContractModel } from '../models/viking/vikingContract.model';
 import { vikingService } from '../services/viking.service';
 
 import nornirABI from '../nornir.abi.json';
 import { AssetHelper } from './asset.helper';
-import { NewVikingHelper } from './new.viking.helper';
-import { NewImageHelper } from './new.image.helper';
+import { VikingHelper } from './viking.helper';
+import { ImageHelper } from './image.helper';
 import { ErrorHelper } from './error.helper';
 import { HttpErrorCode } from '../enums/httpErrorCode.enum';
 
@@ -113,7 +111,7 @@ export class EthHelper {
 
         const assetSpecifications = AssetHelper.buildAssetSpecifications(id, vikingData);
 
-        const imageUrl = await NewImageHelper.generateImage(assetSpecifications).catch((err) => {
+        const imageUrl = await ImageHelper.generateImage(assetSpecifications).catch((err) => {
             console.error('EthHelper: error during image generation');
             // error will be a GraphicsMagick error - wrap it into an APIError
             throw ErrorHelper.createError(
@@ -122,7 +120,7 @@ export class EthHelper {
             );
         });
 
-        await NewVikingHelper.createViking(assetSpecifications, imageUrl).catch((err) => {
+        await VikingHelper.createViking(assetSpecifications, imageUrl).catch((err) => {
             console.error('EthHelper: error during viking generation');
             // error will already be an APIError
             throw err;

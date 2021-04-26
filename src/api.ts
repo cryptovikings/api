@@ -6,7 +6,7 @@ import { cors } from './middleware/cors.middleware';
 import { error } from './middleware/error.middleware';
 import { apiRouter } from './routes/api.router';
 import { EthHelper } from './helpers/eth.helper';
-import { NewImageHelper } from './helpers/new.image.helper';
+import { ImageHelper } from './helpers/image.helper';
 
 // port
 const port = process.env.SERVER_PORT!;
@@ -23,7 +23,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cors);
 
 // Image hosting
-apiRouter.use('/static', express.static(NewImageHelper.VIKING_OUT));
+app.use('/static', express.static(ImageHelper.VIKING_OUT));
 
 // API router
 app.use('/', apiRouter);
@@ -59,7 +59,7 @@ server.on('error', (error: NodeJS.ErrnoException) => {
 // server listening handler
 server.on('listening', () => {
     // create image output directories
-    NewImageHelper.initialize();
+    ImageHelper.initialize();
 
     // connect to the database
     DatabaseHelper.initialize().then(
