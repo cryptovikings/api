@@ -29,6 +29,7 @@ NB: built and tested within a Unix (Ubuntu) environment
         - Example: `"out/"`
     - `IMAGE_INPUT_ROOT` : the root input folder for assets
         - Example: `"res/"`
+    - `CATCH_UP` : `true` or `false` - whether or not to synchronize with the Contract Viking set on launch
     - `ETH_CONTRACT_ADDRESS` : the address of the Contract
     - `ETH_PROVIDER_URL` : the JSON RPC Provider URL
         - Example (public provider): `"https://matic-mumbai.chainstacklabs.com"`

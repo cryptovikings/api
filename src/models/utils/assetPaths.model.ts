@@ -4,12 +4,12 @@
 export interface AssetPaths {
     beard: string;
     body: string;
+    top: string;
+    face: string;
     boots?: string;
     bottoms?: string;
-    face: string;
     helmet?: string;
     // unused for now (no assets)
     // shield?: string;
-    // top: string;
     // weapon?: string;
 }

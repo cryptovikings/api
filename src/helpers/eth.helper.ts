@@ -40,6 +40,11 @@ export class EthHelper {
     private static readonly LISTEN = process.env.ETH_EVENT_LISTENERS === 'true' ?? false;
 
     /**
+     * Whether or not to catch up/synchronise with the Contract data
+     */
+    private static readonly CATCH_UP = process.env.CATCH_UP === 'true' ?? false;
+
+    /**
      * Polling Interval for Contract event listeners
      */
     private static readonly LISTENER_POLLING_INTERVAL = parseInt(process.env.ETH_PROVIDER_POLLING_INTERVAL!, 10);
@@ -61,35 +66,66 @@ export class EthHelper {
             EthHelper.registerListeners();
         }
         else {
-            console.log('EthInterface: Contract Event Listeners disabled');
+            console.log('EthHelper: Contract Event Listeners disabled');
         }
 
         // retrieve the number of local + remote Vikings
         const counts = await EthHelper.counts().catch(
             (err) => {
-                console.error('EthInterface: error during status check');
+                console.error('EthHelper: error during status check');
                 throw err;
             }
         );
 
-        console.log('EthInterface: local Viking count:', counts.local);
-        console.log('EthInterface: remote Viking count:', counts.remote);
+        console.log('EthHelper: local Viking count:', counts.local);
+        console.log('EthHelper: remote Viking count:', counts.remote);
 
         // synchronize if necessary
-        if (counts.local !== counts.remote) {
+        if (counts.local !== counts.remote && EthHelper.CATCH_UP) {
             await EthHelper.synchronize(counts.remote).then(
                 () => {
-                    console.log('EthInterface: Local Vikings synchronized');
+                    console.log('EthHelper: Local Vikings synchronized');
                 },
                 (err) => {
-                    console.error('EthInterface: error during synchronization');
+                    console.error('EthHelper: error during synchronization');
                     throw err;
                 }
             );
         }
         else {
-            console.log('EthInterface: no synchronization necessary');
+            console.log('EthHelper: no synchronization necessary');
         }
+    }
+
+    /**
+     * Generate a single Viking (image + database) with a given numerical ID based on some given Viking Contract Data
+     *
+     * @param id the number of the Viking to generate
+     * @param vikingData the Contract Data representing the Viking
+     */
+    public static async generateViking(id: number, vikingData: VikingContractModel): Promise<void> {
+        console.log(`EthHelper: generating Viking with ID ${id}`);
+
+        // TODO redesign this procedure
+        const assetSpecs = VikingHelper.resolveAssetSpecs(vikingData);
+
+        const imageUrl = await ImageHelper.composeImage(id, assetSpecs).catch(
+            (err) => {
+                console.error('EthHelper: error during image composition');
+                throw err;
+            }
+        );
+
+        const storage = VikingHelper.generateVikingStorage(id, imageUrl, vikingData);
+
+        await VikingHelper.saveViking(storage).catch(
+            (err) => {
+                console.error('EthHelper: error during Viking database write');
+                throw err;
+            }
+        );
+
+        console.log(`EthHelper: generated Viking with ID ${id}`);
     }
 
     /**
@@ -99,11 +135,11 @@ export class EthHelper {
         EthHelper.PROVIDER.pollingInterval = EthHelper.LISTENER_POLLING_INTERVAL;
 
         // eslint-disable-next-line
-        console.log(`EthInterface: listening for Contract Events with Polling Interval [${EthHelper.LISTENER_POLLING_INTERVAL}] on ${process.env.ETH_PROVIDER_URL!}`);
+        console.log(`EthHelper: listening for Contract Events with Polling Interval [${EthHelper.LISTENER_POLLING_INTERVAL}] on ${process.env.ETH_PROVIDER_URL!}`);
 
         // register all listeners
         for (const [event, listener] of Object.entries(EthHelper.EVENT_MAP)) {
-            console.log(`EthInterface: registering listener for event [${event}]`);
+            console.log(`EthHelper: registering listener for event [${event}]`);
 
             EthHelper.CONTRACT.on(event, listener);
         }
@@ -119,37 +155,6 @@ export class EthHelper {
             local: await vikingService.count(),
             remote: (await EthHelper.CONTRACT.functions.totalSupply())[0]?.toNumber()
         };
-    }
-
-    /**
-     * Generate a single Viking (image + database) with a given numerical ID based on some given Viking Contract Data
-     *
-     * @param id the number of the Viking to generate
-     * @param vikingData the Contract Data representing the Viking
-     */
-    private static async generateViking(id: number, vikingData: VikingContractModel): Promise<void> {
-        console.log(`EthInterfadce: generating Viking with ID ${id}`);
-
-        // TODO redesign this procedure
-        const assetSpecs = VikingHelper.resolveAssetSpecs(vikingData);
-
-        const imageUrl = await ImageHelper.composeImage(id, assetSpecs).catch(
-            (err) => {
-                console.error('EthInterface: error during image composition');
-                throw err;
-            }
-        );
-
-        const storage = VikingHelper.generateVikingStorage(id, imageUrl, vikingData);
-
-        await VikingHelper.saveViking(storage).catch(
-            (err) => {
-                console.error('EthInterface: error during Viking database write');
-                throw err;
-            }
-        );
-
-        console.log(`EthInterface: generated Viking with ID ${id}`);
     }
 
     /**
@@ -182,14 +187,14 @@ export class EthHelper {
      * @param requestId the requestId emitted with the VikingReady event
      */
     private static onVikingReady(requestId: number): void {
-        console.log(`EthInterface: VikingReady - Request ID: ${requestId}`);
+        console.log(`EthHelper: VikingReady - Request ID: ${requestId}`);
 
         EthHelper.CONTRACT.functions.generateViking(requestId, { gasPrice: 1000000000 }).then(
             () => {
-                console.log('EthInterface: sent generateViking() call request');
+                console.log('EthHelper: sent generateViking() call request');
             },
             (err) => {
-                console.error('EthInterface: error sending generateViking() call request:', err);
+                console.error('EthHelper: error sending generateViking() call request:', err);
             }
         );
     }
@@ -203,14 +208,14 @@ export class EthHelper {
     private static onVikingGenerated(id: BigNumber, vikingData: VikingContractModel): void {
         const number = id.toNumber();
 
-        console.log(`EthInterface: VikingGenerated - ID: ${number}`);
+        console.log(`EthHelper: VikingGenerated - ID: ${number}`);
 
         EthHelper.generateViking(number, vikingData).then(
             () => {
-                console.log(`EthInterface: Viking with ID ${number} generated`);
+                console.log(`EthHelper: Viking with ID ${number} generated`);
             },
             (err) => {
-                console.error('EthInterface: Error during Viking generation:', err);
+                console.error('EthHelper: Error during Viking generation:', err);
             }
         );
     }

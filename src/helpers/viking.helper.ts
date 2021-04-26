@@ -392,7 +392,21 @@ export class VikingHelper {
      * @returns the name of the Top Type
      */
     private static resolveTopType(selector: number): string {
-        return 'Shirt';
+        if (selector <= 29) {
+            return '01';
+        }
+        else if (selector <= 49) {
+            return '02';
+        }
+        else if (selector <= 69) {
+            return '03';
+        }
+        else if (selector <= 89) {
+            return '04';
+        }
+        else {
+            return '05';
+        }
     }
 
     /**

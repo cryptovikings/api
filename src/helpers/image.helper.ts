@@ -82,15 +82,13 @@ export class ImageHelper {
         const beardFile = `beard_${assetSpecs.names.beard.replace(/\s/g, '_').toLowerCase()}.png`;
         const bodyFile = `body_${assetSpecs.names.body.replace(/\s/g, '_').toLowerCase()}.png`;
         const faceFile = `face_${assetSpecs.names.face.replace(/\s/g, '_').toLowerCase()}.png`;
-        // unused for now (no assets)
-        // const topFile = `top_${assetSpecs.names.top.replace(/\s/g, '_').toLowerCase()}.png`;
+        const topFile = `top_${assetSpecs.names.top.replace(/\s/g, '_').toLowerCase()}.png`;
 
         const paths: AssetPaths = {
             beard: path.join(ImageHelper.directories.beards, beardFile),
             body: path.join(ImageHelper.directories.bodies, bodyFile),
             face: path.join(ImageHelper.directories.faces, faceFile),
-            // unused for now (no assets)
-            // top: path.join(ImageHelper.directories.tops, topFile)
+            top: path.join(ImageHelper.directories.tops, topFile)
         };
 
         // TODO basic handling
@@ -159,8 +157,8 @@ export class ImageHelper {
             image
                 .in(paths.body)
                 .in(paths.face)
+                .in(paths.top)
                 .in(paths.beard);
-            // .in(paths.top);
 
             if (paths.boots) {
                 image.in(paths.boots)
@@ -181,6 +179,7 @@ export class ImageHelper {
             image
                 .background('transparent')
                 .mosaic()
+                .resize(1024, 1024)
                 .write(filePath, ((err) => err ? reject(err) : resolve(imageUrl)));
         });
     }
