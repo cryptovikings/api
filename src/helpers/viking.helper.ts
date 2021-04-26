@@ -1,48 +1,25 @@
-import { BigNumber } from '@ethersproject/bignumber';
-
-import { AssetSpecs } from '../models/utils/assetSpec.model';
+import { AssetSpecs } from '../models/utils/assetSpecs.model';
 import { Viking } from '../models/viking/viking.model';
-import { VikingContractModel } from '../models/viking/vikingContract.model';
 import { vikingService } from '../services/viking.service';
 
+/**
+ * VikingHelper, centralising logic for the production of Viking Database Data based on intermediate Contract-Data-based AssetSpecs, and of Viking
+ *   (OpenSea) Metadata based on stored Viking Database Data
+ */
 export class VikingHelper {
 
-    public static generateVikingContractData(): VikingContractModel {
-        const random = (max: number): BigNumber => BigNumber.from(Math.round(Math.random() * (max - 1) + 1));
-
-        const beard = random(89).add(10);
-        const body = random(99);
-        const face = random(99);
-        const top = random(99);
-
-        // eslint-disable-next-line
-        const appearance = `${beard.toString()}${body.lt(10) ? `0${body.toString()}` : body.toString()}${face.lt(10) ? `0${face.toString()}` : face.toString()}${top.lt(10) ? `0${top.toString()}` : top.toString()}`;
-
-        return {
-            appearance: BigNumber.from(appearance),
-
-            boots: random(99),
-            speed: random(99),
-
-            bottoms: random(99),
-            stamina: random(99),
-
-            helmet: random(99),
-            intelligence: random(99),
-
-            shield: random(99),
-            defence: random(99),
-
-            weapon: random(99),
-            attack: random(99)
-        };
-    }
-
-    public static async createViking(assetSpecifications: AssetSpecs, imageUrl: string): Promise<void> {
-        await vikingService.createOne({
+    /**
+     * Given an AssetSpecs definition, produce and store a Viking in the Database
+     *
+     * Effectively just a wrapper for (VikingService).createOne()
+     *
+     * @param assetSpecifications the AssetSpecs, derived from Viking Contract Data, containing the Viking information
+     */
+    public static async createViking(assetSpecifications: AssetSpecs): Promise<Viking['read']> {
+        return vikingService.createOne({
             number: assetSpecifications.number,
-            name: `Test Viking (#${assetSpecifications.number})`,
-            image: imageUrl,
+            name: `Test Viking #${assetSpecifications.number}`,
+            image: assetSpecifications.imageUrl,
             description: 'A unique and special viking',
 
             beard_name: assetSpecifications.names.beard,
@@ -72,6 +49,13 @@ export class VikingHelper {
         });
     }
 
+    /**
+     * Given an as-stored Viking Database structure, produce the equivalent (OpenSea) Metadata
+     *
+     * @param data the Viking Read-format data to transform
+     *
+     * @returns the transformed Viking Broadcast-format data
+     */
     public static resolveMetadata(data: Viking['read']): Viking['broadcast'] {
         return {
             name: data.name,

@@ -1,15 +1,22 @@
 import { ClothesCondition } from '../../enums/clothesCondition.enum';
 import { ItemCondition } from '../../enums/itemCondition.enum';
 
-
 /**
- * Model representing the collection of Asset Names and Conditions inferred based on Viking Contract Data and used by the MetadataHelper and
- *   ImageHelper
+ * Intermediate data format containing all the information required to generate Viking Database Data + Viking Images
  *
- * Intermediate transformed data type
+ * Produced based directly off Viking Contract Data by consistent selection algorithms
+ *
+ * Contains information on:
+ *     - the Viking's Number (Contract/NFT ID)
+ *     - the Viking's Image URL
+ *     - Part Type Names
+ *     - Item/Clothing Conditions
+ *     - Statistics
+ *     - File Paths for each part
  */
 export interface AssetSpecs {
     number: number;
+    imageUrl: string;
     names: {
         beard: string;
         body: string;

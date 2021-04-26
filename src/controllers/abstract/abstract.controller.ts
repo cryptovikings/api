@@ -1,7 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { APIResponse } from '../../models/utils/apiResponse.model';
 
-
 /**
  * Utility type representing a properly bound request processor
  */
@@ -53,9 +52,9 @@ export abstract class AbstractController {
         try {
             // TODO this is where authorisation may go
 
-            const { status, data, paginate } = await cb(req);
+            const { status, data, pagination } = await cb(req);
 
-            res.status(status).json({ data, paginate });
+            res.status(status).json({ data, pagination });
         }
         catch (e) {
             // pipe any thrown errors directly through to our Error Handling Middleware

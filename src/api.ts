@@ -79,6 +79,7 @@ server.on('listening', () => {
 
             console.log(`Listening on ${str}`);
 
+            // initialize our Ethereum interface
             await EthHelper.initialize().then(
                 () => {
                     console.log('EthInterface: initialized');

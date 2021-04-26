@@ -1,8 +1,8 @@
 import { BigNumber, Contract, providers, Wallet } from 'ethers';
-import { VikingContractModel } from '../models/viking/vikingContract.model';
-import { vikingService } from '../services/viking.service';
 
 import nornirABI from '../nornir.abi.json';
+import { VikingContractModel } from '../models/viking/vikingContract.model';
+import { vikingService } from '../services/viking.service';
 import { AssetHelper } from './asset.helper';
 import { VikingHelper } from './viking.helper';
 import { ImageHelper } from './image.helper';
@@ -14,6 +14,12 @@ import { HttpErrorCode } from '../enums/httpErrorCode.enum';
  *   Contract Event Listeners
  *
  * // TODO recovery: still need to handle the use-case where just images are missing...
+ * // TODO recovery: potentially want to handle the scenario where somehow a Contract `generateViking()` was missed
+ *
+ * // TODO Nonce Conflicts are encountered due to race conditions on many simultaneous mint events - we probably need an Event Queue
+ * //   alternative thoughts: we could just handle Nonce manually, since we know the Wallet which will initiate transactions?
+ *
+ * // TODO Promise handling throughout this class could probably do with tidying up/localising. Esp., error handling within Viking + Image Helpers??
  */
 export class EthHelper {
 
@@ -109,41 +115,25 @@ export class EthHelper {
     public static async generateViking(id: number, vikingData: VikingContractModel): Promise<void> {
         console.log(`EthHelper: generating Viking with ID ${id}`);
 
+        // derive the intermediate AssetSpecs structure for handing off to both the Viking and Image Helpers
         const assetSpecifications = AssetHelper.buildAssetSpecifications(id, vikingData);
 
-        const imageUrl = await ImageHelper.generateImage(assetSpecifications).catch((err) => {
-            console.error('EthHelper: error during image generation');
-            // error will be a GraphicsMagick error - wrap it into an APIError
-            throw ErrorHelper.createError(
-                HttpErrorCode.INTERNAL_SERVER_ERROR,
-                `Failed to generate image for Viking with ID ${id} : ${JSON.stringify(err)}`
-            );
-        });
-
-        await VikingHelper.createViking(assetSpecifications, imageUrl).catch((err) => {
-            console.error('EthHelper: error during viking generation');
-            // error will already be an APIError
-            throw err;
-        });
-
-        // // TODO redesign this procedure
-        // const assetSpecs = VikingHelper.resolveAssetSpecs(vikingData);
-
-        // const imageUrl = await ImageHelper.composeImage(id, assetSpecs).catch(
-        //     (err) => {
-        //         console.error('EthHelper: error during image composition');
-        //         throw err;
-        //     }
-        // );
-
-        // const storage = VikingHelper.generateVikingStorage(id, imageUrl, vikingData);
-
-        // await VikingHelper.saveViking(storage).catch(
-        //     (err) => {
-        //         console.error('EthHelper: error during Viking database write');
-        //         throw err;
-        //     }
-        // );
+        // run generations in parallel
+        await Promise.all([
+            ImageHelper.generateImage(assetSpecifications).catch((err) => {
+                console.error('EthHelper: error during image generation');
+                // error will be a GraphicsMagick error - wrap it into an APIError
+                throw ErrorHelper.createError(
+                    HttpErrorCode.INTERNAL_SERVER_ERROR,
+                    `Failed to generate image for Viking with ID ${id} : ${JSON.stringify(err)}`
+                );
+            }),
+            VikingHelper.createViking(assetSpecifications).catch((err) => {
+                console.error('EthHelper: error during viking generation');
+                // error will already be an APIError
+                throw err;
+            })
+        ]);
 
         console.log(`EthHelper: generated Viking with ID ${id}`);
     }
@@ -168,11 +158,13 @@ export class EthHelper {
     /**
      * Retrieve the number of locally-stored Vikings as well as the Contract's `totalSupply`
      *
+     * Useful for detecting the necessity of synchronization on API init
+     *
      * @returns the local and remote Viking counts
      */
     private static async counts(): Promise<{ local: number, remote: number }> {
         return {
-            local: await vikingService.count(),
+            local: await vikingService.count({}),
             remote: (await EthHelper.CONTRACT.functions.totalSupply())[0]?.toNumber()
         };
     }
@@ -202,7 +194,7 @@ export class EthHelper {
     }
 
     /**
-     * VikingReady event handler - kick off a `generateViking()` transaction with the received requestId
+     * VikingReady Contract Event handler - kick off a `generateViking()` transaction with the received requestId
      *
      * @param requestId the requestId emitted with the VikingReady event
      */
@@ -220,7 +212,7 @@ export class EthHelper {
     }
 
     /**
-     * VikingGenerated event handler - generate a local Viking representation based on the Viking Contract Data
+     * VikingGenerated Contract Event handler - generate a local Viking representation based on the Viking Contract Data
      *
      * @param id the Viking's number emitted with the VikingGenerated event
      * @param vikingData the Viking's Contract-generated data emitted with the VikingGenerated event

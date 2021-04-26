@@ -26,6 +26,7 @@ declare interface NornirContract extends Contract {
     functions: {
         /** ERC-721 `totalSupply()` */
         totalSupply(): Promise<Array<BigNumber>>;
+
         /** getter for Contract Viking array element */
         vikings(id: number): Promise<VikingContractData>;
 

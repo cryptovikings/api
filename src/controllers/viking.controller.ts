@@ -1,7 +1,7 @@
 import { ClothesCondition } from '../enums/clothesCondition.enum';
 import { ItemCondition } from '../enums/itemCondition.enum';
+import { AssetHelper } from '../helpers/asset.helper';
 import { ErrorHelper } from '../helpers/error.helper';
-import { ImageHelper } from '../helpers/image.helper';
 import { APIResponse } from '../models/utils/apiResponse.model';
 import { Viking } from '../models/viking/viking.model';
 import { vikingTransformer } from '../models/viking/viking.transformer';
@@ -28,7 +28,7 @@ class VikingController extends AbstractResourceController<Viking> {
      */
     protected readonly defaultData: Viking['broadcast'] = {
         name: 'Unminted Viking',
-        image: ImageHelper.getImageUrl('viking_unknown'),
+        image: AssetHelper.getImageUrl('viking_unknown'),
         description: 'This Viking hasn\'t yet been minted. Come back once he\'s been minted to check his randomly generated stats and appearance!',
         external_link: `${process.env.FRONT_END_URL!}/viking/mint`,
         attributes: [
