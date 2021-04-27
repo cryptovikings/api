@@ -15,7 +15,8 @@ import { HttpErrorCode } from '../enums/httpErrorCode.enum';
  */
 interface Counts {
     local: number;
-    remote: number;
+    remoteNFTs: number;
+    remoteVikings: number;
 }
 
 /**
@@ -88,6 +89,8 @@ export class EthHelper {
         }
 
         if (EthHelper.RECOVER) {
+            console.log('EthHelper: checking for recovery scenarios...');
+
             // recovery types:
             //   API has missed some `VikingGenerated` events / DB is somehow out of sync - detect by local db count being lower than remote count
             //   API is missing some images (but db is in sync) - detect by image count being lower than local db count
@@ -96,12 +99,15 @@ export class EthHelper {
 
             const counts = await EthHelper.counts();
 
+            console.log('EthHelper: local Viking count:', counts.local);
+            console.log('EthHelper: remote NFT count:', counts.remoteNFTs);
+            console.log('EthHelper: remote Viking count:', counts.remoteVikings);
+
             if (EthHelper.databaseOutOfSync(counts)) {
                 console.log('EthHelper: Database out of sync!');
-                console.log('EthHelper: local Viking count:', counts.local);
-                console.log('EthHelper: remote Viking count:', counts.remote);
 
-                await EthHelper.synchronizeVikings(counts.remote).then(
+                // TODO vikings or NFTs?
+                await EthHelper.synchronizeVikings(counts.remoteVikings).then(
                     () => {
                         console.log('EthHelper: Viking Database synchronized');
                     },
@@ -111,11 +117,15 @@ export class EthHelper {
                     }
                 )
             }
+            else {
+                console.log('EthHelper: database is in sync');
+            }
 
             if (EthHelper.imagesOutOfSync(counts)) {
                 console.log('EthHelper: Images out of sync!');
 
-                await EthHelper.synchronizeImages(counts.remote).then(
+                // TODO vikings or NFTs?
+                await EthHelper.synchronizeImages(counts.remoteVikings).then(
                     () => {
                         console.log('EthHelper: Viking Images synchronized');
                     },
@@ -125,6 +135,12 @@ export class EthHelper {
                     }
                 );
             }
+            else {
+                console.log('EthHelper: images are in sync');
+            }
+        }
+        else {
+            console.log('EthHelper: not in recovery mode');
         }
     }
 
@@ -167,7 +183,9 @@ export class EthHelper {
      * @returns
      */
     private static databaseOutOfSync(counts: Counts): boolean {
-        return counts.local !== counts.remote;
+        // TODO vikings or NFTs?
+
+        return counts.local !== counts.remoteVikings;
     }
 
     /**
@@ -177,8 +195,10 @@ export class EthHelper {
      * @returns
      */
     private static imagesOutOfSync(counts: Counts): boolean {
+        // TODO vikings or NFTs?
+
         // sub 1 from viking image file count due to presence of viking_unknown.png
-        return (fs.readdirSync(ImageHelper.VIKING_OUT).length - 1) < counts.remote;
+        return (fs.readdirSync(ImageHelper.VIKING_OUT).length - 1) < counts.remoteVikings;
     }
 
     /**
@@ -208,7 +228,8 @@ export class EthHelper {
     private static async counts(): Promise<Counts> {
         return {
             local: await vikingService.count({}),
-            remote: (await EthHelper.CONTRACT.functions.totalSupply())[0]?.toNumber()
+            remoteNFTs: (await EthHelper.CONTRACT.functions.totalSupply())[0]?.toNumber(),
+            remoteVikings: (await EthHelper.CONTRACT.functions.vikingCount())[0]?.toNumber()
         };
     }
 
@@ -263,15 +284,15 @@ export class EthHelper {
      *
      * @param requestId the requestId emitted with the VikingReady event
      */
-    private static onVikingReady(requestId: number): void {
-        console.log(`EthHelper: VikingReady - Request ID: ${requestId}`);
+    private static onVikingReady(vikingId: BigNumber): void {
+        console.log(`EthHelper: VikingReady - Viking ID: ${vikingId.toString()}`);
 
-        EthHelper.CONTRACT.functions.generateViking(requestId, { gasPrice: 1000000000 }).then(
+        EthHelper.CONTRACT.functions.generateViking(vikingId, { gasPrice: 1000000000 }).then(
             () => {
-                console.log('EthHelper: sent generateViking() call request');
+                console.log(`EthHelper: sent generateViking() call request for Viking ID ${vikingId.toString()}`);
             },
             (err) => {
-                console.error('EthHelper: error sending generateViking() call request:', err);
+                console.error(`EthHelper: error sending generateViking() call request for Viking ID ${vikingId.toString()}:`, err);
             }
         );
     }

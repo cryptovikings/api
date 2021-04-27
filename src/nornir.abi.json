@@ -200,9 +200,9 @@
         "inputs": [
             {
                 "indexed": false,
-                "internalType": "bytes32",
-                "name": "requestId",
-                "type": "bytes32"
+                "internalType": "uint256",
+                "name": "vikingId",
+                "type": "uint256"
             }
         ],
         "name": "VikingReady",
@@ -332,9 +332,9 @@
     {
         "inputs": [
             {
-                "internalType": "bytes32",
-                "name": "requestId",
-                "type": "bytes32"
+                "internalType": "uint256",
+                "name": "vikingId",
+                "type": "uint256"
             }
         ],
         "name": "generateViking",
@@ -482,25 +482,6 @@
     {
         "inputs": [
             {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "name": "randomNumberToVikingId",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
                 "internalType": "bytes32",
                 "name": "requestId",
                 "type": "bytes32"
@@ -521,6 +502,25 @@
         "name": "renounceOwnership",
         "outputs": [],
         "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "bytes32",
+                "name": "",
+                "type": "bytes32"
+            }
+        ],
+        "name": "requestIdToVikingId",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
         "type": "function"
     },
     {
@@ -733,6 +733,19 @@
         "name": "transferOwnership",
         "outputs": [],
         "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "vikingCount",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
         "type": "function"
     },
     {

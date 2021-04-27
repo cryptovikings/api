@@ -30,6 +30,12 @@ declare interface NornirContract extends Contract {
         /** getter for Contract Viking array element */
         vikings(id: number): Promise<VikingContractData>;
 
+        /** getter for Contract internal vikingCount */
+        vikingCount(): Promise<Array<BigNumber>>;
+
+        /** Contract generateViking() */
+        generateViking(id: BigNumber, overrides?: { gasPrice?: number }): Promise<void>;
+
         // re-implement the arbitrary index found in the original definition
         [name: string]: ContractFunction;
     }
