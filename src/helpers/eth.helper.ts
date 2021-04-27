@@ -1,3 +1,4 @@
+import fs from 'fs';
 import { BigNumber, Contract, providers, Wallet } from 'ethers';
 
 import nornirABI from '../nornir.abi.json';
@@ -10,8 +11,16 @@ import { ErrorHelper } from './error.helper';
 import { HttpErrorCode } from '../enums/httpErrorCode.enum';
 
 /**
- * EthHelper, encapsulating all Ethereum-related functionality, including Contract instantiation and interaction, Contract data synchronization, and
- *   Contract Event Listeners
+ * // TODO
+ */
+interface Counts {
+    local: number;
+    remote: number;
+}
+
+/**
+ * EthHelper, encapsulating all Ethereum-related functionality, including Contract instantiation and interaction, Contract data synchronization,
+ *   recovery, and Contract Event Listeners
  *
  * // TODO recovery: still need to handle the use-case where just images are missing...
  * // TODO recovery: potentially want to handle the scenario where somehow a Contract `generateViking()` was missed
@@ -49,9 +58,9 @@ export class EthHelper {
     private static readonly LISTEN = process.env.ETH_EVENT_LISTENERS === 'true' ?? false;
 
     /**
-     * Whether or not to catch up/synchronise with the Contract data
+     * Whether or not to recover from API/Contract synchronization issues
      */
-    private static readonly SYNCHRONIZE = process.env.ETH_SYNCHRONIZE === 'true' ?? false;
+    private static readonly RECOVER = process.env.ETH_RECOVER === 'true' ?? false;
 
     /**
      * Polling Interval for Contract event listeners
@@ -78,31 +87,44 @@ export class EthHelper {
             console.log('EthHelper: Contract Event Listeners disabled');
         }
 
-        // retrieve the number of local + remote Vikings
-        const counts = await EthHelper.counts().catch(
-            (err) => {
-                console.error('EthHelper: error during status check');
-                throw err;
+        if (EthHelper.RECOVER) {
+            // recovery types:
+            //   API has missed some `VikingGenerated` events / DB is somehow out of sync - detect by local db count being lower than remote count
+            //   API is missing some images (but db is in sync) - detect by image count being lower than local db count
+            //   Contract has missed some `GenerateViking` calls - detect by... // TODO
+            //      - could happen if the API missed a `VikingReady` event or otherwise failed to trigger `GenerateViking`
+
+            const counts = await EthHelper.counts();
+
+            if (EthHelper.databaseOutOfSync(counts)) {
+                console.log('EthHelper: Database out of sync!');
+                console.log('EthHelper: local Viking count:', counts.local);
+                console.log('EthHelper: remote Viking count:', counts.remote);
+
+                await EthHelper.synchronizeVikings(counts.remote).then(
+                    () => {
+                        console.log('EthHelper: Viking Database synchronized');
+                    },
+                    (err) => {
+                        console.error('EthHelper: error during Viking Database synchronization');
+                        throw err;
+                    }
+                )
             }
-        );
 
-        console.log('EthHelper: local Viking count:', counts.local);
-        console.log('EthHelper: remote Viking count:', counts.remote);
+            if (EthHelper.imagesOutOfSync(counts)) {
+                console.log('EthHelper: Images out of sync!');
 
-        // synchronize if necessary
-        if (counts.local !== counts.remote && EthHelper.SYNCHRONIZE) {
-            await EthHelper.synchronize(counts.remote).then(
-                () => {
-                    console.log('EthHelper: Local Vikings synchronized');
-                },
-                (err) => {
-                    console.error('EthHelper: error during synchronization');
-                    throw err;
-                }
-            );
-        }
-        else {
-            console.log('EthHelper: no synchronization necessary');
+                await EthHelper.synchronizeImages(counts.remote).then(
+                    () => {
+                        console.log('EthHelper: Viking Images synchronized');
+                    },
+                    (err) => {
+                        console.log('EthHelper: error during Viking Image synchronization');
+                        throw err;
+                    }
+                );
+            }
         }
     }
 
@@ -139,6 +161,27 @@ export class EthHelper {
     }
 
     /**
+     * // TODO
+     *
+     * @param counts
+     * @returns
+     */
+    private static databaseOutOfSync(counts: Counts): boolean {
+        return counts.local !== counts.remote;
+    }
+
+    /**
+     * // TODO
+     *
+     * @param counts
+     * @returns
+     */
+    private static imagesOutOfSync(counts: Counts): boolean {
+        // sub 1 from viking image file count due to presence of viking_unknown.png
+        return (fs.readdirSync(ImageHelper.VIKING_OUT).length - 1) < counts.remote;
+    }
+
+    /**
      * Configure the Provider's polling interval and then register all event listeners upon the Contract
      */
     private static registerListeners(): void {
@@ -162,7 +205,7 @@ export class EthHelper {
      *
      * @returns the local and remote Viking counts
      */
-    private static async counts(): Promise<{ local: number, remote: number }> {
+    private static async counts(): Promise<Counts> {
         return {
             local: await vikingService.count({}),
             remote: (await EthHelper.CONTRACT.functions.totalSupply())[0]?.toNumber()
@@ -177,7 +220,7 @@ export class EthHelper {
      *
      * @param remoteCount the Contract's `totalSupply`
      */
-    private static async synchronize(remoteCount: number): Promise<void> {
+    private static async synchronizeVikings(remoteCount: number): Promise<void> {
         // get a list of all database-stored Viking Numbers
         const numbers = (await vikingService.findMany({}, ['number'])).docs.map((v) => v.number);
 
@@ -189,6 +232,28 @@ export class EthHelper {
 
                 // generate the Viking
                 await EthHelper.generateViking(i, vikingData);
+            }
+        }
+    }
+
+    private static async synchronizeImages(remoteCount: number): Promise<void> {
+        // eslint-disable-next-line
+        const imageNumbers = fs.readdirSync(ImageHelper.VIKING_OUT).filter((f) => !f.includes('unknown')).map((f) => parseInt(/_([0-9]+)/.exec(f)![1], 10));
+
+        for (let i = 0; i < remoteCount; i++) {
+            if (!imageNumbers.includes(i)) {
+                console.log(`EthHelper: generating Viking Image for ID ${i}`);
+
+                const vikingSpecification = VikingSpecificationHelper.buildVikingSpecification(i, await EthHelper.CONTRACT.functions.vikings(i));
+
+                await ImageHelper.generateImage(vikingSpecification).catch((err) => {
+                    console.error('EthHelper: error during image generation');
+                    // error will be a GraphicsMagick error - wrap it into an APIError
+                    throw ErrorHelper.createError(
+                        HttpErrorCode.INTERNAL_SERVER_ERROR,
+                        `Failed to generate image for Viking with ID ${i} : ${JSON.stringify(err)}`
+                    );
+                });
             }
         }
     }

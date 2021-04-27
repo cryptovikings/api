@@ -6,7 +6,7 @@ import { VikingSpecification } from '../models/viking/vikingSpecification.model'
 import { VikingContractModel } from '../models/viking/vikingContract.model';
 
 /**
- * VikingSpecification  Helper, centralising the production of the intermediate VikingSpecification data format, based on given Viking Contract Data,
+ * VikingSpecification Helper, centralising the production of the intermediate VikingSpecification data format, based on given Viking Contract Data,
  *   used in generating Viking Database Data and in producing Viking Images
  *
  * All Contract Number => Type + Condition name mappings are contained within this class
