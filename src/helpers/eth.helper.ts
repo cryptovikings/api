@@ -130,13 +130,31 @@ export class EthHelper {
                         console.log('EthHelper: Viking Images synchronized');
                     },
                     (err) => {
-                        console.log('EthHelper: error during Viking Image synchronization');
+                        console.error('EthHelper: error during Viking Image synchronization');
                         throw err;
                     }
                 );
             }
             else {
                 console.log('EthHelper: images are in sync');
+            }
+
+            // TODO do this last, important! - document why
+            if (EthHelper.contractOutOfSync(counts)) {
+                console.log('EthHelper: Contract ouf of sync!');
+
+                await EthHelper.synchronizeContract(counts.remoteNFTs, counts.remoteVikings).then(
+                    () => {
+                        console.log('EthHelper: Viking Contract synchronized');
+                    },
+                    (err) => {
+                        console.error('EthHelper: error during Viking Contract synchronization');
+                        throw err;
+                    }
+                );
+            }
+            else {
+                console.log('EthHelper: Contract is in sync');
             }
         }
         else {
@@ -199,6 +217,16 @@ export class EthHelper {
 
         // sub 1 from viking image file count due to presence of viking_unknown.png
         return (fs.readdirSync(ImageHelper.VIKING_OUT).length - 1) < counts.remoteVikings;
+    }
+
+    /**
+     * // TODO
+     *
+     * @param counts
+     * @returns
+     */
+    private static contractOutOfSync(counts: Counts): boolean {
+        return counts.remoteNFTs !== counts.remoteVikings;
     }
 
     /**
@@ -276,6 +304,16 @@ export class EthHelper {
                     );
                 });
             }
+        }
+    }
+
+    private static async synchronizeContract(nftCount: number, vikingCount: number): Promise<void> {
+        for (let i = vikingCount; i < nftCount; i++) {
+            console.log(`EthHelper: sending generateViking() call request for Viking ID ${i}`);
+
+            await EthHelper.CONTRACT.functions.generateViking(i);
+
+            console.log(`EthHelper: sent generateViking() call request for Viking ID ${i}`);
         }
     }
 
