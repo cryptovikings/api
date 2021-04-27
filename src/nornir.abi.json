@@ -126,6 +126,11 @@
             {
                 "components": [
                     {
+                        "internalType": "string",
+                        "name": "name",
+                        "type": "string"
+                    },
+                    {
                         "internalType": "uint256",
                         "name": "weapon",
                         "type": "uint256"
@@ -205,6 +210,19 @@
     },
     {
         "inputs": [],
+        "name": "BASE_URI",
+        "outputs": [
+            {
+                "internalType": "string",
+                "name": "",
+                "type": "string"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
         "name": "MAX_BULK",
         "outputs": [
             {
@@ -235,6 +253,19 @@
         "outputs": [
             {
                 "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "WETHContract",
+        "outputs": [
+            {
+                "internalType": "contract IWeth",
                 "name": "",
                 "type": "address"
             }
@@ -280,19 +311,6 @@
         "type": "function"
     },
     {
-        "inputs": [],
-        "name": "balanceWETH",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
         "inputs": [
             {
                 "internalType": "uint256",
@@ -300,19 +318,6 @@
                 "type": "uint256"
             }
         ],
-        "name": "calculateBulkPrice",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
         "name": "calculatePrice",
         "outputs": [
             {
@@ -351,6 +356,29 @@
                 "internalType": "address",
                 "name": "",
                 "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "getPricing",
+        "outputs": [
+            {
+                "internalType": "bool",
+                "name": "pillageStarted",
+                "type": "bool"
+            },
+            {
+                "internalType": "uint256",
+                "name": "curvePrice",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "pillagePrice",
+                "type": "uint256"
             }
         ],
         "stateMutability": "view",
@@ -454,6 +482,25 @@
     {
         "inputs": [
             {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "name": "randomNumberToVikingId",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
                 "internalType": "bytes32",
                 "name": "requestId",
                 "type": "bytes32"
@@ -541,24 +588,6 @@
             }
         ],
         "name": "setApprovalForAll",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "tokenId",
-                "type": "uint256"
-            },
-            {
-                "internalType": "string",
-                "name": "_tokenURI",
-                "type": "string"
-            }
-        ],
-        "name": "setTokenURI",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -716,6 +745,11 @@
         ],
         "name": "vikings",
         "outputs": [
+            {
+                "internalType": "string",
+                "name": "name",
+                "type": "string"
+            },
             {
                 "internalType": "uint256",
                 "name": "weapon",
