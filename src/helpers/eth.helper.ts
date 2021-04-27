@@ -51,7 +51,7 @@ export class EthHelper {
     /**
      * Whether or not to catch up/synchronise with the Contract data
      */
-    private static readonly CATCH_UP = process.env.CATCH_UP === 'true' ?? false;
+    private static readonly SYNCHRONIZE = process.env.ETH_SYNCHRONIZE === 'true' ?? false;
 
     /**
      * Polling Interval for Contract event listeners
@@ -90,7 +90,7 @@ export class EthHelper {
         console.log('EthHelper: remote Viking count:', counts.remote);
 
         // synchronize if necessary
-        if (counts.local !== counts.remote && EthHelper.CATCH_UP) {
+        if (counts.local !== counts.remote && EthHelper.SYNCHRONIZE) {
             await EthHelper.synchronize(counts.remote).then(
                 () => {
                     console.log('EthHelper: Local Vikings synchronized');
