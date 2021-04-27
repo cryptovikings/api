@@ -3,7 +3,7 @@ import { BigNumber, Contract, providers, Wallet } from 'ethers';
 import nornirABI from '../nornir.abi.json';
 import { VikingContractModel } from '../models/viking/vikingContract.model';
 import { vikingService } from '../services/viking.service';
-import { AssetHelper } from './asset.helper';
+import { VikingSpecificationHelper } from './vikingSpecification.helper';
 import { VikingHelper } from './viking.helper';
 import { ImageHelper } from './image.helper';
 import { ErrorHelper } from './error.helper';
@@ -115,12 +115,12 @@ export class EthHelper {
     public static async generateViking(id: number, vikingData: VikingContractModel): Promise<void> {
         console.log(`EthHelper: generating Viking with ID ${id}`);
 
-        // derive the intermediate AssetSpecs structure for handing off to both the Viking and Image Helpers
-        const assetSpecifications = AssetHelper.buildAssetSpecifications(id, vikingData);
+        // derive the intermediate VikingSpecification structure for handing off to both the Viking and Image Helpers
+        const vikingSpecification = VikingSpecificationHelper.buildVikingSpecification(id, vikingData);
 
         // run generations in parallel
         await Promise.all([
-            ImageHelper.generateImage(assetSpecifications).catch((err) => {
+            ImageHelper.generateImage(vikingSpecification).catch((err) => {
                 console.error('EthHelper: error during image generation');
                 // error will be a GraphicsMagick error - wrap it into an APIError
                 throw ErrorHelper.createError(
@@ -128,7 +128,7 @@ export class EthHelper {
                     `Failed to generate image for Viking with ID ${id} : ${JSON.stringify(err)}`
                 );
             }),
-            VikingHelper.createViking(assetSpecifications).catch((err) => {
+            VikingHelper.createViking(vikingSpecification).catch((err) => {
                 console.error('EthHelper: error during viking generation');
                 // error will already be an APIError
                 throw err;

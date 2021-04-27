@@ -4,20 +4,22 @@ import { ItemCondition } from '../../enums/itemCondition.enum';
 /**
  * Intermediate data format containing all the information required to generate Viking Database Data + Viking Images
  *
- * Produced based directly off Viking Contract Data by consistent selection algorithms
+ * Derived directly from Viking Contract Data by consistent selection algorithms
  *
  * Contains information on:
- *     - the Viking's Number (Contract/NFT ID)
- *     - the Viking's Image URL
- *     - Part Type Names
- *     - Item/Clothing Conditions
- *     - Statistics
+ *     - the Viking's Number (direct from Contract; NFT ID)
+ *     - the Viking's Name (direct from Contract)
+ *     - Part Type Names (derived from Contract Data Style numbers)
+ *     - Item/Clothing Conditions (derived from Contract Data Statistics)
+ *     - Statistics (direct from Contract)
  *     - File Paths for each part
+ *     - the Viking's Image URL
  */
-export interface AssetSpecs {
+export interface VikingSpecification {
     number: number;
+    name: string;
     imageUrl: string;
-    names: {
+    types: {
         beard: string;
         body: string;
         boots: string;

@@ -2,16 +2,19 @@ import path from 'path';
 
 import { ClothesCondition } from '../enums/clothesCondition.enum';
 import { ItemCondition } from '../enums/itemCondition.enum';
-import { AssetSpecs } from '../models/utils/assetSpecs.model';
+import { VikingSpecification } from '../models/viking/vikingSpecification.model';
 import { VikingContractModel } from '../models/viking/vikingContract.model';
 
 /**
- * Asset Helper, centralising the production of the intermediate AssetSpecs data format, based on given Viking Contract Data, used in generating
- *   Viking Database Data and in producing Viking Images
+ * VikingSpecification  Helper, centralising the production of the intermediate VikingSpecification data format, based on given Viking Contract Data,
+ *   used in generating Viking Database Data and in producing Viking Images
  *
  * All Contract Number => Type + Condition name mappings are contained within this class
+ *
+ * Separated from the VikingHelper so as to keep classes small and because the derivation of the VikingSpecification can be considered wholly separate
+ *   to the subsequent production of Viking Database Data and Viking Metadata
  */
-export class AssetHelper {
+export class VikingSpecificationHelper {
 
     /**
      * Viking Image Parts input folder, copied over from the environment
@@ -27,15 +30,15 @@ export class AssetHelper {
      * Viking Image Parts directories, derived from the PARTS_ROOT
      */
     private static readonly directories = {
-        beards: path.join(AssetHelper.PARTS_ROOT, 'beards'),
-        bodies: path.join(AssetHelper.PARTS_ROOT, 'bodies'),
-        boots: path.join(AssetHelper.PARTS_ROOT, 'boots'),
-        bottoms: path.join(AssetHelper.PARTS_ROOT, 'bottoms'),
-        faces: path.join(AssetHelper.PARTS_ROOT, 'faces'),
-        helmets: path.join(AssetHelper.PARTS_ROOT, 'helmets'),
-        shields: path.join(AssetHelper.PARTS_ROOT, 'shields'),
-        tops: path.join(AssetHelper.PARTS_ROOT, 'tops'),
-        weapons: path.join(AssetHelper.PARTS_ROOT, 'weapons')
+        beards: path.join(VikingSpecificationHelper.PARTS_ROOT, 'beards'),
+        bodies: path.join(VikingSpecificationHelper.PARTS_ROOT, 'bodies'),
+        boots: path.join(VikingSpecificationHelper.PARTS_ROOT, 'boots'),
+        bottoms: path.join(VikingSpecificationHelper.PARTS_ROOT, 'bottoms'),
+        faces: path.join(VikingSpecificationHelper.PARTS_ROOT, 'faces'),
+        helmets: path.join(VikingSpecificationHelper.PARTS_ROOT, 'helmets'),
+        shields: path.join(VikingSpecificationHelper.PARTS_ROOT, 'shields'),
+        tops: path.join(VikingSpecificationHelper.PARTS_ROOT, 'tops'),
+        weapons: path.join(VikingSpecificationHelper.PARTS_ROOT, 'weapons')
     };
 
     /**
@@ -46,12 +49,12 @@ export class AssetHelper {
      * @returns the Image URL
      */
     public static getImageUrl(fileName: string): string {
-        return `${AssetHelper.IMAGE_BASE_URI}/${fileName}.png`
+        return `${VikingSpecificationHelper.IMAGE_BASE_URI}/${fileName}.png`
     }
 
     /**
-     * Core AssetSpec production method. Take a Viking Number and its associated Viking Contract Data, and produce all the information necessary to
-     *   generate a Viking for the database as well as a Viking Image, including:
+     * Core VikingSpecification production method. Take a Viking Number and its associated Viking Contract Data, and produce all the information
+     *   necessary to generate a Viking for the database as well as a Viking Image, including:
      *       - Part Type Names
      *       - Item/Clothing Conditions
      *       - Statistics
@@ -62,7 +65,7 @@ export class AssetHelper {
      * @param number the ID of the Viking
      * @param data the Viking Contract Data
      */
-    public static buildAssetSpecifications(number: number, data: VikingContractModel): AssetSpecs {
+    public static buildVikingSpecification(number: number, data: VikingContractModel): VikingSpecification {
         // simple string transformer for producing file name parts by replacing spaces and hyphens with underscores
         const cleanName = (name: string): string => name.replace(/[\s-]/g, '_').toLowerCase();
 
@@ -74,50 +77,50 @@ export class AssetHelper {
         const stamina = data.stamina.toNumber();
 
         // resolve the boots + bottoms + helmet + sheild + weapon conditions, based on their associated statistic numbers
-        const bootsCondition = AssetHelper.resolveClothesCondition(speed);
-        const bottomsCondition = AssetHelper.resolveClothesCondition(stamina);
-        const helmetCondition = AssetHelper.resolveItemCondition(intelligence);
-        const shieldCondition = AssetHelper.resolveItemCondition(defence);
-        const weaponCondition = AssetHelper.resolveItemCondition(attack);
+        const bootsCondition = VikingSpecificationHelper.resolveClothesCondition(speed);
+        const bottomsCondition = VikingSpecificationHelper.resolveClothesCondition(stamina);
+        const helmetCondition = VikingSpecificationHelper.resolveItemCondition(intelligence);
+        const shieldCondition = VikingSpecificationHelper.resolveItemCondition(defence);
+        const weaponCondition = VikingSpecificationHelper.resolveItemCondition(attack);
 
         // pull out 8-digit number representing beard + body + face + top generations from the Contract Data
         const appearance = data.appearance.toString();
 
         // resolve the beard + body + face + top type names based on 2-digit sequential slices of the appearance number
-        const beardType = AssetHelper.resolveBeardType(parseInt(appearance.slice(0, 2), 10));
-        const bodyType = AssetHelper.resolveBodyType(parseInt(appearance.slice(2, 4), 10));
-        const faceType = AssetHelper.resolveFaceType(parseInt(appearance.slice(4, 6), 10));
-        const topType = AssetHelper.resolveTopType(parseInt(appearance.slice(6, 8), 10));
+        const beardType = VikingSpecificationHelper.resolveBeardType(parseInt(appearance.slice(0, 2), 10));
+        const bodyType = VikingSpecificationHelper.resolveBodyType(parseInt(appearance.slice(2, 4), 10));
+        const faceType = VikingSpecificationHelper.resolveFaceType(parseInt(appearance.slice(4, 6), 10));
+        const topType = VikingSpecificationHelper.resolveTopType(parseInt(appearance.slice(6, 8), 10));
 
         // resolve the boots + bottoms + helmet + shield + weapon type names based on their associated Contract numbers and resolved Conditions
-        const bootsType = AssetHelper.resolveBootsType(data.boots.toNumber(), bootsCondition);
-        const bottomsType = AssetHelper.resolveBottomsType(data.bottoms.toNumber(), bottomsCondition);
-        const helmetType = AssetHelper.resolveHelmetType(data.helmet.toNumber(), helmetCondition);
-        const shieldType = AssetHelper.resolveShieldType(data.shield.toNumber(), shieldCondition);
-        const weaponType = AssetHelper.resolveWeaponType(data.weapon.toNumber(), weaponCondition);
+        const bootsType = VikingSpecificationHelper.resolveBootsType(data.boots.toNumber(), bootsCondition);
+        const bottomsType = VikingSpecificationHelper.resolveBottomsType(data.bottoms.toNumber(), bottomsCondition);
+        const helmetType = VikingSpecificationHelper.resolveHelmetType(data.helmet.toNumber(), helmetCondition);
+        const shieldType = VikingSpecificationHelper.resolveShieldType(data.shield.toNumber(), shieldCondition);
+        const weaponType = VikingSpecificationHelper.resolveWeaponType(data.weapon.toNumber(), weaponCondition);
 
         // resolve the File Paths for the beard + body + face + top parts
-        const beardFile = path.join(AssetHelper.directories.beards, `beard_${cleanName(beardType)}.png`);
-        const bodyFile = path.join(AssetHelper.directories.bodies, `body_${cleanName(bodyType)}.png`);
-        const faceFile = path.join(AssetHelper.directories.faces, `face_${cleanName(faceType)}.png`);
-        const topFile = path.join(AssetHelper.directories.tops, `top_${cleanName(topType)}.png`);
+        const beardFile = path.join(VikingSpecificationHelper.directories.beards, `beard_${cleanName(beardType)}.png`);
+        const bodyFile = path.join(VikingSpecificationHelper.directories.bodies, `body_${cleanName(bodyType)}.png`);
+        const faceFile = path.join(VikingSpecificationHelper.directories.faces, `face_${cleanName(faceType)}.png`);
+        const topFile = path.join(VikingSpecificationHelper.directories.tops, `top_${cleanName(topType)}.png`);
 
         // resolve the Boots File Path, defaulting to the "Basic" boots asset if the statistic-based Condition wasn't good enough
-        let bootsFile = path.join(AssetHelper.directories.boots, 'boots_basic.png');
+        let bootsFile = path.join(VikingSpecificationHelper.directories.boots, 'boots_basic.png');
         if (bootsCondition !== ClothesCondition.BASIC) {
             const type = cleanName(bootsType);
             const condition = cleanName(bootsCondition);
 
-            bootsFile = path.join(AssetHelper.directories.boots, type, `boots_${type}_${condition}.png`);
+            bootsFile = path.join(VikingSpecificationHelper.directories.boots, type, `boots_${type}_${condition}.png`);
         }
 
         // resolve the Bottoms File Path, defaulting to the "Basic" bottoms asset if the statistic-based Condition wasn't good enough
-        let bottomsFile = path.join(AssetHelper.directories.bottoms, 'bottoms_basic.png');
+        let bottomsFile = path.join(VikingSpecificationHelper.directories.bottoms, 'bottoms_basic.png');
         if (bottomsCondition !== ClothesCondition.BASIC) {
             const type = cleanName(bottomsType);
             const condition = cleanName(bottomsCondition);
 
-            bottomsFile = path.join(AssetHelper.directories.bottoms, type, `bottoms_${type}_${condition}.png`);
+            bottomsFile = path.join(VikingSpecificationHelper.directories.bottoms, type, `bottoms_${type}_${condition}.png`);
         }
 
         // resolve the Helmet File Path, defaulting to undefined if the statistic-based Condition wasn't good enough
@@ -126,7 +129,7 @@ export class AssetHelper {
             const type = cleanName(helmetType);
             const condition = cleanName(helmetCondition);
 
-            helmetFile = path.join(AssetHelper.directories.helmets, type, `helmet_${type}_${condition}.png`);
+            helmetFile = path.join(VikingSpecificationHelper.directories.helmets, type, `helmet_${type}_${condition}.png`);
         }
 
         // resolve the Shield File Path, defaulting to undefined if the statistic-based Condition wasn't good enough
@@ -135,7 +138,7 @@ export class AssetHelper {
             const type = cleanName(shieldType);
             const condition = cleanName(shieldCondition);
 
-            shieldFile = path.join(AssetHelper.directories.shields, type, `shield_${type}_${condition}.png`);
+            shieldFile = path.join(VikingSpecificationHelper.directories.shields, type, `shield_${type}_${condition}.png`);
         }
 
         // resolve the Weapon File Path, defaulting to undefined if the statistic-based Condition wasn't good enough
@@ -144,14 +147,15 @@ export class AssetHelper {
             const type = cleanName(weaponType);
             const condition = cleanName(weaponCondition);
 
-            weaponFile = path.join(AssetHelper.directories.weapons, type, `weapon_${type}_${condition}.png`);
+            weaponFile = path.join(VikingSpecificationHelper.directories.weapons, type, `weapon_${type}_${condition}.png`);
         }
 
-        // build the AssetSpec structure for use in Viking and Image generation
+        // build the VikingSpecification structure for use in Viking and Image generation
         return {
             number,
-            imageUrl: AssetHelper.getImageUrl(`viking_${number}`),
-            names: {
+            name: data.name,
+            imageUrl: VikingSpecificationHelper.getImageUrl(`viking_${number}`),
+            types: {
                 beard: beardType,
                 body: bodyType,
                 face: faceType,

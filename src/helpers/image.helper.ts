@@ -2,11 +2,11 @@ import path from 'path';
 import fs from 'fs';
 import gm from 'gm';
 
-import { AssetSpecs } from '../models/utils/assetSpecs.model';
+import { VikingSpecification } from '../models/viking/vikingSpecification.model';
 
 /**
- * Image Helper, centralising logic for the production of Viking Images based on intermediate Contract-Data-based AssetSpecs, encapsulating all
- *   GraphicsMagick interactions and image output management
+ * Image Helper, centralising logic for the production of Viking Images based on intermediate Contract-Data-based VikingSpecification, encapsulating
+ *   all GraphicsMagick interactions and image output management
  */
 export class ImageHelper {
 
@@ -43,36 +43,37 @@ export class ImageHelper {
     }
 
     /**
-     * Given an AssetSpecs definition, compose and output a Viking Image by building it from the specified parts with GraphicsMagick
+     * Given a VikingSpecification, compose and output a Viking Image by building it from the specified parts with GraphicsMagick
      *
-     * @param assetSpecifications the AssetSpecs, derived from Viking Contract Data, containing the Viking information
+     * @param vikingSpecification the VikingSpecification, derived from Viking Contract Data, containing the Viking information
      */
-    public static async generateImage(assetSpecifications: AssetSpecs): Promise<void> {
+    public static async generateImage(vikingSpecification: VikingSpecification): Promise<void> {
         // wrap the GM process into a Promise so that it can be awaited
         return new Promise((resolve, reject) => {
-            const filePath = path.join(ImageHelper.VIKING_OUT, `viking_${assetSpecifications.number}.png`);
+            // images are named numerically so as to decouple storage + retrieval from the Viking's actual name
+            const filePath = path.join(ImageHelper.VIKING_OUT, `viking_${vikingSpecification.number}.png`);
 
             // initialize an empty gm()
             const image = gm('');
 
             // pass in the asset parts in a specific layering order
             image
-                .in(assetSpecifications.filePaths.body)
-                .in(assetSpecifications.filePaths.face)
-                .in(assetSpecifications.filePaths.top)
-                .in(assetSpecifications.filePaths.beard)
-                .in(assetSpecifications.filePaths.bottoms)
-                .in(assetSpecifications.filePaths.boots);
+                .in(vikingSpecification.filePaths.body)
+                .in(vikingSpecification.filePaths.face)
+                .in(vikingSpecification.filePaths.top)
+                .in(vikingSpecification.filePaths.beard)
+                .in(vikingSpecification.filePaths.bottoms)
+                .in(vikingSpecification.filePaths.boots);
 
             // only pass in helmet, shield and weapon if their associated statistics weren't low enough to nullify them
-            if (assetSpecifications.filePaths.helmet) {
-                image.in(assetSpecifications.filePaths.helmet);
+            if (vikingSpecification.filePaths.helmet) {
+                image.in(vikingSpecification.filePaths.helmet);
             }
-            if (assetSpecifications.filePaths.shield) {
-                image.in(assetSpecifications.filePaths.shield);
+            if (vikingSpecification.filePaths.shield) {
+                image.in(vikingSpecification.filePaths.shield);
             }
-            if (assetSpecifications.filePaths.weapon) {
-                image.in(assetSpecifications.filePaths.weapon);
+            if (vikingSpecification.filePaths.weapon) {
+                image.in(vikingSpecification.filePaths.weapon);
             }
 
             // configure and output the composed image

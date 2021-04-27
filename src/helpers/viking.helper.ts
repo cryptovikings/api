@@ -1,51 +1,51 @@
-import { AssetSpecs } from '../models/utils/assetSpecs.model';
+import { VikingSpecification } from '../models/viking/vikingSpecification.model';
 import { Viking } from '../models/viking/viking.model';
 import { vikingService } from '../services/viking.service';
 
 /**
- * VikingHelper, centralising logic for the production of Viking Database Data based on intermediate Contract-Data-based AssetSpecs, and of Viking
- *   (OpenSea) Metadata based on stored Viking Database Data
+ * VikingHelper, centralising logic for the production of Viking Database Data based on intermediate Contract-Data-based VikingSpecification, and of
+ *   Viking (OpenSea) Metadata based on stored Viking Database Data
  */
 export class VikingHelper {
 
     /**
-     * Given an AssetSpecs definition, produce and store a Viking in the Database
+     * Given a VikingSpecification, produce and store a Viking in the Database
      *
      * Effectively just a wrapper for (VikingService).createOne()
      *
-     * @param assetSpecifications the AssetSpecs, derived from Viking Contract Data, containing the Viking information
+     * @param vikingSpecification the VikingSpecification, derived from Viking Contract Data, containing the Viking information
      */
-    public static async createViking(assetSpecifications: AssetSpecs): Promise<Viking['read']> {
+    public static async createViking(vikingSpecification: VikingSpecification): Promise<Viking['read']> {
         return vikingService.createOne({
-            number: assetSpecifications.number,
-            name: `Test Viking #${assetSpecifications.number}`,
-            image: assetSpecifications.imageUrl,
+            number: vikingSpecification.number,
+            name: vikingSpecification.name,
+            image: vikingSpecification.imageUrl,
             description: 'A unique and special viking',
 
-            beard_name: assetSpecifications.names.beard,
-            body_name: assetSpecifications.names.body,
-            face_name: assetSpecifications.names.face,
-            top_name: assetSpecifications.names.top,
+            beard_name: vikingSpecification.types.beard,
+            body_name: vikingSpecification.types.body,
+            face_name: vikingSpecification.types.face,
+            top_name: vikingSpecification.types.top,
 
-            boots_name: assetSpecifications.names.boots,
-            boots_condition: assetSpecifications.conditions.boots,
-            speed: assetSpecifications.stats.speed,
+            boots_name: vikingSpecification.types.boots,
+            boots_condition: vikingSpecification.conditions.boots,
+            speed: vikingSpecification.stats.speed,
 
-            bottoms_name: assetSpecifications.names.bottoms,
-            bottoms_condition: assetSpecifications.conditions.bottoms,
-            stamina: assetSpecifications.stats.stamina,
+            bottoms_name: vikingSpecification.types.bottoms,
+            bottoms_condition: vikingSpecification.conditions.bottoms,
+            stamina: vikingSpecification.stats.stamina,
 
-            helmet_name: assetSpecifications.names.helmet,
-            helmet_condition: assetSpecifications.conditions.helmet,
-            intelligence: assetSpecifications.stats.intelligence,
+            helmet_name: vikingSpecification.types.helmet,
+            helmet_condition: vikingSpecification.conditions.helmet,
+            intelligence: vikingSpecification.stats.intelligence,
 
-            shield_name: assetSpecifications.names.shield,
-            shield_condition: assetSpecifications.conditions.shield,
-            defence: assetSpecifications.stats.defence,
+            shield_name: vikingSpecification.types.shield,
+            shield_condition: vikingSpecification.conditions.shield,
+            defence: vikingSpecification.stats.defence,
 
-            weapon_name: assetSpecifications.names.weapon,
-            weapon_condition: assetSpecifications.conditions.weapon,
-            attack: assetSpecifications.stats.attack,
+            weapon_name: vikingSpecification.types.weapon,
+            weapon_condition: vikingSpecification.conditions.weapon,
+            attack: vikingSpecification.stats.attack,
         });
     }
 
