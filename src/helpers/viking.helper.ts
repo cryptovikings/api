@@ -50,6 +50,17 @@ export class VikingHelper {
     }
 
     /**
+     * // TODO
+     *
+     * @param id
+     * @param newName
+     * @returns
+     */
+    public static async updateVikingName(number: number, name: string): Promise<Viking['read']> {
+        return vikingService.updateOne({ number }, { name });
+    }
+
+    /**
      * Given an as-stored Viking Database structure, produce the equivalent (OpenSea) Metadata
      *
      * @param data the Viking Read-format data to transform

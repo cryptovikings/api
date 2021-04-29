@@ -23,8 +23,7 @@ interface Counts {
  * EthHelper, encapsulating all Ethereum-related functionality, including Contract instantiation and interaction, Contract data synchronization,
  *   recovery, and Contract Event Listeners
  *
- * // TODO recovery: still need to handle the use-case where just images are missing...
- * // TODO recovery: potentially want to handle the scenario where somehow a Contract `generateViking()` was missed
+ * // TODO recovery: local names out of sync?
  *
  * // TODO Nonce Conflicts are encountered due to race conditions on many simultaneous mint events - we probably need an Event Queue
  * //   alternative thoughts: we could just handle Nonce manually, since we know the Wallet which will initiate transactions?
@@ -73,7 +72,8 @@ export class EthHelper {
      */
     private static readonly EVENT_MAP = {
         VikingReady: EthHelper.onVikingReady,
-        VikingGenerated: EthHelper.onVikingGenerated
+        VikingGenerated: EthHelper.onVikingGenerated,
+        NameChange: EthHelper.onNameChange
     };
 
     /**
@@ -341,8 +341,8 @@ export class EthHelper {
      * @param id the Viking's number emitted with the VikingGenerated event
      * @param vikingData the Viking's Contract-generated data emitted with the VikingGenerated event
      */
-    private static onVikingGenerated(id: BigNumber, vikingData: VikingContractModel): void {
-        const number = id.toNumber();
+    private static onVikingGenerated(vikingId: BigNumber, vikingData: VikingContractModel): void {
+        const number = vikingId.toNumber();
 
         console.log(`EthHelper: VikingGenerated - ID: ${number}`);
 
@@ -352,6 +352,27 @@ export class EthHelper {
             },
             (err) => {
                 console.error('EthHelper: Error during Viking generation:', err);
+            }
+        );
+    }
+
+    /**
+     * // TODO
+     *
+     * @param name
+     * @param vikingId
+     */
+    private static onNameChange(name: string, vikingId: BigNumber): void {
+        const number = vikingId.toNumber();
+
+        console.log(`EthHelper: NameChange - ID ${number}`);
+
+        VikingHelper.updateVikingName(number, name).then(
+            () => {
+                console.log(`EthHelper: Viking with ID ${number} updated with name ${name}`);
+            },
+            (err) => {
+                console.error('EthHelper: Error during Viking name update:', err);
             }
         );
     }
