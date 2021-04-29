@@ -8,6 +8,7 @@ import mongoosePaginate from 'mongoose-paginate-v2';
 interface BaseModel {
     readonly _id: Schema.Types.ObjectId;
     readonly readonly: boolean;
+    readonly readonlyOverrides: Array<string>;
 }
 
 /**
@@ -15,7 +16,7 @@ interface BaseModel {
  *
  * Models should be specified with a Write Type which extends this
  */
-export type ModelWrite = Omit<BaseModel, '_id' | 'readonly'> & { readonly?: boolean };
+export type ModelWrite = Omit<BaseModel, '_id' | 'readonly' | 'readonlyOverrides'> & { readonly?: boolean };
 
 /**
  * The base 'readable' Model representation, signifying the basic makeup of a Model as read from the database
@@ -27,7 +28,7 @@ export type ModelRead = BaseModel & Document;
 /**
  * The base 'broadcast' Model representation, signifying the basic makeup of a Model as broadcast to the outside world
  */
-export type ModelBroadcast = Omit<BaseModel, '_id' | 'readonly'>;
+export type ModelBroadcast = Omit<BaseModel, '_id' | 'readonly' | 'readonlyOverrides'>;
 
 /**
  * Supertype for packing the three Model representations into a single type structure for simplifying typeparams throughout the API's abstract classes
@@ -52,6 +53,7 @@ interface ModelDescriptor {
     readonly name: string;
     readonly schemaDefinition: SchemaDefinition;
     readonly readonly?: boolean;
+    readonly readonlyOverrides?: Array<string>;
     readonly collectionName?: string;
     readonly schemaOptions?: SchemaOptions;
 }
@@ -68,7 +70,8 @@ export const _createModel = (descriptor: ModelDescriptor): PaginateModel<any> =>
     // base schema, defining properties all models will have
     const baseSchema: SchemaDefinition = {
         // allow a model to define readonly as default true in the descriptor
-        readonly: { type: Boolean, default: descriptor.readonly ?? false }
+        readonly: { type: Boolean, default: descriptor.readonly ?? false },
+        readonlyOverrides: { type: Array, default: descriptor.readonlyOverrides ?? [] }
     };
 
     // set up the Schema to incoroporate the MongooosePaginate and BeautifulUniqueValidation plugins

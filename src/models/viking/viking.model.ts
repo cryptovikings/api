@@ -183,6 +183,7 @@ export interface Viking extends APIModel<VikingWrite, VikingRead, VikingBroadcas
 export const VikingModel = _createModel({
     name: 'Viking',
     readonly: true,
+    readonlyOverrides: ['name'],
     schemaDefinition: {
         number: { type: Number, required: true, unique: true, index: true },
         name: { type: String, required: true, unique: true, index: true },

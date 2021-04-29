@@ -131,10 +131,10 @@ export abstract class AbstractService<TModel extends APIModel> {
             );
         }
 
-        // throw an explicit error for update attempts on readonly Documents
-        if (doc.readonly) {
+        const readonlyConflicts = this.readonlyConflicts(doc, data);
+        if (readonlyConflicts) {
             throw ErrorHelper.errors.forbidden(
-                `Could not update the ${this.modelName} found with identifier ${JSON.stringify(identifierQuery)} - Document is readonly`
+                `Could not update the ${this.modelName} found with identifier ${JSON.stringify(identifierQuery)} : ${readonlyConflicts}`
             );
         }
 
@@ -209,5 +209,22 @@ export abstract class AbstractService<TModel extends APIModel> {
         return {
             deleted: deleted.deletedCount ?? deleted.n ?? 0
         };
+    }
+
+    /**
+     * // TODO
+     *
+     * @param doc
+     * @param data
+     * @returns
+     */
+    private readonlyConflicts(doc: TModel['read'], data: DeepPartial<TModel['write']>): string | null {
+        const readonlyConflicts = doc.readonly && Object.keys(data).filter((key) => !doc.readonlyOverrides.includes(key));
+
+        if (readonlyConflicts && readonlyConflicts.length) {
+            return `Attempted to overwrite readonly fields ${JSON.stringify(readonlyConflicts)}`
+        }
+
+        return null;
     }
 }
