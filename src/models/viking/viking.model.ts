@@ -185,8 +185,8 @@ export const VikingModel = _createModel({
     readonly: true,
     schemaDefinition: {
         number: { type: Number, required: true, unique: true, index: true },
-        name: { type: String, required: true },
-        image: { type: String, required: true },
+        name: { type: String, required: true, unique: true, index: true },
+        image: { type: String, required: true, unique: true },
         description: { type: String, required: true },
 
         beard_name: { type: String, required: true },
