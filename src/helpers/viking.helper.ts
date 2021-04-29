@@ -14,6 +14,8 @@ export class VikingHelper {
      * Effectively just a wrapper for (VikingService).createOne()
      *
      * @param vikingSpecification the VikingSpecification, derived from Viking Contract Data, containing the Viking information
+     *
+     * @returns the created Viking data
      */
     public static async createViking(vikingSpecification: VikingSpecification): Promise<Viking['read']> {
         return vikingService.createOne({
@@ -50,11 +52,14 @@ export class VikingHelper {
     }
 
     /**
-     * // TODO
+     * Given a Viking Number and a new name, update a Viking in the Database
      *
-     * @param id
-     * @param newName
-     * @returns
+     * Effectively just a wrapper for (vikingService).updateOne()
+     *
+     * @param number the Number of the Viking to update
+     * @param name the new name to give to the Viking
+     *
+     * @returns the updated Viking data
      */
     public static async updateVikingName(number: number, name: string): Promise<Viking['read']> {
         return vikingService.updateOne({ number }, { name });

@@ -17,8 +17,6 @@ export class ImageHelper {
 
     /**
      * Viking Atlas output folder, derived from the root output folder as provided in the environment
-     *
-     * // TODO technically temporary
      */
     private static readonly ATLAS_OUT = path.join(process.env.IMAGE_OUTPUT_ROOT!, 'atlas');
 
@@ -35,7 +33,6 @@ export class ImageHelper {
         ImageHelper.mkDirOptional(ImageHelper.VIKING_OUT);
         ImageHelper.mkDirOptional(ImageHelper.ATLAS_OUT);
 
-        // TODO a little hacky doing this here, but oh well?
         const unknownOut = path.join(ImageHelper.VIKING_OUT, ImageHelper.UNKNOWN_IMAGE);
         if (!fs.existsSync(unknownOut)) {
             fs.copyFileSync(path.join(process.env.IMAGE_INPUT_ROOT!, ImageHelper.UNKNOWN_IMAGE), unknownOut);

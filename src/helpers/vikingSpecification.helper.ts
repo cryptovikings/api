@@ -202,8 +202,6 @@ export class VikingSpecificationHelper {
      *
      * Since Beard is the first component of the 8-digit Appearance, its lower limit is 10, rather than 0 as with the others
      *
-     * // TODO due to the above, there's a bug right now where probabilities are not distributed evenly. Just a numbers thing
-     *
      * // TODO flesh out with actual names + tune for rarity as asset lists are finalised
      *
      * @param selector the numerical Beard Type value
@@ -211,19 +209,19 @@ export class VikingSpecificationHelper {
      * @returns the name of the Beard Type
      */
     private static resolveBeardType(selector: number): string {
-        if (selector <= 29) {
+        if (selector <= 27) {
             return '01';
         }
 
-        if (selector <= 49) {
+        if (selector <= 45) {
             return '02';
         }
 
-        if (selector <= 69) {
+        if (selector <= 63) {
             return '03';
         }
 
-        if (selector <= 89) {
+        if (selector <= 81) {
             return '04';
         }
 

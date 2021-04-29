@@ -115,7 +115,7 @@ export abstract class AbstractService<TModel extends APIModel> {
      * Update one Document, found by an identifier-based query
      *
      * Implements updates by (Document).save() so as to be able to return the actual updated Document data, and so as to activate Model pre('save')
-     *   hooks. Also allows us to throw errors for document not found or readonly document update attempts
+     *   hooks. Also allows us to throw errors for document not found or readonly field update attempts
      *
      * @param identifierQuery the query
      * @param data the data representing the Document changes to write
@@ -124,7 +124,6 @@ export abstract class AbstractService<TModel extends APIModel> {
      */
     public async updateOne(identifierQuery: NonNullable<APIQuery['where']>, data: DeepPartial<TModel['write']>): Promise<TModel['read']> {
         const doc = await this.findOne(identifierQuery, []);
-
         if (!doc) {
             throw ErrorHelper.errors.notFound(
                 `Could not update a ${this.modelName} - no Document found with identifier ${JSON.stringify(identifierQuery)}`
@@ -165,8 +164,6 @@ export abstract class AbstractService<TModel extends APIModel> {
      * Implements deletes by (Document).remove() so as to activate Model pre('remove') hooks. Also allows us to throw errors for document not found
      *   or readonly document delete attempts
      *
-     * // TODO might wanna re-evaluate this
-     *
      * @param identifierQuery the query
      *
      * @returns the number of Documents affected
@@ -196,9 +193,7 @@ export abstract class AbstractService<TModel extends APIModel> {
      * Delete many Documents, found by a given Query
      *
      * Implements deletes by (Model).deleteMany(), unlike deleteOne(), for efficiency. Ensures that readonly Documents are not deleted by augmenting
-     *   the incoming query
-     *
-     * // TODO might wanna re-evaluate this
+     *   the incoming query, at the sacrifice of the ability to error for attempts at deleting readonly documents
      *
      * @param where the query matching Documents to delete
      */
@@ -212,11 +207,14 @@ export abstract class AbstractService<TModel extends APIModel> {
     }
 
     /**
-     * // TODO
+     * Check incoming data for document updates to see if it contains values for keys not whitelisted in `readonlyOverrides` for a `readonly` Document
      *
-     * @param doc
-     * @param data
-     * @returns
+     * Allows us to prevent overwrites to documents which are marked as readonly, while allowing overwrites to specifically-whitelisted fields
+     *
+     * @param doc the document that may be updated
+     * @param data the incoming data to check
+     *
+     * @returns an error string if conflicts are found, or null if not
      */
     private readonlyConflicts(doc: TModel['read'], data: DeepPartial<TModel['write']>): string | null {
         const readonlyConflicts = doc.readonly && Object.keys(data).filter((key) => !doc.readonlyOverrides.includes(key));
