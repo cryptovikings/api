@@ -9,6 +9,7 @@ import { VikingHelper } from './viking.helper';
 import { ImageHelper } from './image.helper';
 import { ErrorHelper } from './error.helper';
 import { HttpErrorCode } from '../enums/httpErrorCode.enum';
+import { forever } from 'async';
 
 /**
  * Internal-use interface for the object storing local + remote viking/nft counts
@@ -77,12 +78,18 @@ export class EthHelper {
     };
 
     /**
+     * // TODO in-memory event queue - do we maybe want a database queue instead?
+     */
+    private static EVENT_QUEUE: Array<any> = [];
+
+    /**
      * Initialize by registering all event listeners if required and synchronizing local data with Contract data if necessary
      */
     public static async initialize(): Promise<void> {
         // handle event listeners
         if (EthHelper.LISTEN) {
             EthHelper.registerListeners();
+            EthHelper.startEventQueue();
         }
         else {
             console.warn('EthHelper: Contract Event Listeners disabled');
@@ -165,6 +172,39 @@ export class EthHelper {
         else {
             console.warn('EthHelper: not in recovery mode');
         }
+    }
+
+    /**
+     * // TODO
+     */
+    private static startEventQueue(): void {
+        forever(
+            (next) => {
+                if (EthHelper.EVENT_QUEUE.length) {
+                    const vikingId = EthHelper.EVENT_QUEUE.shift() as number;
+
+                    EthHelper.CONTRACT.functions.generateViking(vikingId, { gasPrice: 1000000000 }).then(
+                        () => {
+                            console.log(`EthHelper: sent generateViking() call request for Viking ID ${vikingId}`);
+
+                            next();
+                        },
+                        (err) => {
+                            console.error(`EthHelper: error sending generateViking() call request for Viking ID ${vikingId}:`, err);
+
+                            // TODO do we actually want to stop execution?
+                            next(err);
+                        }
+                    );
+                }
+                else {
+                    next();
+                }
+            },
+            (err) => {
+                console.error('Event Queue stopped:', err);
+            }
+        );
     }
 
     /**
@@ -359,14 +399,18 @@ export class EthHelper {
     private static onVikingReady(vikingId: BigNumber): void {
         console.log(`EthHelper: VikingReady - Viking ID: ${vikingId.toString()}`);
 
-        EthHelper.CONTRACT.functions.generateViking(vikingId, { gasPrice: 1000000000 }).then(
-            () => {
-                console.log(`EthHelper: sent generateViking() call request for Viking ID ${vikingId.toString()}`);
-            },
-            (err) => {
-                console.error(`EthHelper: error sending generateViking() call request for Viking ID ${vikingId.toString()}:`, err);
-            }
-        );
+        // EthHelper.WALLET.sendTransaction()
+
+        EthHelper.EVENT_QUEUE.push(vikingId);
+
+        // EthHelper.CONTRACT.functions.generateViking(vikingId, { gasPrice: 1000000000 }).then(
+        //     () => {
+        //         console.log(`EthHelper: sent generateViking() call request for Viking ID ${vikingId.toString()}`);
+        //     },
+        //     (err) => {
+        //         console.error(`EthHelper: error sending generateViking() call request for Viking ID ${vikingId.toString()}:`, err);
+        //     }
+        // );
     }
 
     /**
