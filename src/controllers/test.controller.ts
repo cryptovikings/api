@@ -42,8 +42,8 @@ class TestController extends AbstractController {
             console.log(`PROCESSING BATCH ${batch} of ${array.length / batchSize}`);
 
             await Promise.all(array.slice(i, i + batchSize).map((n) => new Promise((resolve, reject) => {
-                const data = TestHelper.generateVikingContractData();
-                EthHelper.generateViking(n, data).then(() => resolve(null), (err) => reject(err));
+                const data = TestHelper.generateVikingContractData(n);
+                EthHelper.testGenerateViking(n, data).then(() => resolve(null), (err) => reject(err));
             })));
 
             batch++;

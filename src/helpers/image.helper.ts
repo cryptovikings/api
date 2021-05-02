@@ -101,7 +101,7 @@ export class ImageHelper {
 
             // montage the first 12 Viking Image files
             let i = 0;
-            for (const file of fs.readdirSync(ImageHelper.VIKING_OUT)) {
+            for (const file of fs.readdirSync(ImageHelper.VIKING_OUT).filter((f) => !f.includes('unknown'))) {
                 image.montage(path.join(ImageHelper.VIKING_OUT, file));
 
                 i++;

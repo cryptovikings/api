@@ -14,7 +14,7 @@ export const error = (err: Error | APIError, req: Request, res: Response, next: 
 
         case 'ValidationError':
             // comes from mongoose-beautiful-unique-validation
-            res.status(HttpErrorCode.UNPROCESSABLE_ENTITY).json({ data: { message: 'Unique key validation failed' } });
+            res.status(HttpErrorCode.UNPROCESSABLE_ENTITY).json({ data: { message: `Unique key validation failed: ${err.message}` } });
             break;
 
         default:

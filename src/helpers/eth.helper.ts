@@ -101,6 +101,13 @@ export class EthHelper {
     }
 
     /**
+     * // TODO temporary public reflection of generateViking() for use in testController
+     */
+    public static async testGenerateViking(vikingId: number, vikingData: VikingContractModel): Promise<void> {
+        return EthHelper.generateViking(vikingId, vikingData);
+    }
+
+    /**
      * Configure the Provider's pollingInterval, register all Contract Event Listeners, and kick off the VikingReady event processing loop
      */
     private static listen(): void {

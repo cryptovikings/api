@@ -13,7 +13,7 @@ export class TestHelper {
      *
      * @returns an emulated VikingContractModel
      */
-    public static generateVikingContractData(): VikingContractModel {
+    public static generateVikingContractData(number: number): VikingContractModel {
         // random number generator, producing BigNumbers for ContractModel compatibility
         const random = (max: number): BigNumber => BigNumber.from(Math.round(Math.random() * (max - 1) + 1));
 
@@ -30,6 +30,7 @@ export class TestHelper {
 
         // build the ContractModel compatible representation
         return {
+            name: `Viking #${number}`,
             appearance,
 
             boots: random(99),
