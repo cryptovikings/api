@@ -3,6 +3,7 @@ import fs from 'fs';
 import gm from 'gm';
 
 import { VikingSpecification } from '../models/viking/vikingSpecification.model';
+import { TestHelper } from './test.helper';
 
 /**
  * Image Helper, centralising logic for the production of Viking Images based on intermediate Contract-Data-based VikingSpecification, encapsulating
@@ -99,15 +100,24 @@ export class ImageHelper {
             // initialise an empty gm()
             const image = gm('');
 
-            // montage the first 12 Viking Image files
-            let i = 0;
-            for (const file of fs.readdirSync(ImageHelper.VIKING_OUT).filter((f) => !f.includes('unknown'))) {
-                image.montage(path.join(ImageHelper.VIKING_OUT, file));
+            // montage a random set of 10 (max) Viking Image files
+            const count = fs.readdirSync(ImageHelper.VIKING_OUT).filter((f) => !f.includes('unknown')).length;
+            const amount = Math.min(count, 10);
+            const previous: Array<number> = [];
 
-                i++;
-                if (i === 12) {
-                    break;
+            for (let i = 0; i < amount; i++) {
+                let number = TestHelper.random(count);
+
+                while (previous.includes(number)) {
+                    number = TestHelper.random(count);
                 }
+
+                previous.push(number);
+
+                const fileName = `viking_${number}.png`;
+                const file = path.join(ImageHelper.VIKING_OUT, fileName);
+
+                image.montage(file);
             }
 
             // configure and output the combined image

@@ -9,13 +9,24 @@ import { VikingContractModel } from '../models/viking/vikingContract.model';
 export class TestHelper {
 
     /**
+     * Simple random number generator for testing
+     *
+     * @param max the inclusive maximum
+     *
+     * @returns a random number
+     */
+    public static random(max: number): number {
+        return Math.round(Math.random() * (max - 1) + 1);
+    }
+
+    /**
      * Off-chain TEST Viking Contract Data generator, enabling the testing of Viking Generation without the back-and-forth with Contract Events
      *
      * @returns an emulated VikingContractModel
      */
     public static generateVikingContractData(number: number): VikingContractModel {
-        // random number generator, producing BigNumbers for ContractModel compatibility
-        const random = (max: number): BigNumber => BigNumber.from(Math.round(Math.random() * (max - 1) + 1));
+        // convenient local number generator, wrapping into BigNumbers for ContractModel compatibility
+        const random = (max: number): BigNumber => BigNumber.from(TestHelper.random(max));
 
         const beard = random(89).add(10);
         const body = random(99);

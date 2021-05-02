@@ -49,6 +49,22 @@ class TestController extends AbstractController {
             batch++;
         }
 
+        return {
+            status: HttpSuccessCode.OK,
+            data: true
+        };
+    }
+
+    /**
+     * Custom route handler for the route /test/atlas
+     *
+     * Generate a demonstration Atlas with a maximum of 12 Vikings randomly selected from the output set
+     *
+     * @param req the Express Request
+     *
+     * @returns An APIResponse containing a success flag
+     */
+    public async makeAtlas(): Promise<APIResponse<boolean>> {
         await ImageHelper.generateAtlas();
 
         return {
