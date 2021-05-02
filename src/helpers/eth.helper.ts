@@ -155,34 +155,40 @@ export class EthHelper {
     private static async recover(): Promise<void> {
         console.log('EthHelper [Initialize]: implementing recovery scenarios...');
 
-        const counts = await EthHelper.counts().catch((err) => {
-            console.error('EthHelper [Initialize]: error during counts check');
+        let localVikings = await vikingService.count({});
+
+        const counts = await EthHelper.remoteCounts().catch((err) => {
+            console.error('EthHelper [Initialize]: error during remote count retrieval');
             throw err;
         });
 
-        console.log('EthHelper [Initialize]: local Viking count:', counts.localVikings);
-        console.log('EthHelper [Initialize]: remote NFT count:', counts.remoteNFTs);
-        console.log('EthHelper [Initialize]: remote Viking count:', counts.remoteVikings);
+        console.log('EthHelper [Initialize]: local Viking count:', localVikings);
+        console.log('EthHelper [Initialize]: remote NFT count:', counts.totalSupply);
+        console.log('EthHelper [Initialize]: remote Viking count:', counts.vikingCount);
 
         // recovery scenario 1: local data corruption/loss or missed VikingGenerated events
-        if (counts.localVikings !== counts.remoteVikings) {
-            console.warn('EthHelper [Initialize]: Viking Database out of sync with Contract!');
+        if (localVikings !== counts.vikingCount) {
+            console.warn('EthHelper [Initialize]: Viking Database entries missing!');
 
-            await EthHelper.synchronizeDatabase(counts.remoteVikings).catch((err) => {
+            await EthHelper.synchronizeDatabase(counts.vikingCount).catch((err) => {
                 console.error('EthHelper [Initialize]: error during database synchronization');
                 throw err;
             });
+
+            // update the local viking count for the next scenario
+            localVikings = await vikingService.count({});
         }
         else {
             console.log('EthHelper [Initialize]: Viking Database is in sync');
         }
 
         // recovery scenario 2: local image corruption/loss or half-actioned VikingGenerated events
+        // executed after scenario 1 so that we can safely rely on database Vikings instead of remote Vikings, optimizing for reduced RPC load
         // sub 1 from the image file count due to the presence of viking_unknown.png
-        if (fs.readdirSync(ImageHelper.VIKING_OUT).length - 1 < counts.remoteVikings) {
-            console.warn('EthHelper [Initialize]: Viking Images out of sync with Contract!');
+        if (fs.readdirSync(ImageHelper.VIKING_OUT).length - 1 < localVikings) {
+            console.warn('EthHelper [Initialize]: Viking Images missing!');
 
-            await EthHelper.synchronizeImages(counts.remoteVikings).catch((err) => {
+            await EthHelper.synchronizeImages(localVikings).catch((err) => {
                 console.error('EthHelper [Initialize]: error during image synchronization');
                 throw err;
             });
@@ -192,11 +198,13 @@ export class EthHelper {
         }
 
         // recovery scenario 3: missed VikingReady events or failed generateViking() calls
-        if (counts.remoteNFTs !== counts.remoteVikings) {
+        // executed last so as not to interfere with other recovery types, and so as to enable inline-synchronization of database and images by way of
+        //   the usual event-handling procedure for VikingGenerated
+        if (counts.totalSupply !== counts.vikingCount) {
             console.warn('EthHelper [Initialize]: Contract Vikings are out of sync with totalSupply()!');
 
             // choice: do not use the VikingReady Event Queue - we may not be in listening mode!
-            await EthHelper.synchronizeContract(counts.remoteNFTs, counts.remoteVikings).catch((err) => {
+            await EthHelper.synchronizeContract(counts.totalSupply, counts.vikingCount).catch((err) => {
                 console.error('EthHelper [Initialize]: error during Contract synchronization');
                 throw err;
             });
@@ -213,11 +221,10 @@ export class EthHelper {
      *
      * @returns the local and remote counts
      */
-    private static async counts(): Promise<{ localVikings: number; remoteNFTs: number; remoteVikings: number; }> {
+    private static async remoteCounts(): Promise<{ totalSupply: number; vikingCount: number; }> {
         return {
-            localVikings: await vikingService.count({}),
-            remoteNFTs: (await EthHelper.CONTRACT.functions.totalSupply())[0]?.toNumber(),
-            remoteVikings: (await EthHelper.CONTRACT.functions.vikingCount())[0]?.toNumber()
+            totalSupply: (await EthHelper.CONTRACT.functions.totalSupply())[0]?.toNumber(),
+            vikingCount: (await EthHelper.CONTRACT.functions.vikingCount())[0]?.toNumber()
         };
     }
 
@@ -240,21 +247,27 @@ export class EthHelper {
     }
 
     /**
-     * Synchronize the local Viking image output directory with the Contract's generated Viking set
+     * Synchronize the local Viking image output directory with the local Viking database
      *
-     * Fills gaps in the image output directory by working on the knowledge that Viking IDs are sequential on the Contract side, generating an image
-     *   for any Viking with an ID in the range (0 => vikingCount) which is not reflected in the output directory
+     * Handles data loss/failed image generations for local Vikings. Executed in recovery stage after database synchronization so as to avoid the need
+     *   to be retrieving data from the Contract, optimizing out a bunch of RPC calls
      *
-     * @param remoteVikingCount the number of generated Vikings in the Contract's set
+     * @param localVikingCount the number of generated Vikings in the Contract's set
      */
-    private static async synchronizeImages(remoteVikingCount: number): Promise<void> {
+    private static async synchronizeImages(localVikingCount: number): Promise<void> {
         const imageNumbers = fs.readdirSync(ImageHelper.VIKING_OUT).map((f) => parseInt(/_([0-9]+)/.exec(f)?.[1] ?? '', 10)).filter((n) => !isNaN(n));
 
-        for (let i = 0; i < remoteVikingCount; i++) {
+        for (let i = 0; i < localVikingCount; i++) {
             if (!imageNumbers.includes(i)) {
                 console.log(`EthHelper [Initialize]: generating Viking Image for ID ${i}`);
 
-                await ImageHelper.generateImage(VikingSpecificationHelper.buildVikingSpecification(i, await EthHelper.CONTRACT.functions.vikings(i)));
+                const vikingData = await vikingService.findOne({ number: i });
+
+                if (!vikingData) {
+                    throw Error(`No local Viking representation for ID ${i}`);
+                }
+
+                await ImageHelper.generateImage(VikingSpecificationHelper.buildVikingSpecification(i, vikingData));
             }
         }
     }
