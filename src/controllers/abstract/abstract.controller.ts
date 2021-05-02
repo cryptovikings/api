@@ -50,8 +50,6 @@ export abstract class AbstractController {
         cb: (req: Request) => Promise<APIResponse<any>>, req: Request, res: Response, next: NextFunction
     ): Promise<void> {
         try {
-            // TODO this is where authorisation may go
-
             const { status, data, pagination } = await cb(req);
 
             res.status(status).json({ data, pagination });

@@ -90,7 +90,7 @@ export abstract class AbstractResourceController<TModel extends APIModel> extend
     /**
      * Generic POST handler, supporting both single and multi Entity creation
      *
-     * // TODO Implements validation for the incoming data
+     * // TODO Implement validation for the incoming data
      *
      * @param req the Express Request
      *
@@ -114,7 +114,7 @@ export abstract class AbstractResourceController<TModel extends APIModel> extend
     /**
      * Generic PUT handler, supporting single Entity updates (no multi Entity for now)
      *
-     * // TODO Implements validation for the incoming data
+     * // TODO Implement validation for the incoming data
      *
      * @param req the Express Request
      *
@@ -209,7 +209,7 @@ export abstract class AbstractResourceController<TModel extends APIModel> extend
             return {
                 status: HttpSuccessCode.OK,
                 data: this.transformer.convertManyForBroadcast(result.docs, select),
-                paginate: {
+                pagination: {
                     total: result.totalDocs,
                     count: result.docs.length,
                     page: result.page ?? 1,

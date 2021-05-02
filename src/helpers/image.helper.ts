@@ -11,21 +11,21 @@ import { VikingSpecification } from '../models/viking/vikingSpecification.model'
 export class ImageHelper {
 
     /**
+     * Names of default Viking Images which will always exist in the output directory
+     */
+    public static readonly DEFAULT_IMAGES = [
+        'viking_unknown.png'
+    ]
+
+    /**
      * Viking Image output folder, derived from the root output folder as provided in the environment
      */
     public static readonly VIKING_OUT = path.join(process.env.IMAGE_OUTPUT_ROOT!, 'vikings');
 
     /**
      * Viking Atlas output folder, derived from the root output folder as provided in the environment
-     *
-     * // TODO technically temporary
      */
     private static readonly ATLAS_OUT = path.join(process.env.IMAGE_OUTPUT_ROOT!, 'atlas');
-
-    /**
-     * Name of the "Unknown" Viking Image file, to be addressed in initialization
-     */
-    private static readonly UNKNOWN_IMAGE = 'viking_unknown.png';
 
     /**
      * Initialize by ensuring that output folders for Viking Images and the Atlas exist, and by copying the "Unknown" Viking Image to the output
@@ -35,10 +35,13 @@ export class ImageHelper {
         ImageHelper.mkDirOptional(ImageHelper.VIKING_OUT);
         ImageHelper.mkDirOptional(ImageHelper.ATLAS_OUT);
 
-        // TODO a little hacky doing this here, but oh well?
-        const unknownOut = path.join(ImageHelper.VIKING_OUT, ImageHelper.UNKNOWN_IMAGE);
-        if (!fs.existsSync(unknownOut)) {
-            fs.copyFileSync(path.join(process.env.IMAGE_INPUT_ROOT!, ImageHelper.UNKNOWN_IMAGE), unknownOut);
+        for (const image of ImageHelper.DEFAULT_IMAGES) {
+            const input = path.join(process.env.IMAGE_INPUT_ROOT!, image);
+            const output = path.join(ImageHelper.VIKING_OUT, image);
+
+            if (!fs.existsSync(output)) {
+                fs.copyFileSync(input, output);
+            }
         }
     }
 

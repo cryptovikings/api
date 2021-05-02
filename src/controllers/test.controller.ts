@@ -65,8 +65,6 @@ class TestController extends AbstractController {
      * Useful for verifying that the generation procedure (either emulated, or Contract-based) is working as intended in testing the full system for
      *   production readiness, as well as in ensuring that post-generation numbers all add up as expected
      *
-     * // TODO quick and dirty, could be majorly improved and functionally split if we choose to migrate this into production code
-     *
      * @returns an APIResponse containing the analysis data
      */
     public async statistics(): Promise<APIResponse<any>> {
@@ -74,7 +72,6 @@ class TestController extends AbstractController {
         const totalVikings = await vikingService.count({});
 
         // list out manually (for now) the various Part Names + Condition Names so as to functionise analysis data production
-        // TODO this could be circumvented by using 'fs' to read in the actual asset names
         const itemConditions = Object.values(ItemCondition).filter((v) => v !== 'TBC');
         const clothesConditions = Object.values(ClothesCondition).filter((v) => v !== 'TBC');
         const bodyNames = ['Devil', 'Pink', 'Robot', 'White', 'Zombie'];

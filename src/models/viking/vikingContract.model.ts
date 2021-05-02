@@ -8,7 +8,6 @@ export interface VikingContractModel {
     readonly name: string;
 
     /** 8-digit 4-component Beard+Body+Face+Top style selectors - 10 -> 99 for Beard, then 0 -> 99 for the others */
-    // TODO are we able to use abi string concatenation in the Contract to normalize Beard back to 0 -> 99?
     readonly appearance: BigNumber;
 
     /** Boots style selector - 0 -> 99 */

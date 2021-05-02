@@ -4,9 +4,10 @@ import { ClothesCondition } from '../enums/clothesCondition.enum';
 import { ItemCondition } from '../enums/itemCondition.enum';
 import { VikingSpecification } from '../models/viking/vikingSpecification.model';
 import { VikingContractModel } from '../models/viking/vikingContract.model';
+import { Viking } from '../models/viking/viking.model';
 
 /**
- * VikingSpecification  Helper, centralising the production of the intermediate VikingSpecification data format, based on given Viking Contract Data,
+ * VikingSpecification Helper, centralising the production of the intermediate VikingSpecification data format, based on given Viking Contract Data,
  *   used in generating Viking Database Data and in producing Viking Images
  *
  * All Contract Number => Type + Condition name mappings are contained within this class
@@ -53,51 +54,103 @@ export class VikingSpecificationHelper {
     }
 
     /**
-     * Core VikingSpecification production method. Take a Viking Number and its associated Viking Contract Data, and produce all the information
-     *   necessary to generate a Viking for the database as well as a Viking Image, including:
+     * Core VikingSpecification production method. Take a Viking Number and some representative data, and produce all the information necessary to
+     *   generate a Viking for the database as well as a Viking Image, including:
      *       - Part Type Names
      *       - Item/Clothing Conditions
      *       - Statistics
      *       - File Paths for each Part
      *
-     * Designed for use as the first step in generating a Viking based on data read from the Contract
+     * Capable of building a specification off of both a Contract Viking representation as well as a Local Viking representation. This enables use
+     *   both in generating Vikings + Images from Contract data in Eth Event Handling, and in generating missing Images based on stored Database Data
      *
      * @param number the ID of the Viking
-     * @param data the Viking Contract Data
+     * @param data the data, in Contract or Local representations
      */
-    public static buildVikingSpecification(number: number, data: VikingContractModel): VikingSpecification {
+    public static buildVikingSpecification(number: number, data: VikingContractModel | Viking['read']): VikingSpecification {
         // simple string transformer for producing file name parts by replacing spaces and hyphens with underscores
         const cleanName = (name: string): string => name.replace(/[\s-]/g, '_').toLowerCase();
 
-        // pull out the statistic numbers from the Contract Data
-        const attack = data.attack.toNumber();
-        const defence = data.defence.toNumber();
-        const intelligence = data.intelligence.toNumber();
-        const speed = data.speed.toNumber();
-        const stamina = data.stamina.toNumber();
+        // statistics
+        let attack: number,
+            defence: number,
+            intelligence: number,
+            speed: number,
+            stamina: number;
 
-        // resolve the boots + bottoms + helmet + sheild + weapon conditions, based on their associated statistic numbers
-        const bootsCondition = VikingSpecificationHelper.resolveClothesCondition(speed);
-        const bottomsCondition = VikingSpecificationHelper.resolveClothesCondition(stamina);
-        const helmetCondition = VikingSpecificationHelper.resolveItemCondition(intelligence);
-        const shieldCondition = VikingSpecificationHelper.resolveItemCondition(defence);
-        const weaponCondition = VikingSpecificationHelper.resolveItemCondition(attack);
+        // conditions
+        let bootsCondition: ClothesCondition,
+            bottomsCondition: ClothesCondition,
+            helmetCondition: ItemCondition,
+            shieldCondition: ItemCondition,
+            weaponCondition: ItemCondition;
 
-        // pull out 8-digit number representing beard + body + face + top generations from the Contract Data
-        const appearance = data.appearance.toString();
+        // part names
+        let bootsType: string,
+            bottomsType: string,
+            helmetType: string,
+            shieldType: string,
+            weaponType: string,
+            beardType: string,
+            bodyType: string,
+            faceType: string,
+            topType: string;
 
-        // resolve the beard + body + face + top type names based on 2-digit sequential slices of the appearance number
-        const beardType = VikingSpecificationHelper.resolveBeardType(parseInt(appearance.slice(0, 2), 10));
-        const bodyType = VikingSpecificationHelper.resolveBodyType(parseInt(appearance.slice(2, 4), 10));
-        const faceType = VikingSpecificationHelper.resolveFaceType(parseInt(appearance.slice(4, 6), 10));
-        const topType = VikingSpecificationHelper.resolveTopType(parseInt(appearance.slice(6, 8), 10));
+        if (VikingSpecificationHelper.isVikingContractModel(data)) {
+            // if we're building from Contract data, resolve
 
-        // resolve the boots + bottoms + helmet + shield + weapon type names based on their associated Contract numbers and resolved Conditions
-        const bootsType = VikingSpecificationHelper.resolveBootsType(data.boots.toNumber(), bootsCondition);
-        const bottomsType = VikingSpecificationHelper.resolveBottomsType(data.bottoms.toNumber(), bottomsCondition);
-        const helmetType = VikingSpecificationHelper.resolveHelmetType(data.helmet.toNumber(), helmetCondition);
-        const shieldType = VikingSpecificationHelper.resolveShieldType(data.shield.toNumber(), shieldCondition);
-        const weaponType = VikingSpecificationHelper.resolveWeaponType(data.weapon.toNumber(), weaponCondition);
+            attack = data.attack.toNumber();
+            defence = data.defence.toNumber();
+            intelligence = data.intelligence.toNumber();
+            speed = data.speed.toNumber();
+            stamina = data.stamina.toNumber();
+
+            bootsCondition = VikingSpecificationHelper.resolveClothesCondition(speed);
+            bottomsCondition = VikingSpecificationHelper.resolveClothesCondition(stamina);
+            helmetCondition = VikingSpecificationHelper.resolveItemCondition(intelligence);
+            shieldCondition = VikingSpecificationHelper.resolveItemCondition(defence);
+            weaponCondition = VikingSpecificationHelper.resolveItemCondition(attack);
+
+            bootsType = VikingSpecificationHelper.resolveBootsType(data.boots.toNumber(), bootsCondition);
+            bottomsType = VikingSpecificationHelper.resolveBottomsType(data.bottoms.toNumber(), bottomsCondition);
+            helmetType = VikingSpecificationHelper.resolveHelmetType(data.helmet.toNumber(), helmetCondition);
+            shieldType = VikingSpecificationHelper.resolveShieldType(data.shield.toNumber(), shieldCondition);
+            weaponType = VikingSpecificationHelper.resolveWeaponType(data.weapon.toNumber(), weaponCondition);
+
+            // resolve the beard + body + face + top type names based on 2-digit sequential slices of the appearance number
+            const appearance = data.appearance.toString();
+
+            beardType = VikingSpecificationHelper.resolveBeardType(parseInt(appearance.slice(0, 2), 10));
+            bodyType = VikingSpecificationHelper.resolveBodyType(parseInt(appearance.slice(2, 4), 10));
+            faceType = VikingSpecificationHelper.resolveFaceType(parseInt(appearance.slice(4, 6), 10));
+            topType = VikingSpecificationHelper.resolveTopType(parseInt(appearance.slice(6, 8), 10));
+        }
+        else {
+            // if we're building from Database data, copy
+
+            attack = data.attack;
+            defence = data.defence;
+            intelligence = data.intelligence;
+            speed = data.speed;
+            stamina = data.stamina;
+
+            bootsCondition = data.boots_condition;
+            bottomsCondition = data.bottoms_condition;
+            helmetCondition = data.helmet_condition;
+            shieldCondition = data.shield_condition;
+            weaponCondition = data.weapon_condition;
+
+            bootsType = data.boots_name;
+            bottomsType = data.bottoms_name;
+            helmetType = data.helmet_name;
+            shieldType = data.shield_name;
+            weaponType = data.weapon_name;
+
+            beardType = data.beard_name;
+            bodyType = data.body_name;
+            faceType = data.face_name;
+            topType = data.top_name;
+        }
 
         // resolve the File Paths for the beard + body + face + top parts
         const beardFile = path.join(VikingSpecificationHelper.directories.beards, `beard_${cleanName(beardType)}.png`);
@@ -198,11 +251,20 @@ export class VikingSpecificationHelper {
     }
 
     /**
+     * Type guard for differentiating between Viking Contract Data and Viking Database Data
+     *
+     * @param data the data to inspect
+     *
+     * @returns whether or not the data is a VikingContractModel
+     */
+    private static isVikingContractModel(data: VikingContractModel | Viking['read']): data is VikingContractModel {
+        return !!(data as VikingContractModel).appearance;
+    }
+
+    /**
      * Resolve the name of a Beard Type selected by a number in the range 10-99 by the Viking Contract Data
      *
      * Since Beard is the first component of the 8-digit Appearance, its lower limit is 10, rather than 0 as with the others
-     *
-     * // TODO due to the above, there's a bug right now where probabilities are not distributed evenly. Just a numbers thing
      *
      * // TODO flesh out with actual names + tune for rarity as asset lists are finalised
      *
@@ -211,19 +273,19 @@ export class VikingSpecificationHelper {
      * @returns the name of the Beard Type
      */
     private static resolveBeardType(selector: number): string {
-        if (selector <= 29) {
+        if (selector <= 27) {
             return '01';
         }
 
-        if (selector <= 49) {
+        if (selector <= 45) {
             return '02';
         }
 
-        if (selector <= 69) {
+        if (selector <= 63) {
             return '03';
         }
 
-        if (selector <= 89) {
+        if (selector <= 81) {
             return '04';
         }
 
