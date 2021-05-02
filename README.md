@@ -34,6 +34,7 @@ NB: built and tested within a Unix (Ubuntu) environment
         - Example (public provider): `"https://matic-mumbai.chainstacklabs.com"`
     - `ETH_WALLET_SECRET` : the private key of the Wallet to sign transactions with
     - `ETH_RECOVER` : `true` or `false` - whether or not to execute Contract <-> API Recovery Routines on launch
+    - `ETH_RECOVER_NAMES` : `true` or `false` - whether or not to execute name "synchronization" on launch. `ETH_RECOVER` must also be true for this to work
     - `ETH_LISTEN` : `true` or `false` - whether or not to run Contract Event Listeners
     - `ETH_LISTEN_INTERVAL` : millisecond interval setting the polling rate for Ethereum Contract Events
         - Example: `"20000"`

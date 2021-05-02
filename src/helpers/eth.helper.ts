@@ -19,8 +19,6 @@ import { ImageHelper } from './image.helper';
  * The logic for not throwing runtime errors produced by EthHelper functionality is just in that these errors occur outside of the context of a
  *   Request - so throwing them would cause the API to crash. All these runtime errors are non-critical and recoverable, and we do not want the API
  *   crashing when one is encountered so as to keep Metadata and Leaderboard functionality running
- *
- * // TODO recovery: local names out of sync?
  */
 export class EthHelper {
 
@@ -48,6 +46,11 @@ export class EthHelper {
      * Whether or not to recover from API/Contract synchronization issues
      */
     private static readonly RECOVER = process.env.ETH_RECOVER === 'true' ?? false;
+
+    /**
+     * Whether or not to "recover" from API/Contract Viking name synchronization issues
+     */
+    private static readonly RECOVER_NAMES = process.env.ETH_RECOVER_NAMES === 'true' ?? false;
 
     /**
      * Whether or not to run Contract event listeners
@@ -184,8 +187,7 @@ export class EthHelper {
 
         // recovery scenario 2: local image corruption/loss or half-actioned VikingGenerated events
         // executed after scenario 1 so that we can safely rely on database Vikings instead of remote Vikings, optimizing for reduced RPC load
-        // sub 1 from the image file count due to the presence of viking_unknown.png
-        if (fs.readdirSync(ImageHelper.VIKING_OUT).length - 1 < localVikings) {
+        if (fs.readdirSync(ImageHelper.VIKING_OUT).length - ImageHelper.DEFAULT_IMAGES.length < localVikings) {
             console.warn('EthHelper [Initialize]: Viking Images missing!');
 
             await EthHelper.synchronizeImages(localVikings).catch((err) => {
@@ -198,8 +200,8 @@ export class EthHelper {
         }
 
         // recovery scenario 3: missed VikingReady events or failed generateViking() calls
-        // executed last so as not to interfere with other recovery types, and so as to enable inline-synchronization of database and images by way of
-        //   the usual event-handling procedure for VikingGenerated
+        // executed third so as not to interfere with other recovery types, and so as to enable inline-synchronization of database and images by way
+        //   of the usual event-handling procedure for VikingGenerated
         if (counts.totalSupply !== counts.vikingCount) {
             console.warn('EthHelper [Initialize]: Contract Vikings are out of sync with totalSupply()!');
 
@@ -211,6 +213,16 @@ export class EthHelper {
         }
         else {
             console.log('EthHelper [Initialize]: Contract Vikings are in sync');
+        }
+
+        // recovery scenario 4: missed NameChange events or otherwise out-of-sync local Viking names
+        // executed last and triggered separately from other recovery scenarios due to RPC load issues. NameChange misses are impractical to detect,
+        //   so the routine is "dumb" in that it just retrieves *all* Vikings from the Contract so as to synchronize
+        if (EthHelper.RECOVER_NAMES) {
+            await EthHelper.synchronizeNames(counts.vikingCount).catch((err) => {
+                console.error('EthHelper [Initialize]: error during name synchronization');
+                throw err;
+            });
         }
     }
 
@@ -264,7 +276,7 @@ export class EthHelper {
                 const vikingData = await vikingService.findOne({ number: i });
 
                 if (!vikingData) {
-                    throw Error(`No local Viking representation for ID ${i}`);
+                    throw Error(`EthHelper [Initialize]: No local Viking representation for ID ${i}`);
                 }
 
                 await ImageHelper.generateImage(VikingSpecificationHelper.buildVikingSpecification(i, vikingData));
@@ -279,14 +291,33 @@ export class EthHelper {
      * Just sends the call request, relying on the API's VikingGenerated event listener to pick up the remote emission so as to inline-synchronize
      *   the Viking database + image output directory as an intrinsic aspect of the procedure
      *
-     * @param nftCount the number of minted NFT's on the Contract
+     * @param totalSupply the number of minted NFT's on the Contract
      * @param the number of generated vikings in the Contract's set
      */
-    private static async synchronizeContract(nftCount: number, vikingCount: number): Promise<void> {
-        for (let i = vikingCount; i < nftCount; i++) {
+    private static async synchronizeContract(totalSupply: number, vikingCount: number): Promise<void> {
+        for (let i = vikingCount; i < totalSupply; i++) {
             console.log(`EthHelper [Initialize]: sending generateViking() call request for ID ${i}`);
 
             await EthHelper.CONTRACT.functions.generateViking(i);
+        }
+    }
+
+    /**
+     * Synchronize the local Viking representations' names with their Contract counterparts
+     *
+     * Universally handles missed NameChange error cases in a dumb and non-RPC-optimal way, due to difficulties in detecting out-of-sync names
+     *   and inherent unreliability of any approach that could be taken to do so
+     *
+     * Activated with a separate environment variable to the other recovery routines so as not to overload the RPC with tonnes of potentially-wasted
+     *   calls, allowing us to specifically run this scenario by choice
+     *
+     * @param vikingCount the number of generated vikings in the Contract's set
+     */
+    private static async synchronizeNames(vikingCount: number): Promise<void> {
+        for (let i = 0; i < vikingCount; i++) {
+            const vikingName = (await EthHelper.CONTRACT.functions.vikings(i)).name;
+
+            await VikingHelper.updateVikingName(i, vikingName);
         }
     }
 
