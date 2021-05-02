@@ -366,23 +366,103 @@ export class VikingSpecificationHelper {
      * @returns the name of the Top Type
      */
     private static resolveTopType(selector: number): string {
-        if (selector <= 19) {
+        if (selector <= 3) {
             return '01';
         }
 
-        if (selector <= 39) {
+        if (selector <= 7) {
             return '02';
         }
 
-        if (selector <= 59) {
+        if (selector <= 11) {
             return '03';
         }
 
-        if (selector <= 79) {
+        if (selector <= 15) {
             return '04';
         }
 
-        return '05';
+        if (selector <= 19) {
+            return '05';
+        }
+
+        if (selector <= 23) {
+            return '06';
+        }
+
+        if (selector <= 27) {
+            return '07';
+        }
+
+        if (selector <= 31) {
+            return '08';
+        }
+
+        if (selector <= 35) {
+            return '09';
+        }
+
+        if (selector <= 39) {
+            return '10';
+        }
+
+        if (selector <= 43) {
+            return '11';
+        }
+
+        if (selector <= 47) {
+            return '12';
+        }
+
+        if (selector <= 51) {
+            return '13';
+        }
+
+        if (selector <= 55) {
+            return '14';
+        }
+
+        if (selector <= 59) {
+            return '15';
+        }
+
+        if (selector <= 63) {
+            return '16';
+        }
+
+        if (selector <= 67) {
+            return '17';
+        }
+
+        if (selector <= 71) {
+            return '18';
+        }
+
+        if (selector <= 75) {
+            return '19';
+        }
+
+        if (selector <= 79) {
+            return '20';
+        }
+
+        if (selector <= 83) {
+            return '21';
+        }
+
+        if (selector <= 87) {
+            return '22';
+        }
+
+        if (selector <= 91) {
+            return '23';
+        }
+
+        if (selector <= 95) {
+            return '24';
+        }
+
+        return '25';
     }
 
     /**
@@ -482,7 +562,7 @@ export class VikingSpecificationHelper {
             return ItemCondition.NONE;
         }
 
-        return 'Placeholder';
+        return '01';
     }
 
     /**

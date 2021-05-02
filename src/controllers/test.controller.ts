@@ -77,11 +77,11 @@ class TestController extends AbstractController {
         const bodyNames = ['Devil', 'Pink', 'Robot', 'White', 'Zombie'];
         const beardNames = ['01', '02', '03', '04', '05'];
         const faceNames = ['01', '02', '03', '04', '05'];
-        const topNames = ['01', '02', '03', '04', '05'];
+        const topNames = Array.from(new Array(25).keys()).map((n) => n + 1 < 10 ? `0${n + 1}` : `${n + 1}`);
         const bootsNames = ['Basic', 'Blue', 'Green', 'Red'];
         const bottomsNames = ['Basic', 'Blue', 'Green', 'Red'];
         const helmetNames = ['None', 'Green', 'Green Horned', 'Red Horned'];
-        const shieldNames = ['None', 'Placeholder'];
+        const shieldNames = ['None', '01'];
         const weaponNames = ['None', 'Placeholder'];
 
         /**
