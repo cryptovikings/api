@@ -2,6 +2,8 @@ import { NextFunction, Request, Response } from 'express';
 import { APIError } from '../models/utils/apiError.model';
 import { HttpErrorCode } from '../enums/httpErrorCode.enum';
 
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 /**
  * Error Handling middleware for the Application
  */

@@ -562,7 +562,15 @@ export class VikingSpecificationHelper {
             return ItemCondition.NONE;
         }
 
-        return '01';
+        if (selector <= 32) {
+            return '01';
+        }
+
+        if (selector <= 65) {
+            return '02';
+        }
+
+        return '03';
     }
 
     /**

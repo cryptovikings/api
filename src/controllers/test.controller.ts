@@ -97,7 +97,7 @@ class TestController extends AbstractController {
         const bootsNames = ['Basic', 'Blue', 'Green', 'Red'];
         const bottomsNames = ['Basic', 'Blue', 'Green', 'Red'];
         const helmetNames = ['None', 'Green', 'Green Horned', 'Red Horned'];
-        const shieldNames = ['None', '01'];
+        const shieldNames = ['None', '01', '02', '03'];
         const weaponNames = ['None', 'Placeholder'];
 
         /**
