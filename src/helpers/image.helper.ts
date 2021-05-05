@@ -92,7 +92,7 @@ export class ImageHelper {
     /**
      * Generate an Atlas for demonstration purposes by picking the first 12 Viking Images and combining them into a single image with GraphicsMagick
      */
-    public static generateAtlas(): Promise<void> {
+    public static generateAtlas(maxVikings: number): Promise<void> {
         // wrap the GM process into a Promise so that it can be awaited
         return new Promise((resolve, reject) => {
             const filePath = path.join(ImageHelper.ATLAS_OUT, 'atlas.png');
@@ -102,7 +102,7 @@ export class ImageHelper {
 
             // montage a random set of 10 (max) Viking Image files
             const count = fs.readdirSync(ImageHelper.VIKING_OUT).filter((f) => !f.includes('unknown')).length;
-            const amount = Math.min(count, 10);
+            const amount = Math.min(count, maxVikings);
             const previous: Array<number> = [];
 
             for (let i = 0; i < amount; i++) {

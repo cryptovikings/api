@@ -64,8 +64,8 @@ class TestController extends AbstractController {
      *
      * @returns An APIResponse containing a success flag
      */
-    public async makeAtlas(): Promise<APIResponse<boolean>> {
-        await ImageHelper.generateAtlas();
+    public async makeAtlas(req: Request): Promise<APIResponse<boolean>> {
+        await ImageHelper.generateAtlas(parseInt(req.params.maxVikings, 10));
 
         return {
             status: HttpSuccessCode.OK,

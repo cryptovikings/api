@@ -5,7 +5,7 @@ import { testController } from '../controllers/test.controller';
 const testRouter = Router();
 
 /** POST /test/atlas => (TestController).makeAtlas */
-testRouter.post('/atlas', testController.bindRequestHandler(testController.makeAtlas));
+testRouter.post('/atlas/:maxVikings', testController.bindRequestHandler(testController.makeAtlas));
 
 /** POST /test/make:count => (TestController).makeVikings */
 testRouter.post('/make/:count', testController.bindRequestHandler(testController.makeVikings));
