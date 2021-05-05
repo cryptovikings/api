@@ -4,6 +4,11 @@
 sudo yum -y update
 sudo yum -y upgrade
 
+# install screen if not present
+if ! which screen > /dev/null; then
+    sudo yum -y install screen
+fi
+
 # install + enable MongoDB if not present
 if ! which mongo > /dev/null; then
     echo "
