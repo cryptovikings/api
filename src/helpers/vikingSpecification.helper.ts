@@ -19,8 +19,10 @@ export class VikingSpecificationHelper {
 
     /**
      * Viking Image Parts input folder, copied over from the environment
+     *
+     * // TODO think about for deployment...
      */
-    private static readonly PARTS_ROOT = process.env.IMAGE_INPUT_ROOT!;
+    private static readonly PARTS_ROOT = path.join(__dirname, '../../', process.env.IMAGE_INPUT_ROOT!);
 
     /**
      * Base URI for Image URLs, using the API URL copied over from the environment

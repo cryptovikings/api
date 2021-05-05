@@ -20,13 +20,17 @@ export class ImageHelper {
 
     /**
      * Viking Image output folder, derived from the root output folder as provided in the environment
+     *
+     * // TODO think about for deployment...
      */
-    public static readonly VIKING_OUT = path.join(process.env.IMAGE_OUTPUT_ROOT!, 'vikings');
+    public static readonly VIKING_OUT = path.join(__dirname, '../../', process.env.IMAGE_OUTPUT_ROOT!, 'vikings');
 
     /**
      * Viking Atlas output folder, derived from the root output folder as provided in the environment
+     *
+     * // TODO think about for deployment...
      */
-    private static readonly ATLAS_OUT = path.join(process.env.IMAGE_OUTPUT_ROOT!, 'atlas');
+    private static readonly ATLAS_OUT = path.join(__dirname, '../../', process.env.IMAGE_OUTPUT_ROOT!, 'atlas');
 
     /**
      * Initialize by ensuring that output folders for Viking Images and the Atlas exist, and by copying the "Unknown" Viking Image to the output
