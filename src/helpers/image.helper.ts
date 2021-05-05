@@ -20,15 +20,11 @@ export class ImageHelper {
 
     /**
      * Viking Image output folder, derived from the root output folder as provided in the environment
-     *
-     * // TODO think about for deployment...
      */
     public static readonly VIKING_OUT = path.join(__dirname, '../../', process.env.IMAGE_OUTPUT_ROOT!, 'vikings');
 
     /**
      * Viking Atlas output folder, derived from the root output folder as provided in the environment
-     *
-     * // TODO think about for deployment...
      */
     private static readonly ATLAS_OUT = path.join(__dirname, '../../', process.env.IMAGE_OUTPUT_ROOT!, 'atlas');
 

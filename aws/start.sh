@@ -1,5 +1,5 @@
 #!/bin/bash
 
-cd /home/ec2-user/api-test
+cd /home/ec2-user/api
 
 screen -S api -d -m node -r ./dist/dotenv.js ./dist/api.js

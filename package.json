@@ -4,7 +4,6 @@
     "scripts": {
         "lint": "eslint --ext .ts --fix src",
         "dev": "ts-node-dev --cls --notify=false --inspect -T -r ./src/dotenv.ts ./src/api.ts",
-        "predist": "npm run lint",
         "dist": "tsc --project ./tsconfig.dist.json"
     },
     "dependencies": {

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+cd /home/ec2-user
+
 # update packages
 sudo yum -y update
 sudo yum -y upgrade
@@ -45,11 +47,11 @@ fi
 if ! which gm > /dev/null; then
     cd /home/ec2-user
 
-    wget ftp://ftp.graphicsmagick.org/pub/GraphicsMagick/GraphicsMagick-LATEST.tar.gz
+    wget ftp://ftp.graphicsmagick.org/pub/GraphicsMagick/1.3/GraphicsMagick-1.3.15.tar.gz
 
-    tar -xvf GraphicsMagick-LATEST.tar.gz
+    tar -xvf GraphicsMagick-1.3.15.tar.gz
 
-    cd GraphicsMagick-LATEST
+    cd GraphicsMagick-1.3.15
 
     ./configure
 
@@ -59,6 +61,6 @@ if ! which gm > /dev/null; then
 
     # clean up
     cd ..
-    rm -rf GraphicsMagick-LATEST
-    rm GraphicsMagick-LATEST.tar.gz
+    rm -rf GraphicsMagick-1.3.15
+    rm GraphicsMagick-1.3.15.tar.gz
 fi
