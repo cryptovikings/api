@@ -6,7 +6,7 @@ npm install
 
 npm run dist
 
-cp src/.env.example dist
+# cp src/.env.example dist
 
 rm -rf node_modules
 
@@ -16,24 +16,24 @@ rm -rf .vscode
 
 rm -rf src
 
-rm .editorconfig
+rm -f -f .editorconfig
 
-rm .eslintignore
+rm -f .eslintignore
 
-rm .eslintrc
+rm -f .eslintrc
 
-rm .gitignore
+rm -f .gitignore
 
-rm architecture.md
+rm -f architecture.md
 
-rm deploy.md
+rm -f deploy.md
 
-rm package-lock.json
+rm -f package-lock.json
 
-rm package.json
+rm -f package.json
 
-rm README.md
+rm -f README.md
 
-rm tsconfig.dist.json
+rm -f tsconfig.dist.json
 
-rm tsconfig.json
+rm -f tsconfig.json

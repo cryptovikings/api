@@ -27,3 +27,4 @@ deploy (to /home/ec2-user/api/)
 
 run (foreground)
     node -r /home/ec2-user/api/dotenv.js /home/ec2-user/api/api.js
+

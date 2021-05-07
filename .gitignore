@@ -3,5 +3,5 @@ node_modules
 dist
 out
 
-src/.env
-scripts/.env
+.env
+!.env.example
