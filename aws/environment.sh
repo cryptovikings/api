@@ -11,10 +11,11 @@ sudo yum -y upgrade
 # install development tools
 sudo yum -y groupinstall "Development Tools"
 
-# install screen if not present
-if ! which screen > /dev/null; then
-    sudo yum -y install screen
-fi
+# install libpng + tools
+sudo yum -y install libpng libpng-devel
+
+# install screen
+sudo yum -y install screen
 
 # install + enable MongoDB if not present
 if ! which mongo > /dev/null; then
@@ -41,11 +42,6 @@ if ! which node > /dev/null; then
     . ~/.nvm/nvm.sh
 
     nvm install node
-fi
-
-# install libpng + libpng-devel if not present
-if ! yum list | grep libpng > /dev/null; then
-    sudo yum -y install libpng libpng-devel
 fi
 
 # install graphicsmagick if not present
