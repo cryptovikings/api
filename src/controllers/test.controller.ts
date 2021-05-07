@@ -1,4 +1,5 @@
 import fs from 'fs';
+import path from 'path';
 import { Request } from 'express';
 
 import { HttpSuccessCode } from '../enums/httpSuccessCode.enum';
@@ -224,7 +225,7 @@ class TestController extends AbstractController {
      */
     public async reset(): Promise<APIResponse<boolean>> {
         await vikingService.deleteMany({ readonly: true });
-        fs.rmSync('out', { force: true, recursive: true });
+        fs.rmSync(path.join(__dirname, '../../', process.env.IMAGE_OUTPUT_ROOT!), { force: true, recursive: true });
 
         ImageHelper.initialize();
 
