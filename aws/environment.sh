@@ -45,6 +45,7 @@ if ! yum list | grep libpng > /dev/null; then
     sudo yum -y install libpng libpng-devel
 fi
 
+# TODO this always runs...which gm never returns anything even directly after install...
 # install graphicsmagick if not present
 if ! which gm > /dev/null; then
     cd /home/ec2-user
