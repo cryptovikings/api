@@ -8,6 +8,9 @@ cd /home/ec2-user
 sudo yum -y update
 sudo yum -y upgrade
 
+# install development tools
+sudo yum -y groupinstall "Development Tools"
+
 # install screen if not present
 if ! which screen > /dev/null; then
     sudo yum -y install screen
@@ -45,7 +48,6 @@ if ! yum list | grep libpng > /dev/null; then
     sudo yum -y install libpng libpng-devel
 fi
 
-# TODO this always runs...which gm never returns anything even directly after install...
 # install graphicsmagick if not present
 if ! which gm > /dev/null; then
     cd /home/ec2-user
@@ -56,11 +58,9 @@ if ! which gm > /dev/null; then
 
     cd GraphicsMagick-1.3.15
 
-    ./configure
+    ./configure --prefix=/usr
 
-    make
-
-    sudo make install
+    make install
 
     # clean up
     cd ..
