@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source /root/.bashrc
+
 cd /home/ec2-user
 
 # update packages

@@ -2,7 +2,11 @@
 
 source /root/.bashrc
 
-cd /home/ec2-user/api
+cd /home/ec2-user
+
+cp .env api
+
+cd api
 
 npm install
 
