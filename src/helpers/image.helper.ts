@@ -33,12 +33,19 @@ export class ImageHelper {
      *   folder if necessary
      */
     public static initialize(): void {
+        console.log('IMAGEHELPER');
+        console.log('VIKING OUT', ImageHelper.VIKING_OUT);
+
+
         ImageHelper.mkDirOptional(ImageHelper.VIKING_OUT);
         ImageHelper.mkDirOptional(ImageHelper.ATLAS_OUT);
 
         for (const image of ImageHelper.DEFAULT_IMAGES) {
-            const input = path.join(process.env.IMAGE_INPUT_ROOT!, image);
+            const input = path.join(__dirname, '../../', process.env.IMAGE_INPUT_ROOT!, image);
             const output = path.join(ImageHelper.VIKING_OUT, image);
+
+            console.log('INPUT', input);
+            console.log('OUTPUT', output);
 
             if (!fs.existsSync(output)) {
                 fs.copyFileSync(input, output);
