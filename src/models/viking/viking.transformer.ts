@@ -23,6 +23,7 @@ class VikingTransformer extends ModelTransformer<Viking> {
         // default keys to pick from the Viking Broadcast-format data
         let keys: Array<keyof Viking['broadcast']> = [
             'name',
+            'number',
             'image',
             'description',
             'external_link',

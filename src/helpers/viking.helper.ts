@@ -74,6 +74,7 @@ export class VikingHelper {
      */
     public static resolveMetadata(data: Viking['read']): Viking['broadcast'] {
         return {
+            number: data.number,
             name: data.name,
             image: data.image,
             description: data.description,

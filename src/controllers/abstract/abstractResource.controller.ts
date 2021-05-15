@@ -36,7 +36,7 @@ export abstract class AbstractResourceController<TModel extends APIModel> extend
     /**
      * Optional default Mongo sort set implementable in the subclass
      *
-     * Enables a Controller to define *primary* sort rule(s) for all multi-Entity GETs
+     * Enables a Controller to define default sort rule(s) for all multi-Entity GETs
      */
     protected readonly defaultSort: APIQuery['sort'] | undefined;
 
@@ -325,13 +325,13 @@ export abstract class AbstractResourceController<TModel extends APIModel> extend
     protected parseQuery(req: Request): APIQuery {
         let where: APIQuery['where'];
         let select: APIQuery['select'];
-        let sort: APIQuery['sort'] = this.defaultSort ?? [];
+        let sort: APIQuery['sort'];
         let paginate: APIQuery['paginate'];
 
         if (Object.keys(req.query).length) {
             where = req.query.where ? JSON.parse(req.query.where as string) : undefined;
             select = req.query.select ? JSON.parse(req.query.select as string) : undefined;
-            sort = req.query.sort ? sort.concat(JSON.parse(req.query.sort as string)) : undefined;
+            sort = req.query.sort ? JSON.parse(req.query.sort as string) : this.defaultSort;
             paginate = req.query.paginate ? JSON.parse(req.query.paginate as string) : undefined;
         }
 

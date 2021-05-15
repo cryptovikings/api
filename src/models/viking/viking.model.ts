@@ -42,6 +42,7 @@ interface VikingStore {
  * Viking Metadata (OpenSea) format to be used as the basis for Viking Broadcast model
  */
 interface VikingMetadata {
+    readonly number: number;
     readonly name: string;
     readonly image: string;
     readonly description: string;
