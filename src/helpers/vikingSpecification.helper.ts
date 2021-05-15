@@ -25,7 +25,7 @@ export class VikingSpecificationHelper {
     /**
      * Base URI for Image URLs, using the API URL copied over from the environment
      */
-    private static readonly IMAGE_BASE_URI = `${process.env.API_URL!}/static`;
+    private static readonly IMAGE_BASE_URI = `${process.env.API_URL!}/images`;
 
     /**
      * Viking Image Parts directories, derived from the PARTS_ROOT
