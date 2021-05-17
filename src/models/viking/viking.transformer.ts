@@ -25,6 +25,7 @@ class VikingTransformer extends ModelTransformer<Viking> {
             'name',
             'number',
             'image',
+            'texture',
             'description',
             'external_link',
             'attributes'

@@ -23,9 +23,14 @@ export class VikingSpecificationHelper {
     private static readonly PARTS_ROOT = path.join(__dirname, '../../', process.env.IMAGE_VIKING_INPUT_ROOT!);
 
     /**
-     * Base URI for Image URLs, using the API URL copied over from the environment
+     * Base URI for Viking Image URLs, using the API URL + Viking Endpoint copied over from the environment
      */
-    private static readonly IMAGE_BASE_URI = `${process.env.API_URL!}${process.env.IMAGE_VIKING_ENDPOINT!}`;
+    private static readonly VIKING_IMAGE_BASE_URL = `${process.env.API_URL!}${process.env.IMAGE_VIKING_ENDPOINT!}`;
+
+    /**
+     * Base URL for Texture Image URLs, using the API URL + Texture Endpoint copied over from the environment
+     */
+    private static readonly TEXTURE_IMAGE_BASE_URL = `${process.env.API_URL!}${process.env.IMAGE_TEXTURE_ENDPOINT!}`;
 
     /**
      * Viking Image Parts directories, derived from the PARTS_ROOT
@@ -43,14 +48,25 @@ export class VikingSpecificationHelper {
     };
 
     /**
-     * Build an Image URL for a given file name
+     * Build a Viking Image URL for a given file name
      *
      * @param fileName the name of the file
      *
-     * @returns the Image URL
+     * @returns the Viking Image URL
      */
-    public static getImageUrl(fileName: string): string {
-        return `${VikingSpecificationHelper.IMAGE_BASE_URI}/${fileName}.png`
+    public static getVikingImageUrl(fileName: string): string {
+        return `${VikingSpecificationHelper.VIKING_IMAGE_BASE_URL}/${fileName}.png`
+    }
+
+    /**
+     * Build a Texture Image URL for a given file name
+     *
+     * @param fileName the name of the file
+     *
+     * @returns the Texture Image URL
+     */
+    public static getTextureImageUrl(fileName: string): string {
+        return `${VikingSpecificationHelper.TEXTURE_IMAGE_BASE_URL}/${fileName}.png`
     }
 
     /**
@@ -207,7 +223,8 @@ export class VikingSpecificationHelper {
         return {
             number,
             name: data.name,
-            imageUrl: VikingSpecificationHelper.getImageUrl(`viking_${number}`),
+            vikingImageUrl: VikingSpecificationHelper.getVikingImageUrl(`viking_${number}`),
+            textureImageUrl: VikingSpecificationHelper.getTextureImageUrl(`viking_${number}`),
             types: {
                 beard: beardType,
                 body: bodyType,
