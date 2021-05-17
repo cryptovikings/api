@@ -1,5 +1,7 @@
-import express, { Application } from 'express';
+import fs from 'fs';
+import path from 'path';
 import http from 'http';
+import express, { Application, NextFunction, Request, Response } from 'express';
 
 import { DatabaseHelper } from './helpers/database.helper';
 import { cors } from './middleware/cors.middleware';
@@ -26,7 +28,22 @@ app.use(cors);
 app.use(process.env.IMAGE_VIKING_ENDPOINT!, express.static(ImageHelper.VIKING_OUT));
 
 // Texture image serves
-app.use(process.env.IMAGE_TEXTURE_ENDPOINT!, express.static(ImageHelper.TEXTURE_OUT));
+// app.use(process.env.IMAGE_TEXTURE_ENDPOINT!, express.static(ImageHelper.TEXTURE_OUT));
+
+app.use(process.env.IMAGE_TEXTURE_ENDPOINT!, (req: Request, res: Response, next: NextFunction): void => {
+    const fileName = req.url;
+
+    if (!fs.existsSync(path.join(__dirname, '../', process.env.IMAGE_TEXTURE_OUTPUT!, fileName))) {
+        ImageHelper.generateTextureImage(fileName).then(() => {
+            res.status(200).json({data: true});
+        }).catch((err) => {
+            res.status(500).json({data: err});
+        });
+    }
+    else {
+        res.status(200).sendFile(path.join(__dirname, '../', process.env.IMAGE_TEXTURE_OUTPUT!, fileName));
+    }
+});
 
 // API router
 app.use('/', apiRouter);

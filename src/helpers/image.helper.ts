@@ -29,6 +29,11 @@ export class ImageHelper {
     public static readonly TEXTURE_OUT = path.join(__dirname, '../../', process.env.IMAGE_TEXTURE_OUTPUT!);
 
     /**
+     * // TODO
+     */
+    private static readonly TEXTURE_INPUT_ROOT = path.join(__dirname, '../../', process.env.IMAGE_TEXTURE_INPUT_ROOT!);
+
+    /**
      * Initialize by ensuring that output folders for Viking Images and the Atlas exist, and by copying the "Unknown" Viking Image to the output
      *   folder if necessary
      */
@@ -51,7 +56,7 @@ export class ImageHelper {
      *
      * @param vikingSpecification the VikingSpecification, derived from Viking Contract Data, containing the Viking information
      */
-    public static async generateImage(vikingSpecification: VikingSpecification): Promise<void> {
+    public static async generateVikingImage(vikingSpecification: VikingSpecification): Promise<void> {
         // wrap the GM process into a Promise so that it can be awaited
         return new Promise((resolve, reject) => {
             // images are named numerically so as to decouple storage + retrieval from the Viking's actual name
@@ -89,44 +94,76 @@ export class ImageHelper {
         });
     }
 
-    /**
-     * Generate an Atlas for demonstration purposes by picking the first 12 Viking Images and combining them into a single image with GraphicsMagick
-     */
-    public static generateAtlas(maxVikings: number): Promise<void> {
-        // wrap the GM process into a Promise so that it can be awaited
+    public static async generateTextureImage(fileName: string): Promise<void> {
         return new Promise((resolve, reject) => {
-            const filePath = path.join(ImageHelper.TEXTURE_OUT, 'atlas.png');
+            const texturePath = path.join(ImageHelper.TEXTURE_OUT, fileName);
+            const vikingImagePath = path.join(ImageHelper.VIKING_OUT, fileName);
 
-            // initialise an empty gm()
-            const image = gm('');
+            // prepare the Viking image and then generate the atlas
+            gm(vikingImagePath)
+                .resize(512, 512)
+                .write(texturePath, (err) => {
+                    if (err) {
+                        reject(err);
+                    }
+                    else {
+                        const image = gm('');
 
-            // montage a random set of 10 (max) Viking Image files
-            const count = fs.readdirSync(ImageHelper.VIKING_OUT).filter((f) => !f.includes('unknown')).length;
-            const amount = Math.min(count, maxVikings);
-            const previous: Array<number> = [];
+                        // ensure the Viking comes first
+                        image.montage(texturePath);
 
-            for (let i = 0; i < amount; i++) {
-                let number = TestHelper.random(count);
+                        for (const file of fs.readdirSync(ImageHelper.TEXTURE_INPUT_ROOT)) {
+                            image.montage(path.join(ImageHelper.TEXTURE_INPUT_ROOT, file));
+                        }
 
-                while (previous.includes(number)) {
-                    number = TestHelper.random(count);
-                }
-
-                previous.push(number);
-
-                const fileName = `viking_${number}.png`;
-                const file = path.join(ImageHelper.VIKING_OUT, fileName);
-
-                image.montage(file);
-            }
-
-            // configure and output the combined image
-            image
-                .geometry('+0+0')
-                .background('transparent')
-                .write(filePath, (err) => err ? reject(err) : resolve());
+                        image
+                            .geometry('+0+0')
+                            .background('transparent')
+                            .write(texturePath, (err) => err ? reject(err) : resolve());
+                    }
+                });
         });
     }
+
+    // /**
+    // eslint-disable-next-line
+    //  * Generate an Atlas for demonstration purposes by picking the first 12 Viking Images and combining them into a single image with GraphicsMagick
+    //  */
+    // public static generateVikingAtlas(maxVikings: number): Promise<void> {
+    //     // wrap the GM process into a Promise so that it can be awaited
+    //     return new Promise((resolve, reject) => {
+    //         const filePath = path.join(ImageHelper.TEXTURE_OUT, 'atlas.png');
+
+    //         // initialise an empty gm()
+    //         const image = gm('');
+
+    //         // montage a random set of 10 (max) Viking Image files
+    //         const count = fs.readdirSync(ImageHelper.VIKING_OUT).filter((f) => !f.includes('unknown')).length;
+    //         const amount = Math.min(count, maxVikings);
+    //         const previous: Array<number> = [];
+
+    //         for (let i = 0; i < amount; i++) {
+    //             let number = TestHelper.random(count);
+
+    //             while (previous.includes(number)) {
+    //                 number = TestHelper.random(count);
+    //             }
+
+    //             previous.push(number);
+
+    //             const fileName = `viking_${number}.png`;
+    //             const file = path.join(ImageHelper.VIKING_OUT, fileName);
+
+    //             image.montage(file);
+    //         }
+
+    //         // configure and output the combined image
+    //         image
+    //             .geometry('+0+0')
+    //             .background('transparent')
+    //             .write(filePath, (err) => err ? reject(err) : resolve());
+    //     });
+    // }
 
     /**
      * Internal shorthand utility for creating an output directory only if it doesn't already exist

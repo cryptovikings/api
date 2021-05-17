@@ -286,7 +286,7 @@ export class EthHelper {
                     throw Error(`EthHelper [Initialize]: No local Viking representation for ID ${i}`);
                 }
 
-                await ImageHelper.generateImage(VikingSpecificationHelper.buildVikingSpecification(i, vikingData));
+                await ImageHelper.generateVikingImage(VikingSpecificationHelper.buildVikingSpecification(i, vikingData));
             }
         }
     }
@@ -342,7 +342,7 @@ export class EthHelper {
 
         // run generations in parallel
         await Promise.all([
-            ImageHelper.generateImage(vikingSpecification),
+            ImageHelper.generateVikingImage(vikingSpecification),
             VikingHelper.createViking(vikingSpecification)
         ]);
 
