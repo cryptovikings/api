@@ -109,6 +109,10 @@ export class ImageHelper {
         return new Promise((resolve, reject) => {
             const vikingImagePath = path.join(ImageHelper.VIKING_OUT, fileName);
 
+            if (!fs.existsSync(vikingImagePath)) {
+                reject(`Failed to retrieve texture file : Viking Image ${fileName} does not exist`);
+            }
+
             // prepare the Viking image and then generate the atlas
             gm(vikingImagePath)
                 .resize(512, 512)

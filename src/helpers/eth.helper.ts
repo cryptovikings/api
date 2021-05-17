@@ -324,7 +324,7 @@ export class EthHelper {
         for (let i = 0; i < vikingCount; i++) {
             const vikingName = (await EthHelper.CONTRACT.functions.vikings(i)).name;
 
-            await VikingHelper.updateVikingName(i, vikingName);
+            await vikingService.updateOne({ number: i }, { name: vikingName });
         }
     }
 
@@ -390,7 +390,7 @@ export class EthHelper {
         console.log(`EthHelper [NameChange]: NameChange - ID ${number} - name ${name}`);
 
         // catch errors but do not throw them so as to allow the API to continue running
-        VikingHelper.updateVikingName(number, name).catch((err) => {
+        vikingService.updateOne({ number }, { name }).catch((err) => {
             console.error('EthHelper [NameChange]: Error during Viking name update:', err);
         });
     }

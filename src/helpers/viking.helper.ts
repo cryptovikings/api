@@ -54,20 +54,6 @@ export class VikingHelper {
     }
 
     /**
-     * Given a Viking Number and a new name, update a Viking in the Database
-     *
-     * Effectively just a wrapper for (vikingService).updateOne()
-     *
-     * @param number the Number of the Viking to update
-     * @param name the new name to give to the Viking
-     *
-     * @returns the updated Viking data
-     */
-    public static async updateVikingName(number: number, name: string): Promise<Viking['read']> {
-        return vikingService.updateOne({ number }, { name });
-    }
-
-    /**
      * Given an as-stored Viking Database structure, produce the equivalent (OpenSea) Metadata
      *
      * @param data the Viking Read-format data to transform
