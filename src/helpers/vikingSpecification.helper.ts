@@ -223,8 +223,8 @@ export class VikingSpecificationHelper {
         return {
             number,
             name: data.name,
-            vikingImageUrl: VikingSpecificationHelper.getVikingImageUrl(`viking_${number}`),
-            textureImageUrl: VikingSpecificationHelper.getTextureImageUrl(`viking_${number}`),
+            image: VikingSpecificationHelper.getVikingImageUrl(`viking_${number}`),
+            texture: VikingSpecificationHelper.getTextureImageUrl(`viking_${number}`),
             types: {
                 beard: beardType,
                 body: bodyType,

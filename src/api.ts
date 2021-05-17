@@ -1,7 +1,5 @@
-import fs from 'fs';
-import path from 'path';
 import http from 'http';
-import express, { Application, NextFunction, Request, Response } from 'express';
+import express, { Application } from 'express';
 
 import { DatabaseHelper } from './helpers/database.helper';
 import { cors } from './middleware/cors.middleware';

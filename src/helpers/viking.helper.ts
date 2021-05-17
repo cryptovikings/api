@@ -21,8 +21,8 @@ export class VikingHelper {
         return vikingService.createOne({
             number: vikingSpecification.number,
             name: vikingSpecification.name,
-            vikingImageUrl: vikingSpecification.vikingImageUrl,
-            textureImageUrl: vikingSpecification.textureImageUrl,
+            image: vikingSpecification.image,
+            texture: vikingSpecification.texture,
 
             description: 'A unique and special viking',
 
@@ -64,8 +64,8 @@ export class VikingHelper {
         return {
             number: data.number,
             name: data.name,
-            image: data.vikingImageUrl,
-            texture: data.textureImageUrl,
+            image: data.image,
+            texture: data.texture,
             description: data.description,
             external_link: `${process.env.FRONT_END_URL!}/viking/${data.number}`,
 

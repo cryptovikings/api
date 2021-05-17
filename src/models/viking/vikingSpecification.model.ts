@@ -18,8 +18,8 @@ import { ItemCondition } from '../../enums/itemCondition.enum';
 export interface VikingSpecification {
     number: number;
     name: string;
-    vikingImageUrl: string;
-    textureImageUrl: string;
+    image: string;
+    texture: string;
     types: {
         beard: string;
         body: string;
