@@ -15,20 +15,20 @@ export class ImageHelper {
      */
     public static readonly DEFAULT_IMAGES = [
         'viking_unknown.png'
-    ]
+    ];
 
     /**
-     * Viking Image output folder, derived from the root output folder as provided in the environment
+     * Viking Image output folder, derived from the viking output folder as provided in the environment
      */
     public static readonly VIKING_OUT = path.join(__dirname, '../../', process.env.IMAGE_VIKING_OUTPUT!);
 
     /**
-     * Viking Atlas output folder, derived from the root output folder as provided in the environment
+     * Texture Image output folder, derived from the texture output folder as provided in the environment
      */
     public static readonly TEXTURE_OUT = path.join(__dirname, '../../', process.env.IMAGE_TEXTURE_OUTPUT!);
 
     /**
-     * // TODO
+     * Texture Image input folder, derived from the texture input folder as provided in the environment
      */
     private static readonly TEXTURE_INPUT_ROOT = path.join(__dirname, '../../', process.env.IMAGE_TEXTURE_INPUT_ROOT!);
 
@@ -94,10 +94,16 @@ export class ImageHelper {
     }
 
     /**
-     * // TODO
+     * Given a File Name, retrieve a Texture Image for use in front-end games
      *
-     * @param fileName
-     * @returns
+     * Transparently generates the Texture Image if it does not already exist, producing the more efficient on-demand-generation procedure for Texture
+     *   Images, as rationalised in the TextureController's documentation
+     *
+     * Texture Images are named with the Viking Number, in a 1-1 mapping of Viking Data => Viking Image => Texture Image
+     *
+     * @param fileName the name of the Texture Image file to retrieve
+     *
+     * @returns the file path of the extant or generated Texture Image file
      */
     public static async getTextureImage(fileName: string): Promise<string> {
         const texturePath = path.join(ImageHelper.TEXTURE_OUT, fileName);
@@ -113,17 +119,18 @@ export class ImageHelper {
                 reject(`Failed to retrieve texture file : Viking Image ${fileName} does not exist`);
             }
 
-            // prepare the Viking image and then generate the atlas
+            // prepare the Viking image by downsizing it for inclusion in the Atlas
             gm(vikingImagePath)
-                .resize(512, 512)
+                .resize(256, 256)
                 .write(texturePath, (err) => {
                     if (err) {
                         reject(err);
                     }
                     else {
+                        // now that the appropriately-sized Viking Image is ready, generate the Texture Image by atlasing it with other game textures
                         const image = gm('');
 
-                        // ensure the Viking comes first
+                        // ensure that Viking comes first (place it in position (0,0) for front-end texture sampling)
                         image.montage(texturePath);
 
                         for (const file of fs.readdirSync(ImageHelper.TEXTURE_INPUT_ROOT)) {

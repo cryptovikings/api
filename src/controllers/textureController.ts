@@ -8,15 +8,27 @@ import { HttpErrorCode } from '../enums/httpErrorCode.enum';
 import { vikingService } from '../services/viking.service';
 
 /**
- * // TODO
+ * The TextureController, designed to handle the /texture route collection
+ *
+ * Implements a Texture Image retrieval routine, including transparent on-demand generation
+ *
+ * Rationale: Texture Images are not a necessary product of Viking generations; they may never be requested for a given Viking. As such, it's
+ *   inefficient for storage + processing to generate them "inline" with Viking Data and Viking Images. It's best to generate them once at the time
+ *   they are first requested
+ *
+ * Texture-retrieving routes are handled separately from the Viking collection so as not to imply that a Texture Image is actually a sub-resource
+ *   of Viking, as well as to allow it to sit alongside Viking Image retrieval as a seemingly-static-file-serving first-class resource endpoint
  */
 class TextureController extends AbstractController {
 
     /**
-     * // TODO
+     * Custom handler for the route /texture/:filename
      *
-     * @param req
-     * @returns
+     * Do some error handling to ensure that the request is valid, and defer to the ImageHelper in generating/retrieving the file
+     *
+     * @param req the Express Request
+     *
+     * @returns an APIResponse containing the Texture Image filepath
      */
     public async retrieveTextureImage(req: Request): Promise<APIResponse<string>> {
         const fileName = req.params.fileName;
@@ -42,4 +54,5 @@ class TextureController extends AbstractController {
     }
 }
 
+/** Export a singleton of the TextureController so that we can reference its instance methods in Router configuration */
 export const textureController = new TextureController();
