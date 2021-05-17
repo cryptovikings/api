@@ -6,6 +6,7 @@ import { HttpSuccessCode } from '../../enums/httpSuccessCode.enum';
 export interface APIResponse<T> {
     readonly status: HttpSuccessCode;
     readonly data: T;
+    readonly isFile?: boolean;
     readonly pagination?: {
         readonly total: number;
         readonly count: number;

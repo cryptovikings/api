@@ -50,9 +50,14 @@ export abstract class AbstractController {
         cb: (req: Request) => Promise<APIResponse<any>>, req: Request, res: Response, next: NextFunction
     ): Promise<void> {
         try {
-            const { status, data, pagination } = await cb(req);
+            const { status, data, pagination, isFile } = await cb(req);
 
-            res.status(status).json({ data, pagination });
+            if (isFile) {
+                res.status(status).sendFile(data);
+            }
+            else {
+                res.status(status).json({ data, pagination });
+            }
         }
         catch (e) {
             // pipe any thrown errors directly through to our Error Handling Middleware

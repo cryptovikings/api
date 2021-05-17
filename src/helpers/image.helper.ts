@@ -3,7 +3,6 @@ import fs from 'fs';
 import gm from 'gm';
 
 import { VikingSpecification } from '../models/viking/vikingSpecification.model';
-import { TestHelper } from './test.helper';
 
 /**
  * Image Helper, centralising logic for the production of Viking Images based on intermediate Contract-Data-based VikingSpecification, encapsulating
@@ -94,9 +93,20 @@ export class ImageHelper {
         });
     }
 
-    public static async generateTextureImage(fileName: string): Promise<void> {
+    /**
+     * // TODO
+     *
+     * @param fileName
+     * @returns
+     */
+    public static async getTextureImage(fileName: string): Promise<string> {
+        const texturePath = path.join(ImageHelper.TEXTURE_OUT, fileName);
+
+        if (fs.existsSync(texturePath)) {
+            return texturePath;
+        }
+
         return new Promise((resolve, reject) => {
-            const texturePath = path.join(ImageHelper.TEXTURE_OUT, fileName);
             const vikingImagePath = path.join(ImageHelper.VIKING_OUT, fileName);
 
             // prepare the Viking image and then generate the atlas
@@ -119,7 +129,7 @@ export class ImageHelper {
                         image
                             .geometry('+0+0')
                             .background('transparent')
-                            .write(texturePath, (err) => err ? reject(err) : resolve());
+                            .write(texturePath, (err) => err ? reject(err) : resolve(texturePath));
                     }
                 });
         });
