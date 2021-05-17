@@ -22,8 +22,11 @@ app.use(express.urlencoded({ extended: false }));
 // custom cors middleware
 app.use(cors);
 
-// Image hosting
-app.use('/images', express.static(ImageHelper.VIKING_OUT));
+// Viking image serves
+app.use(process.env.IMAGE_VIKING_ENDPOINT!, express.static(ImageHelper.VIKING_OUT));
+
+// Texture image serves
+app.use(process.env.IMAGE_TEXTURE_ENDPOINT!, express.static(ImageHelper.TEXTURE_OUT));
 
 // API router
 app.use('/', apiRouter);

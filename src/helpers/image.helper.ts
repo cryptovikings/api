@@ -21,12 +21,12 @@ export class ImageHelper {
     /**
      * Viking Image output folder, derived from the root output folder as provided in the environment
      */
-    public static readonly VIKING_OUT = path.join(__dirname, '../../', process.env.IMAGE_OUTPUT_ROOT!, 'vikings');
+    public static readonly VIKING_OUT = path.join(__dirname, '../../', process.env.IMAGE_VIKING_OUTPUT!);
 
     /**
      * Viking Atlas output folder, derived from the root output folder as provided in the environment
      */
-    private static readonly ATLAS_OUT = path.join(__dirname, '../../', process.env.IMAGE_OUTPUT_ROOT!, 'atlas');
+    public static readonly TEXTURE_OUT = path.join(__dirname, '../../', process.env.IMAGE_TEXTURE_OUTPUT!);
 
     /**
      * Initialize by ensuring that output folders for Viking Images and the Atlas exist, and by copying the "Unknown" Viking Image to the output
@@ -34,10 +34,10 @@ export class ImageHelper {
      */
     public static initialize(): void {
         ImageHelper.mkDirOptional(ImageHelper.VIKING_OUT);
-        ImageHelper.mkDirOptional(ImageHelper.ATLAS_OUT);
+        ImageHelper.mkDirOptional(ImageHelper.TEXTURE_OUT);
 
         for (const image of ImageHelper.DEFAULT_IMAGES) {
-            const input = path.join(__dirname, '../../', process.env.IMAGE_INPUT_ROOT!, image);
+            const input = path.join(__dirname, '../../', process.env.IMAGE_VIKING_INPUT_ROOT!, image);
             const output = path.join(ImageHelper.VIKING_OUT, image);
 
             if (!fs.existsSync(output)) {
@@ -95,7 +95,7 @@ export class ImageHelper {
     public static generateAtlas(maxVikings: number): Promise<void> {
         // wrap the GM process into a Promise so that it can be awaited
         return new Promise((resolve, reject) => {
-            const filePath = path.join(ImageHelper.ATLAS_OUT, 'atlas.png');
+            const filePath = path.join(ImageHelper.TEXTURE_OUT, 'atlas.png');
 
             // initialise an empty gm()
             const image = gm('');

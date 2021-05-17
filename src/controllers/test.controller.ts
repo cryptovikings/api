@@ -225,7 +225,8 @@ class TestController extends AbstractController {
      */
     public async reset(): Promise<APIResponse<boolean>> {
         await vikingService.deleteMany({ readonly: true });
-        fs.rmSync(path.join(__dirname, '../../', process.env.IMAGE_OUTPUT_ROOT!), { force: true, recursive: true });
+        fs.rmSync(path.join(__dirname, '../../', process.env.IMAGE_VIKING_OUTPUT!), { force: true, recursive: true });
+        fs.rmSync(path.join(__dirname, '../../', process.env.IMAGE_TEXTURE_OUTPUT!), { force: true, recursive: true });
 
         ImageHelper.initialize();
 

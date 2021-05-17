@@ -20,12 +20,12 @@ export class VikingSpecificationHelper {
     /**
      * Viking Image Parts input folder, copied over from the environment
      */
-    private static readonly PARTS_ROOT = path.join(__dirname, '../../', process.env.IMAGE_INPUT_ROOT!);
+    private static readonly PARTS_ROOT = path.join(__dirname, '../../', process.env.IMAGE_VIKING_INPUT_ROOT!);
 
     /**
      * Base URI for Image URLs, using the API URL copied over from the environment
      */
-    private static readonly IMAGE_BASE_URI = `${process.env.API_URL!}/images`;
+    private static readonly IMAGE_BASE_URI = `${process.env.API_URL!}${process.env.IMAGE_VIKING_ENDPOINT!}`;
 
     /**
      * Viking Image Parts directories, derived from the PARTS_ROOT
