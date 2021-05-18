@@ -1,12 +1,16 @@
 import { Request, Response, Router } from 'express';
 import { vikingRouter } from './viking.router';
 import { testRouter } from './test.router';
+import { textureRouter } from './texture.router';
 
 /** The Router handling the top-level /api route collection, incorporating subordinate collection-handling Routers */
 const apiRouter = Router();
 
-// /metadata collection is handled by the metadataRouter
+// /viking collection is handled by the vikingRouter
 apiRouter.use('/viking', vikingRouter);
+
+// /texture collection is handled by the textureRouter
+apiRouter.use('/texture', textureRouter);
 
 // /test collection is handled by the testRouter
 apiRouter.use('/test', testRouter);

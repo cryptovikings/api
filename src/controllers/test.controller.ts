@@ -56,23 +56,23 @@ class TestController extends AbstractController {
         };
     }
 
-    /**
-     * Custom route handler for the route /test/atlas
-     *
-     * Generate a demonstration Atlas with a maximum of 12 Vikings randomly selected from the output set
-     *
-     * @param req the Express Request
-     *
-     * @returns An APIResponse containing a success flag
-     */
-    public async makeAtlas(req: Request): Promise<APIResponse<boolean>> {
-        await ImageHelper.generateAtlas(parseInt(req.params.maxVikings, 10));
+    // /**
+    //  * Custom route handler for the route /test/atlas
+    //  *
+    //  * Generate a demonstration Atlas with a maximum of 12 Vikings randomly selected from the output set
+    //  *
+    //  * @param req the Express Request
+    //  *
+    //  * @returns An APIResponse containing a success flag
+    //  */
+    // public async makeAtlas(req: Request): Promise<APIResponse<boolean>> {
+    //     await ImageHelper.generateVikingAtlas(parseInt(req.params.maxVikings, 10));
 
-        return {
-            status: HttpSuccessCode.OK,
-            data: true
-        };
-    }
+    //     return {
+    //         status: HttpSuccessCode.OK,
+    //         data: true
+    //     };
+    // }
 
     /**
      * Custom handler for the route /test/stats
@@ -225,7 +225,8 @@ class TestController extends AbstractController {
      */
     public async reset(): Promise<APIResponse<boolean>> {
         await vikingService.deleteMany({ readonly: true });
-        fs.rmSync(path.join(__dirname, '../../', process.env.IMAGE_OUTPUT_ROOT!), { force: true, recursive: true });
+        fs.rmSync(path.join(__dirname, '../../', process.env.IMAGE_VIKING_OUTPUT!), { force: true, recursive: true });
+        fs.rmSync(path.join(__dirname, '../../', process.env.IMAGE_TEXTURE_OUTPUT!), { force: true, recursive: true });
 
         ImageHelper.initialize();
 

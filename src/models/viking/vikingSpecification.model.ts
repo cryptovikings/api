@@ -13,12 +13,13 @@ import { ItemCondition } from '../../enums/itemCondition.enum';
  *     - Item/Clothing Conditions (derived from Contract Data Statistics)
  *     - Statistics (direct from Contract)
  *     - File Paths for each part
- *     - the Viking's Image URL
+ *     - the Viking's Image URLs
  */
 export interface VikingSpecification {
     number: number;
     name: string;
-    imageUrl: string;
+    image: string;
+    texture: string;
     types: {
         beard: string;
         body: string;

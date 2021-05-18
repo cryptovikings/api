@@ -1,5 +1,5 @@
-import express, { Application } from 'express';
 import http from 'http';
+import express, { Application } from 'express';
 
 import { DatabaseHelper } from './helpers/database.helper';
 import { cors } from './middleware/cors.middleware';
@@ -22,8 +22,8 @@ app.use(express.urlencoded({ extended: false }));
 // custom cors middleware
 app.use(cors);
 
-// Image hosting
-app.use('/images', express.static(ImageHelper.VIKING_OUT));
+// Viking image serves
+app.use(process.env.IMAGE_VIKING_ENDPOINT!, express.static(ImageHelper.VIKING_OUT));
 
 // API router
 app.use('/', apiRouter);

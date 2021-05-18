@@ -58,7 +58,7 @@ export abstract class AbstractResourceController<TModel extends APIModel> extend
     constructor(
         protected readonly service: AbstractService<TModel>,
         protected readonly transformer: ModelTransformer<TModel>,
-        protected readonly identifierName: string
+        public readonly identifierName: string
     ) {
         super();
     }
