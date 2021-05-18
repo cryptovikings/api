@@ -2,21 +2,19 @@
 
 NB: built and tested within a Unix (Ubuntu) environment
 
-
 ## Requirements
 
 - **GraphicsMagick**
     - **Ubuntu**: `sudo apt-get install graphicsmagick`
     - **Windows**: [Installer](http://www.graphicsmagick.org/INSTALL-windows.html#retrieve-install-package)
 
-
 ## Setup
 
 - clone
 - `npm install`
-- `touch ./src/.env`
+- `touch ./.env`
 
-- Fill out `src/.env` based on `src/.env.example`:
+- Fill out `./.env` based on `./.env.example`:
     - `SERVER_PORT` : the port to run the API on
         - Example: `"8080"`
     - `API_URL` : the URL for the API
@@ -24,11 +22,17 @@ NB: built and tested within a Unix (Ubuntu) environment
     - `FRONT_END_URL` : the URL for the front end
         - Example: `"http://localhost:3000"`
     - `DATABASE_NAME` : the database name to use
-        - Example: `"crypto_api"`
-    - `IMAGE_OUTPUT_ROOT` : the root output folder for images
-        - Example: `"out/"`
-    - `IMAGE_INPUT_ROOT` : the root input folder for assets
-        - Example: `"res/"`
+        - xample: `"crypto_api"`
+    - `IMAGE_VIKING_INPUT_ROOT` : root folder for Viking Part Images
+        - Example: `"res/viking"`
+    - `IMAGE_TEXTURE_INPUT_ROOT` : root folder for Texture Images
+        - Example: `"res/texture"`
+    - `IMAGE_VIKING_OUTPUT` : output folder for Viking Images
+        - Example: `"out/viking"`
+    - `IMAGE_TEXTURE_OUTPUT` : output folder for Texture Atlases
+        - Example: `"out/texture"`
+    - `IMAGE_VIKING_ENDPOINT` : API endpoint to use in serving Viking Images from `IMAGE_VIKING_OUTPUT`
+        - Example: `"/image"`
     - `ETH_CONTRACT_ADDRESS` : the address of the Contract
     - `ETH_PROVIDER_URL` : the JSON RPC Provider URL
         - Example (public provider): `"https://matic-mumbai.chainstacklabs.com"`
@@ -38,7 +42,6 @@ NB: built and tested within a Unix (Ubuntu) environment
     - `ETH_LISTEN` : `true` or `false` - whether or not to run Contract Event Listeners
     - `ETH_LISTEN_INTERVAL` : millisecond interval setting the polling rate for Ethereum Contract Events
         - Example: `"20000"`
-
 
 ## Scripts
 
