@@ -1,5 +1,5 @@
 import { PaginateOptions, PaginateResult, PaginateModel } from 'mongoose';
-import _mergeWith from 'lodash.mergewith';
+import _mergeWith from 'lodash/mergeWith';
 
 import { ErrorHelper } from '../../helpers/error.helper';
 import { APIQuery } from '../../models/utils/apiQuery.model';

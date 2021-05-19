@@ -1,6 +1,9 @@
+import _pick from 'lodash/pick';
+
 import { VikingSpecification } from '../models/viking/vikingSpecification.model';
 import { Viking } from '../models/viking/viking.model';
 import { vikingService } from '../services/viking.service';
+import { APIQuery } from '../models/utils/apiQuery.model';
 
 /**
  * VikingHelper, centralising logic for the production of Viking Database Data based on intermediate Contract-Data-based VikingSpecification, and of
@@ -23,6 +26,7 @@ export class VikingHelper {
             name: vikingSpecification.name,
             image: vikingSpecification.image,
             texture: vikingSpecification.texture,
+            external_link: `${process.env.FRONT_END_URL!}/viking/${vikingSpecification.number}`,
 
             description: 'A unique and special viking',
 
@@ -60,123 +64,185 @@ export class VikingHelper {
      *
      * @returns the transformed Viking Broadcast-format data
      */
-    public static resolveMetadata(data: Viking['read']): Viking['broadcast'] {
-        return {
-            number: data.number,
-            name: data.name,
-            image: data.image,
-            texture: data.texture,
-            description: data.description,
-            external_link: `${process.env.FRONT_END_URL!}/viking/${data.number}`,
+    public static resolveMetadata(data: Viking['read'], select: APIQuery['select']): DeepPartial<Viking['broadcast']> {
+        // default keys to pick from the Viking Broadcast-format data
+        let keys: Array<keyof Viking['write']> = [
+            'name',
+            'number',
+            'image',
+            'texture',
+            'description'
+        ];
 
-            attributes: [
-                // beard appearance
-                {
-                    trait_type: 'Beard',
-                    value: data.beard_name,
-                },
-                // body appearance
-                {
-                    trait_type: 'Body',
-                    value: data.body_name,
-                },
-                // face appearance
-                {
-                    trait_type: 'Face',
-                    value: data.face_name,
-                },
-                // top appearance
-                {
-                    trait_type: 'Top',
-                    value: data.top_name,
-                },
+        let attributeKeys: Array<keyof Viking['write']> = [
+            'beard_name',
+            'body_name',
+            'face_name',
+            'top_name',
 
-                // Boots appearance
-                {
-                    trait_type: 'Boots Type',
-                    value: data.boots_name,
-                },
-                // Boots condition
-                {
-                    trait_type: 'Boots Condition',
-                    value: data.boots_condition
-                },
-                // speed statistic
-                {
-                    trait_type: 'Speed',
-                    value: data.speed,
-                    max_value: 99
-                },
+            'boots_name',
+            'boots_condition',
+            'speed',
 
-                // Bottoms appearance
-                {
-                    trait_type: 'Bottoms Type',
-                    value: data.bottoms_name,
-                },
-                // Bottoms condition
-                {
-                    trait_type: 'Bottoms Condition',
-                    value: data.bottoms_condition
-                },
-                // stamina statistic
-                {
-                    trait_type: 'Stamina',
-                    value: data.stamina,
-                    max_value: 99
-                },
+            'bottoms_name',
+            'bottoms_condition',
+            'stamina',
 
-                // Helmet appearance
-                {
-                    trait_type: 'Helmet Type',
-                    value: data.helmet_name,
-                },
-                // Helmet condition
-                {
-                    trait_type: 'Helmet Condition',
-                    value: data.helmet_condition
-                },
-                // intelligence statistic
-                {
-                    trait_type: 'Intelligence',
-                    value: data.intelligence,
-                    max_value: 99
-                },
+            'helmet_name',
+            'helmet_condition',
+            'intelligence',
 
-                // Shield appearance
-                {
-                    trait_type: 'Shield Type',
-                    value: data.shield_name,
-                },
-                // Shield condition
-                {
-                    trait_type: 'Shield Condition',
-                    value: data.shield_condition
-                },
-                // defence statistic
-                {
-                    trait_type: 'Defence',
-                    value: data.defence,
-                    max_value: 99
-                },
+            'shield_name',
+            'shield_condition',
+            'defence',
 
+            'weapon_name',
+            'weapon_condition',
+            'attack'
+        ]
 
-                // Weapon appearance
-                {
-                    trait_type: 'Weapon Type',
-                    value: data.weapon_name,
-                },
-                // Weapon condition
-                {
-                    trait_type: 'Weapon Condition',
-                    value: data.weapon_condition
-                },
-                // attack statistic
-                {
-                    trait_type: 'Attack',
-                    value: data.attack,
-                    max_value: 99
-                }
-            ]
-        };
+        // handle projection by augmenting the keys to pick
+        if (select && select.length) {
+            const omitKeys = select.filter((key) => key.startsWith('-')).map((key) => key.substr(1));
+            const pickKeys = select.filter((key) => !key.startsWith('-'));
+
+            if (omitKeys.length) {
+                keys = keys.filter((key) => !omitKeys.includes(key));
+                attributeKeys = attributeKeys.filter((key) => !omitKeys.includes(key));
+            }
+            else if (pickKeys.length) {
+                keys = keys.filter((key) => pickKeys.includes(key));
+                attributeKeys = attributeKeys.filter((key) => pickKeys.includes(key));
+            }
+        }
+
+        const attributes: Partial<Viking['broadcast']['attributes']> = [];
+
+        if (attributeKeys.includes('beard_name')) {
+            attributes.push({
+                trait_type: 'Beard',
+                value: data.beard_name
+            });
+        }
+        if (attributeKeys.includes('body_name')) {
+            attributes.push({
+                trait_type: 'Body',
+                value: data.body_name
+            });
+        }
+        if (attributeKeys.includes('face_name')) {
+            attributes.push({
+                trait_type: 'Face',
+                value: data.face_name
+            });
+        }
+        if (attributeKeys.includes('top_name')) {
+            attributes.push({
+                trait_type: 'Top',
+                value: data.top_name
+            });
+        }
+
+        if (attributeKeys.includes('boots_name')) {
+            attributes.push({
+                trait_type: 'Boots Type',
+                value: data.boots_name
+            });
+        }
+        if (attributeKeys.includes('boots_condition')) {
+            attributes.push({
+                trait_type: 'Boots Condition',
+                value: data.boots_condition
+            });
+        }
+        if (attributeKeys.includes('speed')) {
+            attributes.push({
+                trait_type: 'Speed',
+                value: data.speed,
+                max_value: 99
+            });
+        }
+
+        if (attributeKeys.includes('bottoms_name')) {
+            attributes.push({
+                trait_type: 'Bottoms Type',
+                value: data.bottoms_name
+            });
+        }
+        if (attributeKeys.includes('bottoms_condition')) {
+            attributes.push({
+                trait_type: 'Bottoms Condition',
+                value: data.bottoms_condition
+            });
+        }
+        if (attributeKeys.includes('stamina')) {
+            attributes.push({
+                trait_type: 'Stamina',
+                value: data.stamina,
+                max_value: 99
+            });
+        }
+
+        if (attributeKeys.includes('helmet_name')) {
+            attributes.push({
+                trait_type: 'Helmet Type',
+                value: data.helmet_name
+            });
+        }
+        if (attributeKeys.includes('helmet_condition')) {
+            attributes.push({
+                trait_type: 'Helmet Condition',
+                value: data.helmet_condition
+            });
+        }
+        if (attributeKeys.includes('intelligence')) {
+            attributes.push({
+                trait_type: 'Intelligence',
+                value: data.intelligence,
+                max_value: 99
+            });
+        }
+
+        if (attributeKeys.includes('shield_name')) {
+            attributes.push({
+                trait_type: 'Shield Type',
+                value: data.shield_name
+            });
+        }
+        if (attributeKeys.includes('shield_condition')) {
+            attributes.push({
+                trait_type: 'Shield Condition',
+                value: data.shield_condition
+            });
+        }
+        if (attributeKeys.includes('defence')) {
+            attributes.push({
+                trait_type: 'Defence',
+                value: data.defence,
+                max_value: 99
+            });
+        }
+
+        if (attributeKeys.includes('weapon_name')) {
+            attributes.push({
+                trait_type: 'Weapon Type',
+                value: data.weapon_name
+            });
+        }
+        if (attributeKeys.includes('weapon_condition')) {
+            attributes.push({
+                trait_type: 'Weapon Condition',
+                value: data.weapon_condition
+            });
+        }
+        if (attributeKeys.includes('attack')) {
+            attributes.push({
+                trait_type: 'Attack',
+                value: data.attack,
+                max_value: 99
+            });
+        }
+
+        return Object.assign({}, _pick(data, keys), {attributes: attributes.length ? attributes : undefined});
     }
 }
