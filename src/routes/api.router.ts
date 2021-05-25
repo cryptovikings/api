@@ -10,7 +10,7 @@ const apiRouter = Router();
 apiRouter.use('/viking', vikingRouter);
 
 // /texture collection is handled by the textureRouter
-apiRouter.use('/texture', textureRouter);
+apiRouter.use(process.env.IMAGE_TEXTURE_ENDPOINT!, textureRouter);
 
 // /test collection is handled by the testRouter
 apiRouter.use('/test', testRouter);

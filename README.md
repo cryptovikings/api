@@ -33,6 +33,8 @@ NB: built and tested within a Unix (Ubuntu) environment
         - Example: `"out/texture"`
     - `IMAGE_VIKING_ENDPOINT` : API endpoint to use in serving Viking Images from `IMAGE_VIKING_OUTPUT`
         - Example: `"/image"`
+    - 'IMAGE_TEXTURE_ENDPOINT' : API endpoint to use in serving Texture images from `IMAGE_TEXTURE_OUTPUT`
+        - Example: `"/texture"`
     - `ETH_CONTRACT_ADDRESS` : the address of the Contract
     - `ETH_PROVIDER_URL` : the JSON RPC Provider URL
         - Example (public provider): `"https://matic-mumbai.chainstacklabs.com"`
