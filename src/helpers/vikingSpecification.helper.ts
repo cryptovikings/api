@@ -579,19 +579,19 @@ export class VikingSpecificationHelper {
             return ItemCondition.NONE;
         }
 
-        if (selector <= 27) {
+        if (selector <= 19) {
             return '01';
         }
 
-        if (selector <= 45) {
+        if (selector <= 39) {
             return '02';
         }
 
-        if (selector <= 63) {
+        if (selector <= 59) {
             return '03';
         }
 
-        if (selector <= 81) {
+        if (selector <= 79) {
             return '04';
         }
 
@@ -614,7 +614,23 @@ export class VikingSpecificationHelper {
             return ItemCondition.NONE;
         }
 
-        return 'Placeholder';
+        if (selector <= 19) {
+            return '01';
+        }
+
+        if (selector <= 39) {
+            return '02';
+        }
+
+        if (selector <= 59) {
+            return '03';
+        }
+
+        if (selector <= 79) {
+            return '04';
+        }
+
+        return '05';
     }
 
     /**
