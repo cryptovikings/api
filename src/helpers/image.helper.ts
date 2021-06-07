@@ -133,11 +133,13 @@ export class ImageHelper {
                         // ensure that Viking comes first (place it in position (0,0) for front-end texture sampling)
                         image.montage(texturePath);
 
-                        for (const file of fs.readdirSync(ImageHelper.TEXTURE_INPUT_ROOT)) {
+                        const files = fs.readdirSync(ImageHelper.TEXTURE_INPUT_ROOT);
+                        for (const file of files) {
                             image.montage(path.join(ImageHelper.TEXTURE_INPUT_ROOT, file));
                         }
 
                         image
+                            .tile(`${files.length + 1}x1`)
                             .geometry('+0+0')
                             .background('transparent')
                             .write(texturePath, (err) => err ? reject(err) : resolve(texturePath));
