@@ -381,10 +381,10 @@ export class EthHelper {
     /**
      * NameChange Contract Event handler - update a local Viking representation's name with the received new name
      *
-     * @param name the new name for the Viking, representative of the new Contract-data name, emitted with the NameChange event
      * @param vikingId the NFT/Viking Number of the Viking to update, emitted with the NameChange event
+     * @param name the new name for the Viking, representative of the new Contract-data name, emitted with the NameChange event
      */
-    private static onNameChange(name: string, vikingId: BigNumber): void {
+    private static onNameChange(vikingId: BigNumber, name: string): void {
         const number = vikingId.toNumber();
 
         console.log(`EthHelper [NameChange]: NameChange - ID ${number} - name ${name}`);
