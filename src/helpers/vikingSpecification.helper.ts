@@ -175,8 +175,8 @@ export class VikingSpecificationHelper {
         const topFile = path.join(VikingSpecificationHelper.directories.tops, `top_${cleanName(topType)}.png`);
 
         // resolve the Boots File Path, defaulting to the "Basic" boots asset if the statistic-based Condition wasn't good enough
-        let bootsFile = path.join(VikingSpecificationHelper.directories.boots, 'boots_basic.png');
-        if (bootsCondition !== ClothesCondition.BASIC) {
+        let bootsFile = path.join(VikingSpecificationHelper.directories.boots, 'boots_standard.png');
+        if (bootsCondition !== ClothesCondition.STANDARD) {
             const type = cleanName(bootsType);
             const condition = cleanName(bootsCondition);
 
@@ -184,8 +184,8 @@ export class VikingSpecificationHelper {
         }
 
         // resolve the Bottoms File Path, defaulting to the "Basic" bottoms asset if the statistic-based Condition wasn't good enough
-        let bottomsFile = path.join(VikingSpecificationHelper.directories.bottoms, 'bottoms_basic.png');
-        if (bottomsCondition !== ClothesCondition.BASIC) {
+        let bottomsFile = path.join(VikingSpecificationHelper.directories.bottoms, 'bottoms_standard.png');
+        if (bottomsCondition !== ClothesCondition.STANDARD) {
             const type = cleanName(bottomsType);
             const condition = cleanName(bottomsCondition);
 
@@ -494,8 +494,8 @@ export class VikingSpecificationHelper {
      * @returns the name of the Boots Type
      */
     private static resolveBootsType(selector: number, condition: ClothesCondition): string {
-        if (condition === ClothesCondition.BASIC) {
-            return ClothesCondition.BASIC;
+        if (condition === ClothesCondition.STANDARD) {
+            return ClothesCondition.STANDARD;
         }
 
         if (selector <= 32) {
@@ -521,8 +521,8 @@ export class VikingSpecificationHelper {
      * @returns the name of the Bottoms Type
      */
     private static resolveBottomsType(selector: number, condition: ClothesCondition): string {
-        if (condition === ClothesCondition.BASIC) {
-            return ClothesCondition.BASIC;
+        if (condition === ClothesCondition.STANDARD) {
+            return ClothesCondition.STANDARD;
         }
 
         if (selector <= 32) {
@@ -552,15 +552,23 @@ export class VikingSpecificationHelper {
             return ItemCondition.NONE;
         }
 
-        if (selector <= 32) {
-            return 'Green Horned';
+        if (selector <= 19) {
+            return '01';
         }
 
-        if (selector <= 65) {
-            return 'Green';
+        if (selector <= 39) {
+            return '02';
         }
 
-        return 'Red Horned';
+        if (selector <= 59) {
+            return '03';
+        }
+
+        if (selector <= 79) {
+            return '04';
+        }
+
+        return '05';
     }
 
     /**
@@ -647,19 +655,19 @@ export class VikingSpecificationHelper {
             return ItemCondition.NONE;
         }
         else if (statistic <= 49) {
-            return ItemCondition.BROKEN;
+            return ItemCondition.DESTROYED;
         }
         else if (statistic <= 74) {
-            return ItemCondition.DAMAGED;
+            return ItemCondition.BATTERED;
         }
         else if (statistic <= 89) {
-            return ItemCondition.WORN;
+            return ItemCondition.WAR_TORN;
         }
         else if (statistic <= 96) {
-            return ItemCondition.GOOD;
+            return ItemCondition.BATTLE_READY;
         }
         else {
-            return ItemCondition.PERFECT;
+            return ItemCondition.FLAWLESS;
         }
     }
 
@@ -675,13 +683,13 @@ export class VikingSpecificationHelper {
      */
     private static resolveClothesCondition(statistic: number): ClothesCondition {
         if (statistic <= 9) {
-            return ClothesCondition.BASIC;
+            return ClothesCondition.STANDARD;
         }
         else if (statistic <= 49) {
             return ClothesCondition.RAGGED;
         }
         else if (statistic <= 74) {
-            return ClothesCondition.WORN;
+            return ClothesCondition.TORN;
         }
         else if (statistic <= 89) {
             return ClothesCondition.USED;
@@ -690,7 +698,7 @@ export class VikingSpecificationHelper {
             return ClothesCondition.GOOD;
         }
         else {
-            return ClothesCondition.PRISTINE;
+            return ClothesCondition.PERFECT;
         }
     }
 }

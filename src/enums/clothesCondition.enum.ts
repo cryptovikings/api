@@ -3,10 +3,10 @@
  */
 export enum ClothesCondition {
     TBC = 'TBC',
-    BASIC = 'Basic',
+    STANDARD = 'Standard',
     RAGGED = 'Ragged',
-    WORN = 'Worn',
+    TORN = 'Torn',
     USED = 'Used',
     GOOD = 'Good',
-    PRISTINE = 'Pristine'
+    PERFECT = 'Perfect'
 }

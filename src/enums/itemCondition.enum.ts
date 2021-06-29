@@ -4,9 +4,9 @@
 export enum ItemCondition {
     TBC = 'TBC',
     NONE = 'None',
-    BROKEN = 'Broken',
-    DAMAGED = 'Damaged',
-    WORN = 'Worn',
-    GOOD = 'Good',
-    PERFECT = 'Perfect'
+    DESTROYED = 'Destroyed',
+    BATTERED = 'Battered',
+    WAR_TORN = 'War Torn',
+    BATTLE_READY = 'Battle Ready',
+    FLAWLESS = 'Flawless'
 }
