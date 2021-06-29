@@ -97,7 +97,7 @@ class TestController extends AbstractController {
         const topNames = Array.from(new Array(25).keys()).map((n) => n + 1 < 10 ? `0${n + 1}` : `${n + 1}`);
         const bootsNames = ['Basic', 'Blue', 'Green', 'Red'];
         const bottomsNames = ['Basic', 'Blue', 'Green', 'Red'];
-        const helmetNames = ['None', 'Green', 'Green Horned', 'Red Horned'];
+        const helmetNames = ['01', '02', '03', '04', '05'];
         const shieldNames = ['None', '01', '02', '03', '05', '05'];
         const weaponNames = ['None', 'Placeholder'];
 
