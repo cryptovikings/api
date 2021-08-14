@@ -56,23 +56,23 @@ class TestController extends AbstractController {
         };
     }
 
-    // /**
-    //  * Custom route handler for the route /test/atlas
-    //  *
-    //  * Generate a demonstration Atlas with a maximum of 12 Vikings randomly selected from the output set
-    //  *
-    //  * @param req the Express Request
-    //  *
-    //  * @returns An APIResponse containing a success flag
-    //  */
-    // public async makeAtlas(req: Request): Promise<APIResponse<boolean>> {
-    //     await ImageHelper.generateVikingAtlas(parseInt(req.params.maxVikings, 10));
+    /**
+     * Custom route handler for the route /test/atlas
+     *
+     * Generate a demonstration Atlas with a maximum of 12 Vikings randomly selected from the output set
+     *
+     * @param req the Express Request
+     *
+     * @returns An APIResponse containing a success flag
+     */
+    public async makeAtlas(req: Request): Promise<APIResponse<boolean>> {
+        await ImageHelper.generateVikingAtlas(parseInt(req.params.maxVikings, 10));
 
-    //     return {
-    //         status: HttpSuccessCode.OK,
-    //         data: true
-    //     };
-    // }
+        return {
+            status: HttpSuccessCode.OK,
+            data: true
+        };
+    }
 
     /**
      * Custom handler for the route /test/stats
@@ -95,11 +95,11 @@ class TestController extends AbstractController {
         const beardNames = ['01', '02', '03', '04', '05'];
         const faceNames = ['01', '02', '03', '04', '05'];
         const topNames = Array.from(new Array(25).keys()).map((n) => n + 1 < 10 ? `0${n + 1}` : `${n + 1}`);
-        const bootsNames = ['Basic', 'Blue', 'Green', 'Red'];
-        const bottomsNames = ['Basic', 'Blue', 'Green', 'Red'];
-        const helmetNames = ['01', '02', '03', '04', '05'];
+        const bootsNames = ['Standard', '01', '02', '03', '04', '05'];
+        const bottomsNames = ['Standard', 'Blue', 'Green', 'Red'];
+        const helmetNames = ['None', '01', '02', '03', '04', '05'];
         const shieldNames = ['None', '01', '02', '03', '05', '05'];
-        const weaponNames = ['None', 'Placeholder'];
+        const weaponNames = ['None', '01', '02', '03', '05', '05'];
 
         /**
          * Internal method for producing analysis data on the prevalence of Part Names + Condition Names amongst their respective sets

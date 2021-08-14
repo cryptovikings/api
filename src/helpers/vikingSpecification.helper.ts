@@ -498,15 +498,23 @@ export class VikingSpecificationHelper {
             return ClothesCondition.STANDARD;
         }
 
-        if (selector <= 32) {
-            return 'Blue';
+        if (selector <= 19) {
+            return '01';
         }
 
-        if (selector <= 65) {
-            return 'Green';
+        if (selector <= 39) {
+            return '02';
         }
 
-        return 'Red';
+        if (selector <= 59) {
+            return '03';
+        }
+
+        if (selector <= 79) {
+            return '04';
+        }
+
+        return '05';
     }
 
     /**
