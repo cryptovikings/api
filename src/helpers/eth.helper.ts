@@ -112,17 +112,17 @@ export class EthHelper {
      */
     private static listen(): void {
         // eslint-disable-next-line
-        console.log(`EthHelper [Initialize]: listening for Contract Events with Polling Interval [${EthHelper.LISTENER_POLLING_INTERVAL}] on [${process.env.ETH_PROVIDER_URL!}]`);
+        console.log(`EthHelper [Listen]: listening for Contract Events with Polling Interval [${EthHelper.LISTENER_POLLING_INTERVAL}] on [${process.env.ETH_PROVIDER_URL!}]`);
 
         EthHelper.PROVIDER.pollingInterval = EthHelper.LISTENER_POLLING_INTERVAL;
 
         for (const [event, listener] of Object.entries(EthHelper.EVENT_MAP)) {
-            console.log(`EthHelper [Initialize]: registering listener for event [${event}]`);
+            console.log(`EthHelper [Listen]: registering listener for event [${event}]`);
 
             EthHelper.CONTRACT.on(event, listener);
         }
 
-        console.log('EthHelper [Initialize]: beginning VikingReady Event Queue processing loop');
+        console.log('EthHelper [Listen]: beginning VikingReady Event Queue...');
 
         forever(
             (next) => {
@@ -150,7 +150,7 @@ export class EthHelper {
             },
             (err) => {
                 // this should never happen (no calls to next() with an error), but the callback is required so...
-                console.error('EthHelper [Queue]: VikingReady Event Queue processing loop stopped:', err);
+                console.error('EthHelper [Queue]: VikingReady Event Queue stopped:', err);
             }
         );
     }
@@ -162,22 +162,22 @@ export class EthHelper {
      * Recovery scenarios are detected and executed in a specific order so as to optimize RPC load and API boot time
      */
     private static async recover(): Promise<void> {
-        console.log('EthHelper [Initialize]: implementing recovery scenarios...');
+        console.log('EthHelper [Recover]: implementing recovery scenarios...');
 
         let localVikings = await vikingService.count({});
 
         const counts = await EthHelper.remoteCounts().catch((err) => {
-            console.error('EthHelper [Initialize]: error during remote count retrieval');
+            console.error('EthHelper [Recover]: error during remote count retrieval');
             throw err;
         });
 
-        console.log('EthHelper [Initialize]: local Viking count:', localVikings);
-        console.log('EthHelper [Initialize]: remote NFT count:', counts.totalSupply);
-        console.log('EthHelper [Initialize]: remote Viking count:', counts.vikingCount);
+        console.log('EthHelper [Recover]: local Viking count:', localVikings);
+        console.log('EthHelper [Recover]: remote NFT count:', counts.totalSupply);
+        console.log('EthHelper [Recover]: remote Viking count:', counts.vikingCount);
 
         // recovery scenario 1: local data corruption/loss or missed VikingGenerated events
         if (localVikings !== counts.vikingCount) {
-            console.warn('EthHelper [Initialize]: Viking Database entries missing!');
+            console.warn('EthHelper [Recover]: Viking Database entries missing!');
 
             await EthHelper.synchronizeDatabase(counts.vikingCount).catch((err) => {
                 console.error('EthHelper [synchronizeDatabase]: error during database synchronization');
@@ -188,13 +188,13 @@ export class EthHelper {
             localVikings = await vikingService.count({});
         }
         else {
-            console.log('EthHelper [Initialize]: Viking Database is in sync');
+            console.log('EthHelper [Recover]: Viking Database is in sync');
         }
 
         // recovery scenario 2: local image corruption/loss or half-actioned VikingGenerated events
         // executed after scenario 1 so that we can safely rely on database Vikings instead of remote Vikings, optimizing for reduced RPC load
         if (fs.readdirSync(ImageHelper.VIKING_OUT).length - ImageHelper.DEFAULT_IMAGES.length < localVikings) {
-            console.warn('EthHelper [Initialize]: Viking Images missing!');
+            console.warn('EthHelper [Recover]: Viking Images missing!');
 
             await EthHelper.synchronizeImages(localVikings).catch((err) => {
                 console.error('EthHelper [synchronizeImages]: error during image synchronization');
@@ -202,14 +202,13 @@ export class EthHelper {
             });
         }
         else {
-            console.log('EthHelper [Initialize]: Viking Images are in sync');
+            console.log('EthHelper [Recover]: Viking Images are in sync');
         }
 
         // recovery scenario 3: missed VikingReady events or failed generateViking() calls
         // executed third so as to limit back-and-forth between contract and API during hole-filling on the Contract data
-
         if (counts.totalSupply !== counts.vikingCount) {
-            console.warn('EthHelper [Initialize]: Contract Vikings are out of sync with totalSupply()!');
+            console.warn('EthHelper [Recover]: Contract Vikings are out of sync with totalSupply()!');
 
             await EthHelper.synchronizeContract(counts.totalSupply, counts.vikingCount).catch((err) => {
                 console.error('EthHelper [synchronizeContract]: error during Contract synchronization');
@@ -217,13 +216,15 @@ export class EthHelper {
             });
         }
         else {
-            console.log('EthHelper [Initialize]: Contract Vikings are in sync');
+            console.log('EthHelper [Recover]: Contract Vikings are in sync');
         }
 
         // recovery scenario 4: missed NameChange events or otherwise out-of-sync local Viking names
         // executed last and triggered separately from other recovery scenarios due to RPC load issues. NameChange misses are impractical to detect,
         //   so the routine is "dumb" in that it just retrieves *all* Vikings from the Contract so as to synchronize
         if (EthHelper.RECOVER_NAMES) {
+            console.warn('EthHelper [Recover]: synchronizing names...');
+
             await EthHelper.synchronizeNames(counts.vikingCount).catch((err) => {
                 console.error('EthHelper [synchronizeNames]: error during name synchronization');
                 throw err;
@@ -328,7 +329,7 @@ export class EthHelper {
                         count++;
                     },
                     (err) => {
-                        console.error(`EthHelper [synchronizeContract]: error processing VikingReady event for Viking ID ${i}:`, err);
+                        console.error(`EthHelper [synchronizeContract]: error during generateViking() call request for ID ${i}:`, err);
                     }
                 );
             }
@@ -367,7 +368,7 @@ export class EthHelper {
      * @param vikingData the Contract Data representing the Viking
      */
     private static async generateViking(vikingId: number, vikingData: VikingContractModel): Promise<void> {
-        console.log(`EthHelper: generating Viking with ID ${vikingId}`);
+        console.log(`EthHelper [generateViking]: generating Viking with ID ${vikingId}`);
 
         // derive the intermediate VikingSpecification structure for handing off to both the Viking and Image Helpers
         const vikingSpecification = VikingSpecificationHelper.buildVikingSpecification(vikingId, vikingData);
@@ -378,7 +379,7 @@ export class EthHelper {
             VikingHelper.createViking(vikingSpecification)
         ]);
 
-        console.log(`EthHelper: generated Viking with ID ${vikingId}`);
+        console.log(`EthHelper [generateViking]: generated Viking with ID ${vikingId}`);
     }
 
     /**
