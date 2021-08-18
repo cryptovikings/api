@@ -181,7 +181,7 @@ export class EthHelper {
             console.warn('EthHelper [Initialize]: Viking Database entries missing!');
 
             await EthHelper.synchronizeDatabase(counts.vikingCount).catch((err) => {
-                console.error('EthHelper [Initialize]: error during database synchronization');
+                console.error('EthHelper [synchronizeDatabase]: error during database synchronization');
                 throw err;
             });
 
@@ -198,7 +198,7 @@ export class EthHelper {
             console.warn('EthHelper [Initialize]: Viking Images missing!');
 
             await EthHelper.synchronizeImages(localVikings).catch((err) => {
-                console.error('EthHelper [Initialize]: error during image synchronization');
+                console.error('EthHelper [synchronizeImages]: error during image synchronization');
                 throw err;
             });
         }
@@ -207,27 +207,27 @@ export class EthHelper {
         }
 
         // recovery scenario 3: missed VikingReady events or failed generateViking() calls
-        // executed third so as not to interfere with other recovery types, and so as to enable inline-synchronization of database and images by way
-        //   of the usual event-handling procedure for VikingGenerated
-        if (counts.totalSupply !== counts.vikingCount) {
+        // executed third so as to limit back-and-forth between contract and API during hole-filling on the Contract data
+
+        // TODO temporary force-run
+        // if (counts.totalSupply !== counts.vikingCount) {
             console.warn('EthHelper [Initialize]: Contract Vikings are out of sync with totalSupply()!');
 
-            // choice: do not use the VikingReady Event Queue - we may not be in listening mode!
             await EthHelper.synchronizeContract(counts.totalSupply, counts.vikingCount).catch((err) => {
-                console.error('EthHelper [Initialize]: error during Contract synchronization');
+                console.error('EthHelper [synchronizeContract]: error during Contract synchronization');
                 throw err;
             });
-        }
-        else {
-            console.log('EthHelper [Initialize]: Contract Vikings are in sync');
-        }
+        // }
+        // else {
+        //     console.log('EthHelper [Initialize]: Contract Vikings are in sync');
+        // }
 
         // recovery scenario 4: missed NameChange events or otherwise out-of-sync local Viking names
         // executed last and triggered separately from other recovery scenarios due to RPC load issues. NameChange misses are impractical to detect,
         //   so the routine is "dumb" in that it just retrieves *all* Vikings from the Contract so as to synchronize
         if (EthHelper.RECOVER_NAMES) {
             await EthHelper.synchronizeNames(counts.vikingCount).catch((err) => {
-                console.error('EthHelper [Initialize]: error during name synchronization');
+                console.error('EthHelper [synchronizeNames]: error during name synchronization');
                 throw err;
             });
         }
@@ -260,7 +260,14 @@ export class EthHelper {
 
         for (let i = 0; i < remoteVikingCount; i++) {
             if (!localNumbers.includes(i)) {
-                await EthHelper.generateViking(i, await EthHelper.CONTRACT.functions.vikings(i));
+                const vikingData = await EthHelper.CONTRACT.functions.vikings(i);
+
+                // if the contract data is void (detectable by appearance being 0), DO NOTHING
+                // rationale: void data will cause a crash in trying to write the local Viking; void data will be filled by synchronizeContract()
+                // rationale 2: doing the contract-level synchronization here may be considered "messy"
+                if (!vikingData.appearance.isZero()) {
+                    await EthHelper.generateViking(i, vikingData);
+                }
             }
         }
     }
@@ -292,20 +299,43 @@ export class EthHelper {
     }
 
     /**
-     * Synchronize the Contract's generated Viking set with the Contract's minted NFT set by triggering generateViking() calls for all Viking IDs in
-     *   the range (vikingCount => nftCount), producing stored Viking data for all missed VikingGenerated events
+     * Synchronize the Contract's generated Viking set with the Contract's minted NFT set by triggering generateViking() calls for all Viking IDs
+     *   which are missing data in the Vikings map
      *
-     * Just sends the call request, relying on the API's VikingGenerated event listener to pick up the remote emission so as to inline-synchronize
-     *   the Viking database + image output directory as an intrinsic aspect of the procedure
+     * Can occur if VikingReady events are missed or if generateViking calls fail somehow
+     *
+     * Also synchronizes the local database once the routine is complete if we're not in listening mode so as to ensure data integrity with only a
+     *   single execution
      *
      * @param totalSupply the number of minted NFT's on the Contract
-     * @param the number of generated vikings in the Contract's set
+     * @param vikingCount number of generated vikings in the Contract's set
      */
     private static async synchronizeContract(totalSupply: number, vikingCount: number): Promise<void> {
-        for (let i = vikingCount; i < totalSupply; i++) {
-            console.log(`EthHelper [Initialize]: sending generateViking() call request for ID ${i}`);
+        let count = vikingCount;
 
-            await EthHelper.CONTRACT.functions.generateViking(i);
+        for (let i = 0; i < totalSupply; i++) {
+            console.log(`EthHelper [synchronizeContract] checking Viking with ID ${i}...`);
+
+            const data = await EthHelper.CONTRACT.functions.vikings(i);
+
+            if (data.appearance.isZero()) {
+                console.log(`EthHelper [synchronizeContract] Viking with ID ${i} void; sending generateViking() call request`);
+
+                await EthHelper.CONTRACT.functions.generateViking(i, { gasPrice: 1000000000 }).then(
+                    () => {
+                        count++;
+                    },
+                    (err) => {
+                        console.error(`EthHelper [synchronizeContract]: error processing VikingReady event for Viking ID ${i}:`, err);
+                    }
+                );
+            }
+        }
+
+        // if we did fill any void data, and if we're NOT listening, force-sync the database
+        // if we are listening, the generateViking() calls will naturally sync the database by way of the usual event-handling procedure
+        if (count > vikingCount && !EthHelper.LISTEN) {
+            await EthHelper.synchronizeDatabase(count);
         }
     }
 
