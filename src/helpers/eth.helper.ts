@@ -122,7 +122,6 @@ export class EthHelper {
             EthHelper.CONTRACT.on(event, listener);
         }
 
-
         console.log('EthHelper [Initialize]: beginning VikingReady Event Queue processing loop');
 
         forever(
@@ -209,18 +208,17 @@ export class EthHelper {
         // recovery scenario 3: missed VikingReady events or failed generateViking() calls
         // executed third so as to limit back-and-forth between contract and API during hole-filling on the Contract data
 
-        // TODO temporary force-run
-        // if (counts.totalSupply !== counts.vikingCount) {
+        if (counts.totalSupply !== counts.vikingCount) {
             console.warn('EthHelper [Initialize]: Contract Vikings are out of sync with totalSupply()!');
 
             await EthHelper.synchronizeContract(counts.totalSupply, counts.vikingCount).catch((err) => {
                 console.error('EthHelper [synchronizeContract]: error during Contract synchronization');
                 throw err;
             });
-        // }
-        // else {
-        //     console.log('EthHelper [Initialize]: Contract Vikings are in sync');
-        // }
+        }
+        else {
+            console.log('EthHelper [Initialize]: Contract Vikings are in sync');
+        }
 
         // recovery scenario 4: missed NameChange events or otherwise out-of-sync local Viking names
         // executed last and triggered separately from other recovery scenarios due to RPC load issues. NameChange misses are impractical to detect,
@@ -266,7 +264,11 @@ export class EthHelper {
                 // rationale: void data will cause a crash in trying to write the local Viking; void data will be filled by synchronizeContract()
                 // rationale 2: doing the contract-level synchronization here may be considered "messy"
                 if (!vikingData.appearance.isZero()) {
+                    console.log(`EthHelper [synchronizeDatabase] creating local Viking with ID ${i}`);
                     await EthHelper.generateViking(i, vikingData);
+                }
+                else {
+                    console.error(`EthHelper [synchronizeDatabase] skipping Viking with ID ${i}; data is void`);
                 }
             }
         }
@@ -285,12 +287,12 @@ export class EthHelper {
 
         for (let i = 0; i < localVikingCount; i++) {
             if (!imageNumbers.includes(i)) {
-                console.log(`EthHelper [Initialize]: generating Viking Image for ID ${i}`);
+                console.log(`EthHelper [synchronizeImages]: generating Viking Image for ID ${i}`);
 
                 const vikingData = await vikingService.findOne({ number: i });
 
                 if (!vikingData) {
-                    throw Error(`EthHelper [Initialize]: No local Viking representation for ID ${i}`);
+                    throw Error(`EthHelper [synchronizeImages]: No local Viking representation for ID ${i}`);
                 }
 
                 await ImageHelper.generateVikingImage(VikingSpecificationHelper.buildVikingSpecification(i, vikingData));
