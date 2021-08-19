@@ -321,23 +321,31 @@ export class VikingSpecificationHelper {
      * @returns the name of the Body Type
      */
     private static resolveBodyType(selector: number): string {
-        if (selector <= 19) {
+        if (selector <= 14) {
             return 'Devil';
         }
 
-        if (selector <= 39) {
+        if (selector <= 28) {
             return 'Pink';
         }
 
-        if (selector <= 59) {
+        if (selector <= 42) {
             return 'Robot';
         }
 
-        if (selector <= 79) {
+        if (selector <= 56) {
+            return 'Tats';
+        }
+
+        if (selector <= 70) {
             return 'White';
         }
 
-        return 'Zombie';
+        if (selector <= 84) {
+            return 'Zombie';
+        }
+
+        return 'Zombie2';
     }
 
     /**
@@ -533,15 +541,23 @@ export class VikingSpecificationHelper {
             return ClothesCondition.STANDARD;
         }
 
-        if (selector <= 32) {
-            return 'Blue';
+        if (selector <= 19) {
+            return '01';
         }
 
-        if (selector <= 65) {
-            return 'Green';
+        if (selector <= 39) {
+            return '02';
         }
 
-        return 'Red';
+        if (selector <= 59) {
+            return '03';
+        }
+
+        if (selector <= 79) {
+            return '04';
+        }
+
+        return '05';
     }
 
     /**
