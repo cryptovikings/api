@@ -36,6 +36,9 @@ declare interface NornirContract extends Contract {
         /** Contract generateViking() */
         generateViking(id: BigNumber | number, overrides?: { gasPrice?: number }): Promise<void>;
 
+        /** Contract completeViking() */
+        completeViking(id: BigNumber | number, overrides?: {gasPrice?: number}): Promise<void>;
+
         // re-implement the arbitrary index found in the original definition
         [name: string]: ContractFunction;
     }
