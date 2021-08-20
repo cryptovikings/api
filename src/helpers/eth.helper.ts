@@ -406,9 +406,18 @@ export class EthHelper {
         console.log(`EthHelper [VikingGenerated]: processing Viking ID: ${number}`);
 
         // catch errors but do not throw them so as to allow the API to continue running
-        EthHelper.generateViking(number, vikingData).catch((err) => {
-            console.error('EthHelper [VikingGenerated]: error during viking generation:', err);
-        });
+        EthHelper.generateViking(number, vikingData).then(
+            () => {
+                console.log(`EthHelper [VikingGenerated]: sending completeViking call request for Viking ID: ${number}`);
+
+                EthHelper.CONTRACT.functions.completeViking(number, { gasPrice: 1000000000 }).catch((err) => {
+                        console.error(`EthHelper [VikingGenerated]: error during completeViking call request for Viking ID ${number}`, err);
+                    });
+            },
+            (err) => {
+                console.error('EthHelper [VikingGenerated]: error during viking generation:', err);
+            }
+        );
     }
 
     /**
