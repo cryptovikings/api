@@ -4,7 +4,7 @@ import { testController } from '../controllers/test.controller';
 /** The Router handling the /test route collection */
 const testRouter = Router();
 
-/** POST /test/atlas => (TestController).makeAtlas */
+/** POST /test/atlas/:maxVikings => (TestController).makeAtlas */
 testRouter.post('/atlas/:maxVikings', testController.bindRequestHandler(testController.makeAtlas));
 
 /** POST /test/make:count => (TestController).makeVikings */

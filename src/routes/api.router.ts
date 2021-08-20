@@ -8,8 +8,10 @@ const apiRouter = Router();
 // /viking collection is handled by the vikingRouter
 apiRouter.use('/viking', vikingRouter);
 
-// /test collection is handled by the testRouter
-apiRouter.use('/test', testRouter);
+// in dev mode only, register the /test collection
+if (process.env.DEV === 'true') {
+    apiRouter.use('/test', testRouter);
+}
 
 // configure a fallback route clearly stating that a route was invalid
 apiRouter.use('*', (req: Request, res: Response): void => {
