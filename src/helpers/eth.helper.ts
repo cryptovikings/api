@@ -72,10 +72,18 @@ export class EthHelper {
     };
 
     /**
-     * Array to serve as an in-memory queue for VikingReady event responses, avoiding a nonce conflict/transaction replacement cost error for
-     *   generateViking() transactions by processing VikingReady events one at a time rather than in parallel
+     * Array to serve as an in-memory queue for generateViking call requests, avoiding a nonce conflicts for generateViking() transactions as well as
+     *   completeViking() transactions by processing all TXs one at a time
      */
     private static readonly VIKING_READY_EVENT_QUEUE: Array<BigNumber> = [];
+
+    /**
+     * Array to serve as an in-memory queue for completeViking call requests, avoiding nonce conflicts for completeViking() transactions as well as
+     *   generateViking() transactions by processing all TXs one at a time
+     *
+     * completeViking() calls will be prioritised over generateViking() calls since they're simpler/higher priority for user experience
+     */
+    private static readonly COMPLETE_VIKING_CALL_QUEUE: Array<BigNumber> = [];
 
     /**
      * Initialize by registering all event listeners if required and enacting recovery scenarios if required
@@ -126,26 +134,49 @@ export class EthHelper {
 
         forever(
             (next) => {
-                const vikingId = EthHelper.VIKING_READY_EVENT_QUEUE.shift();
+                // prioritise completeViking() calls
+                const completeId = EthHelper.COMPLETE_VIKING_CALL_QUEUE.shift();
 
-                if (vikingId) {
-                    console.log(`EthHelper [Queue]: processing VikingReady event for Viking ID ${vikingId.toNumber()}`);
+                if (completeId) {
+                    console.log(`EthHelper [Queue] sending completeViking call request for Viking ID ${completeId.toNumber()}`);
 
-                    EthHelper.CONTRACT.functions.generateViking(vikingId, { gasPrice: 1000000000 }).then(
+                    EthHelper.CONTRACT.functions.completeViking(completeId, { gasPrice: 1000000000 }).then(
                         () => {
                             next();
                         },
                         (err) => {
-                            console.error(`EthHelper [Queue]: error processing VikingReady event for Viking ID ${vikingId.toNumber()}:`, err);
+                            console.error(`EthHelper [Queue]: error during completeViking call request for Viking ID ${completeId.toNumber()}`, err);
 
-                            // do not halt execution! It is not a critical issue if we miss a VikingReady response, and erroring out here would
-                            //   create a compunding recovery problem
+                            // do not halt execution! It is not a critical issue if we drop a completeViking call
                             next();
                         }
                     );
                 }
                 else {
-                    next();
+                    const generateId = EthHelper.VIKING_READY_EVENT_QUEUE.shift();
+
+                    if (generateId) {
+                        console.log(`EthHelper [Queue]: sending generateViking call request for Viking ID ${generateId.toNumber()}`);
+
+                        EthHelper.CONTRACT.functions.generateViking(generateId, { gasPrice: 1000000000 }).then(
+                            () => {
+                                next();
+                            },
+                            (err) => {
+                                console.error(
+                                    `EthHelper [Queue]: error during generateViking call request for Viking ID ${generateId.toNumber()}:`,
+                                    err
+                                );
+
+                                // do not halt execution! It is not a critical issue if we miss a VikingReady response, and erroring out here would
+                                //   create a compunding recovery problem
+                                next();
+                            }
+                        );
+                    }
+                    else {
+                        next();
+                    }
                 }
             },
             (err) => {
@@ -389,13 +420,14 @@ export class EthHelper {
      * @param vikingId the NFT/Viking Number of the Viking to request a generation for, emitted with the VikingReady event
      */
     private static onVikingReady(vikingId: BigNumber): void {
-        console.log(`EthHelper [VikingReady]: queueing Viking ID ${vikingId.toNumber()}`);
+        console.log(`EthHelper [VikingReady]: queueing generateViking call request for Viking ID ${vikingId.toNumber()}`);
 
         EthHelper.VIKING_READY_EVENT_QUEUE.push(vikingId);
     }
 
     /**
-     * VikingGenerated Contract Event handler - generate a local Viking representation based on the received Viking Contract Data
+     * VikingGenerated Contract Event handler - generate a local Viking representation based on the received Viking Contract Data and then queue up
+     *   a completeViking() call request for that Viking
      *
      * @param vikingId the NFT/Viking Number of the Viking to generate, emitted with the VikingGenerated event
      * @param vikingData the Viking's Contract-generated data, emitted with the VikingGenerated event
@@ -408,11 +440,9 @@ export class EthHelper {
         // catch errors but do not throw them so as to allow the API to continue running
         EthHelper.generateViking(number, vikingData).then(
             () => {
-                console.log(`EthHelper [VikingGenerated]: sending completeViking call request for Viking ID: ${number}`);
+                console.log(`EthHelper [VikingGenerated]: queueing completeViking call request for Viking ID: ${number}`);
 
-                EthHelper.CONTRACT.functions.completeViking(number, { gasPrice: 1000000000 }).catch((err) => {
-                        console.error(`EthHelper [VikingGenerated]: error during completeViking call request for Viking ID ${number}`, err);
-                    });
+                EthHelper.COMPLETE_VIKING_CALL_QUEUE.push(vikingId);
             },
             (err) => {
                 console.error('EthHelper [VikingGenerated]: error during viking generation:', err);
