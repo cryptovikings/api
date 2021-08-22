@@ -99,11 +99,15 @@ export class EthHelper {
         }
 
         if (EthHelper.RECOVER) {
-            await EthHelper.recover();
+            await EthHelper.recover().catch((err) => {
+                // TODO
+            });
         }
         else {
             console.warn('EthHelper [Initialize]: Recovery mode disabled');
         }
+
+        EthHelper.queue();
 
         console.log('EthHelper [Initialize]: initialization complete');
     }
@@ -129,8 +133,13 @@ export class EthHelper {
 
             EthHelper.CONTRACT.on(event, listener);
         }
+    }
 
-        console.log('EthHelper [Listen]: beginning VikingReady Event Queue...');
+    /**
+     * // TODO
+     */
+    private static queue(): void {
+        console.log('EthHelper [Queue]: beginning Ethereum Event Queue...');
 
         forever(
             (next) => {
@@ -323,11 +332,16 @@ export class EthHelper {
 
                 const vikingData = await vikingService.findOne({ number: i });
 
-                if (!vikingData) {
-                    throw Error(`EthHelper [synchronizeImages]: No local Viking representation for ID ${i}`);
+                if (vikingData) {
+                    await ImageHelper.generateVikingImage(VikingSpecificationHelper.buildVikingSpecification(i, vikingData));
+                }
+                else {
+                    console.error(`EthHelper [synchronizeImages] skipping Viking Image for ID ${i}; data is void`);
                 }
 
-                await ImageHelper.generateVikingImage(VikingSpecificationHelper.buildVikingSpecification(i, vikingData));
+                // if (!vikingData) {
+                //     throw Error(`EthHelper [synchronizeImages]: No local Viking representation for ID ${i}`);
+                // }
             }
         }
     }
