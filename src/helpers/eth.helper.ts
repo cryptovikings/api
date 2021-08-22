@@ -92,6 +92,7 @@ export class EthHelper {
         console.log('EthHelper [Initialize]: initializing...');
 
         if (EthHelper.LISTEN) {
+            // register Ethereum event listeners
             EthHelper.listen();
         }
         else {
@@ -99,10 +100,16 @@ export class EthHelper {
         }
 
         if (EthHelper.RECOVER) {
+            // implement recovery scenarios
             await EthHelper.recover();
         }
         else {
             console.warn('EthHelper [Initialize]: Recovery mode disabled');
+        }
+
+        if (EthHelper.LISTEN) {
+            // begin the event processing loop
+            EthHelper.queue();
         }
 
         console.log('EthHelper [Initialize]: initialization complete');
@@ -129,8 +136,16 @@ export class EthHelper {
 
             EthHelper.CONTRACT.on(event, listener);
         }
+    }
 
-        console.log('EthHelper [Listen]: beginning VikingReady Event Queue...');
+    /**
+     * Begin an event processing queue for handling VikingComplete and VikingGenerated event responses in series, avoiding nonce conflicts
+     *
+     * Event processing is kicked off as a last port of call in initialization so as to avoid nonce conflicts with recovery-related transactions, and
+     *   so as to not actually miss any events while recovery proceeds
+     */
+    private static queue(): void {
+        console.log('EthHelper [Queue]: beginning Ethereum Event Queue...');
 
         forever(
             (next) => {
@@ -163,10 +178,8 @@ export class EthHelper {
                                 next();
                             },
                             (err) => {
-                                console.error(
-                                    `EthHelper [Queue]: error during generateViking call request for Viking ID ${generateId.toNumber()}:`,
-                                    err
-                                );
+                                // eslint-disable-next-line
+                                console.error(`EthHelper [Queue]: error during generateViking call request for Viking ID ${generateId.toNumber()}:`, err);
 
                                 // do not halt execution! It is not a critical issue if we miss a VikingReady response, and erroring out here would
                                 //   create a compunding recovery problem
@@ -199,6 +212,8 @@ export class EthHelper {
 
         const counts = await EthHelper.remoteCounts().catch((err) => {
             console.error('EthHelper [Recover]: error during remote count retrieval');
+
+            // throw this error since recovery cannot continue without counts
             throw err;
         });
 
@@ -211,8 +226,8 @@ export class EthHelper {
             console.warn('EthHelper [Recover]: Viking Database entries missing!');
 
             await EthHelper.synchronizeDatabase(counts.vikingCount).catch((err) => {
-                console.error('EthHelper [synchronizeDatabase]: error during database synchronization');
-                throw err;
+                // do not throw this error so that recovery can continue
+                console.error('EthHelper [synchronizeDatabase]: error during database synchronization', err);
             });
 
             // update the local viking count for the next scenario
@@ -228,8 +243,8 @@ export class EthHelper {
             console.warn('EthHelper [Recover]: Viking Images missing!');
 
             await EthHelper.synchronizeImages(localVikings).catch((err) => {
-                console.error('EthHelper [synchronizeImages]: error during image synchronization');
-                throw err;
+                // do not throw this error so that recovery can continue
+                console.error('EthHelper [synchronizeImages]: error during image synchronization', err);
             });
         }
         else {
@@ -242,8 +257,8 @@ export class EthHelper {
             console.warn('EthHelper [Recover]: Contract Vikings are out of sync with totalSupply()!');
 
             await EthHelper.synchronizeContract(counts.totalSupply, counts.vikingCount).catch((err) => {
-                console.error('EthHelper [synchronizeContract]: error during Contract synchronization');
-                throw err;
+                // do not throw this error so that recovery can continue
+                console.error('EthHelper [synchronizeContract]: error during Contract synchronization', err);
             });
         }
         else {
@@ -257,8 +272,8 @@ export class EthHelper {
             console.warn('EthHelper [Recover]: synchronizing names...');
 
             await EthHelper.synchronizeNames(counts.vikingCount).catch((err) => {
-                console.error('EthHelper [synchronizeNames]: error during name synchronization');
-                throw err;
+                // do not throw this error so that initialization can continue
+                console.error('EthHelper [synchronizeNames]: error during name synchronization', err);
             });
         }
     }
@@ -323,11 +338,12 @@ export class EthHelper {
 
                 const vikingData = await vikingService.findOne({ number: i });
 
-                if (!vikingData) {
-                    throw Error(`EthHelper [synchronizeImages]: No local Viking representation for ID ${i}`);
+                if (vikingData) {
+                    await ImageHelper.generateVikingImage(VikingSpecificationHelper.buildVikingSpecification(i, vikingData));
                 }
-
-                await ImageHelper.generateVikingImage(VikingSpecificationHelper.buildVikingSpecification(i, vikingData));
+                else {
+                    console.error(`EthHelper [synchronizeImages] skipping Viking Image for ID ${i}; data is void`);
+                }
             }
         }
     }
