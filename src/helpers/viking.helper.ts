@@ -22,6 +22,11 @@ export class VikingHelper {
     private static readonly TEXTURE_IMAGE_BASE_URL = `${process.env.API_URL!}${process.env.IMAGE_TEXTURE_ENDPOINT!}`;
 
     /**
+     * Base URL for front end Viking links
+     */
+    private static readonly VIKING_LINK_BASE_URL = `${process.env.FRONT_END_URL!}/viking`;
+
+    /**
      * Given a VikingSpecification, produce and store a Viking in the Database
      *
      * Effectively just a wrapper for (VikingService).createOne()
@@ -36,7 +41,6 @@ export class VikingHelper {
             name: vikingSpecification.name,
             image: vikingSpecification.image,
             texture: vikingSpecification.texture,
-            external_link: `${process.env.FRONT_END_URL!}/viking/${vikingSpecification.number}`,
 
             description: 'A unique and special viking',
 
@@ -253,13 +257,24 @@ export class VikingHelper {
             });
         }
 
-        let transformed = Object.assign({}, _pick(data, keys), { attributes: attributes.length ? attributes : undefined });
+        let transformed = Object.assign(
+            {},
+            _pick(data, keys)
+        );
 
         if (keys.includes('image')) {
             transformed = Object.assign(transformed, { image: VikingHelper.getVikingImageUrl(data.image) });
         }
         if (keys.includes('texture')) {
             transformed = Object.assign(transformed, { texture: VikingHelper.getTextureImageUrl(data.texture) });
+        }
+
+        if (!select || select?.includes('external_url')) {
+            transformed = Object.assign(transformed, { external_url: VikingHelper.getVikingExternalURL(data.number) });
+        }
+
+        if (attributes.length) {
+            transformed = Object.assign(transformed, { attributes });
         }
 
         return transformed;
@@ -285,5 +300,16 @@ export class VikingHelper {
      */
     public static getTextureImageUrl(fileName: string): string {
         return `${VikingHelper.TEXTURE_IMAGE_BASE_URL}/${fileName}.png`
+    }
+
+    /**
+     * Build a Viking External URL for a given URI
+     *
+     * @param resource the name of the resource to include in the URL
+     *
+     * @returns the Viking External URL
+     */
+    public static getVikingExternalURL(resource: string | number): string {
+        return `${VikingHelper.VIKING_LINK_BASE_URL}/${resource}`;
     }
 }

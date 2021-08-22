@@ -12,7 +12,6 @@ interface VikingStore {
     readonly image: string;
     readonly texture: string;
     readonly description: string;
-    readonly external_link: string;
 
     readonly beard_name: string;
     readonly body_name: string;
@@ -194,7 +193,6 @@ export const VikingModel = _createModel({
         image: { type: String, required: true, unique: true },
         texture: { type: String, required: true, unique: true },
         description: { type: String, required: true },
-        external_link: { type: String, required: true, unique: true },
 
         beard_name: { type: String, required: true },
         body_name: { type: String, required: true },
