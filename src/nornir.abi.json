@@ -255,19 +255,6 @@
     },
     {
         "inputs": [],
-        "name": "BASE_URI",
-        "outputs": [
-            {
-                "internalType": "string",
-                "name": "",
-                "type": "string"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
         "name": "LAUNCH_BLOCK",
         "outputs": [
             {
@@ -395,6 +382,19 @@
         "type": "function"
     },
     {
+        "inputs": [],
+        "name": "baseURI",
+        "outputs": [
+            {
+                "internalType": "string",
+                "name": "",
+                "type": "string"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
         "inputs": [
             {
                 "internalType": "uint256",
@@ -411,6 +411,19 @@
             }
         ],
         "stateMutability": "pure",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "string",
+                "name": "newURI",
+                "type": "string"
+            }
+        ],
+        "name": "changeBaseURI",
+        "outputs": [],
+        "stateMutability": "nonpayable",
         "type": "function"
     },
     {
