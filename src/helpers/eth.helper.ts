@@ -13,12 +13,7 @@ import { ImageHelper } from './image.helper';
  * EthHelper, encapsulating all Ethereum-related functionality, including Contract instantiation and interaction, Contract data synchronization,
  *   Contract Event Listeners and a number of synchronization-related recovery routines
  *
- * EthHelper is careful to handle errors appropriately. During initialization, errors are logged and then thrown, such that the API's launch
- *   can be cancelled by `api.ts`. At runtime, errors are logged but *not* thrown
- *
- * The logic for not throwing runtime errors produced by EthHelper functionality is just in that these errors occur outside of the context of a
- *   Request - so throwing them would cause the API to crash. All these runtime errors are non-critical and recoverable, and we do not want the API
- *   crashing when one is encountered so as to keep Metadata and Leaderboard functionality running
+ * EthHelper is careful to handle errors appropriately so as to produce as little downtime as possible
  */
 export class EthHelper {
 
@@ -116,14 +111,17 @@ export class EthHelper {
     }
 
     /**
-     * // TODO temporary public reflection of generateViking() for use in testController
+     * Public reflection of generateViking() for use by the testController
+     *
+     * @param vikingId the NFT/Viking Number of the Viking to generate
+     * @param vikingData the Contract Data representing the Viking
      */
     public static async testGenerateViking(vikingId: number, vikingData: VikingContractModel): Promise<void> {
         return EthHelper.generateViking(vikingId, vikingData);
     }
 
     /**
-     * Configure the Provider's pollingInterval, register all Contract Event Listeners, and kick off the VikingReady event processing loop
+     * Configure the Provider's pollingInterval and register all Contract Event Listeners
      */
     private static listen(): void {
         // eslint-disable-next-line
@@ -139,10 +137,11 @@ export class EthHelper {
     }
 
     /**
-     * Begin an event processing queue for handling VikingComplete and VikingGenerated event responses in series, avoiding nonce conflicts
+     * Begin an event processing queue for handling VikingComplete and VikingGenerated event responses in series, avoiding nonce conflicts in the
+     *   minting procedure
      *
      * Event processing is kicked off as a last port of call in initialization so as to avoid nonce conflicts with recovery-related transactions, and
-     *   so as to not actually miss any events while recovery proceeds
+     *   so as to not accidentally miss any events while recovery proceeds, preventing a compounding recovery problem
      */
     private static queue(): void {
         console.log('EthHelper [Queue]: beginning Ethereum Event Queue...');

@@ -12,6 +12,16 @@ import { APIQuery } from '../models/utils/apiQuery.model';
 export class VikingHelper {
 
     /**
+     * Base URI for Viking Image URLs, using the API URL + Viking Endpoint copied over from the environment
+     */
+    private static readonly VIKING_IMAGE_BASE_URL = `${process.env.API_URL!}${process.env.IMAGE_VIKING_ENDPOINT!}`;
+
+    /**
+     * Base URL for Texture Image URLs, using the API URL + Texture Endpoint copied over from the environment
+     */
+    private static readonly TEXTURE_IMAGE_BASE_URL = `${process.env.API_URL!}${process.env.IMAGE_TEXTURE_ENDPOINT!}`;
+
+    /**
      * Given a VikingSpecification, produce and store a Viking in the Database
      *
      * Effectively just a wrapper for (VikingService).createOne()
@@ -243,6 +253,37 @@ export class VikingHelper {
             });
         }
 
-        return Object.assign({}, _pick(data, keys), {attributes: attributes.length ? attributes : undefined});
+        let transformed = Object.assign({}, _pick(data, keys), { attributes: attributes.length ? attributes : undefined });
+
+        if (keys.includes('image')) {
+            transformed = Object.assign(transformed, { image: VikingHelper.getVikingImageUrl(data.image) });
+        }
+        if (keys.includes('texture')) {
+            transformed = Object.assign(transformed, { texture: VikingHelper.getTextureImageUrl(data.texture) });
+        }
+
+        return transformed;
+    }
+
+    /**
+     * Build a Viking Image URL for a given file name
+     *
+     * @param fileName the name of the file
+     *
+     * @returns the Viking Image URL
+     */
+    public static getVikingImageUrl(fileName: string): string {
+        return `${VikingHelper.VIKING_IMAGE_BASE_URL}/${fileName}.png`
+    }
+
+    /**
+     * Build a Texture Image URL for a given file name
+     *
+     * @param fileName the name of the file
+     *
+     * @returns the Texture Image URL
+     */
+    public static getTextureImageUrl(fileName: string): string {
+        return `${VikingHelper.TEXTURE_IMAGE_BASE_URL}/${fileName}.png`
     }
 }

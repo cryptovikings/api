@@ -1,12 +1,12 @@
 import { ClothesCondition } from '../enums/clothesCondition.enum';
 import { ItemCondition } from '../enums/itemCondition.enum';
-import { VikingSpecificationHelper } from '../helpers/vikingSpecification.helper';
 import { ErrorHelper } from '../helpers/error.helper';
 import { APIResponse } from '../models/utils/apiResponse.model';
 import { Viking } from '../models/viking/viking.model';
 import { vikingTransformer } from '../models/viking/viking.transformer';
 import { vikingService } from '../services/viking.service';
 import { AbstractResourceController } from './abstract/abstractResource.controller';
+import { VikingHelper } from '../helpers/viking.helper';
 
 /**
  * The VikingController, designed to handle the /viking route collection and the viking metadata database Entity
@@ -29,8 +29,8 @@ class VikingController extends AbstractResourceController<Viking> {
     protected readonly defaultData: Viking['broadcast'] = {
         number: -1,
         name: 'Unminted Viking',
-        image: VikingSpecificationHelper.getVikingImageUrl('viking_unknown'),
-        texture: VikingSpecificationHelper.getVikingImageUrl('viking_unknown'),
+        image: VikingHelper.getVikingImageUrl('viking_unknown'),
+        texture: VikingHelper.getVikingImageUrl('viking_unknown'),
         description: 'This Viking hasn\'t yet been minted. Come back once he\'s been minted to check his randomly generated stats and appearance!',
         external_link: `${process.env.FRONT_END_URL!}/viking/mint`,
         attributes: [

@@ -192,9 +192,9 @@ export const VikingModel = _createModel({
         number: { type: Number, required: true, unique: true, index: true },
         name: { type: String, required: true, unique: true, index: true },
         image: { type: String, required: true, unique: true },
-        texture: {type: String, required: true, unique: true},
+        texture: { type: String, required: true, unique: true },
         description: { type: String, required: true },
-        external_link: {type: String, required: true, unique: true},
+        external_link: { type: String, required: true, unique: true },
 
         beard_name: { type: String, required: true },
         body_name: { type: String, required: true },
