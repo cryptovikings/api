@@ -401,9 +401,11 @@ export class EthHelper {
      */
     private static async synchronizeNames(vikingCount: number): Promise<void> {
         for (let i = 0; i < vikingCount; i++) {
-            const vikingName = (await EthHelper.CONTRACT.functions.vikings(i)).name;
+            console.log(`EthHelper [synchronizeNames] synchronizing name for Viking with ID ${i}...`);
 
-            await vikingService.updateOne({ number: i }, { name: vikingName });
+            const { name } = (await EthHelper.CONTRACT.functions.vikings(i));
+
+            await vikingService.updateOne({ number: i }, { name });
         }
     }
 
