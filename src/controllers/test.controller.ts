@@ -91,7 +91,7 @@ class TestController extends AbstractController {
         // list out manually (for now) the various Part Names + Condition Names so as to functionise analysis data production
         const itemConditions = Object.values(ItemCondition).filter((v) => v !== 'TBC');
         const clothesConditions = Object.values(ClothesCondition).filter((v) => v !== 'TBC');
-        const bodyNames = ['Devil', 'Pink', 'Robot', 'Tats', 'White', 'Zombie', 'Zombie2'];
+        const bodyNames = ['Devil', 'Piggy', 'Pink', 'Robot', 'Tats', 'Tats2', 'White', 'Zombie', 'Zombie2'];
         const beardNames = ['01', '02', '03', '04', '05'];
         const faceNames = ['01', '02', '03', '04', '05'];
         const topNames = Array.from(new Array(25).keys()).map((n) => n + 1 < 10 ? `0${n + 1}` : `${n + 1}`);

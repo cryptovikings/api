@@ -289,27 +289,35 @@ export class VikingSpecificationHelper {
      * @returns the name of the Body Type
      */
     private static resolveBodyType(selector: number): string {
-        if (selector <= 14) {
+        if (selector <= 11) {
             return 'Devil';
         }
 
-        if (selector <= 28) {
+        if (selector <= 22) {
+            return 'Piggy';
+        }
+
+        if (selector <= 33) {
             return 'Pink';
         }
 
-        if (selector <= 42) {
+        if (selector <= 44) {
             return 'Robot';
         }
 
-        if (selector <= 56) {
+        if (selector <= 55) {
             return 'Tats';
         }
 
-        if (selector <= 70) {
+        if (selector <= 66) {
+            return 'Tats2';
+        }
+
+        if (selector <= 77) {
             return 'White';
         }
 
-        if (selector <= 84) {
+        if (selector <= 88) {
             return 'Zombie';
         }
 
