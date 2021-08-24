@@ -92,7 +92,7 @@ class TestController extends AbstractController {
         const itemConditions = Object.values(ItemCondition).filter((v) => v !== 'TBC');
         const clothesConditions = Object.values(ClothesCondition).filter((v) => v !== 'TBC');
         const beardNames = ['Beaded', 'Bushy', 'Goatee', 'Sophisticated', 'Stubble'];
-        const bodyNames = ['Devil', 'Inked', 'Pigman', 'Robot', 'Tanned', 'Tatted', 'White', 'Zombie (Blue)', 'Zombie (Green)'];
+        const bodyNames = ['Base 1', 'Base 2', 'Base 3', 'Devil', 'Inked', 'Pigman', 'Robot', 'Tatted', 'Wolfman', 'Zombie (Blue)', 'Zombie (Green)'];
         const bootsNames = ['Standard', 'Laced', 'Leather', 'Sandals', 'Steel Capped', 'Tailored'];
         const bottomsNames = ['Standard', 'Buckled', 'Kingly', 'Patchwork', 'Short Shorts', 'Shorts'];
         const faceNames = ['Cyclops', 'Grin', 'Patch', 'Smirk', 'Stern'];
