@@ -337,7 +337,7 @@ export class VikingSpecificationHelper {
      */
     private static resolveFaceType(selector: number): string {
         if (selector <= 19) {
-            return '01';
+            return 'Stern';
         }
 
         if (selector <= 39) {
@@ -483,22 +483,22 @@ export class VikingSpecificationHelper {
         }
 
         if (selector <= 19) {
-            return '01';
+            return 'Laced';
         }
 
         if (selector <= 39) {
-            return '02';
+            return 'Leather';
         }
 
         if (selector <= 59) {
-            return '03';
+            return 'Sandals';
         }
 
         if (selector <= 79) {
-            return '04';
+            return 'Steel Capped';
         }
 
-        return '05';
+        return 'Tailored';
     }
 
     /**
@@ -518,22 +518,22 @@ export class VikingSpecificationHelper {
         }
 
         if (selector <= 19) {
-            return '01';
+            return 'Buckled';
         }
 
         if (selector <= 39) {
-            return '02';
+            return 'Kingly';
         }
 
         if (selector <= 59) {
-            return '03';
+            return 'Patchwork';
         }
 
         if (selector <= 79) {
-            return '04';
+            return 'Short Shorts';
         }
 
-        return '05';
+        return 'Shorts';
     }
 
     /**
@@ -588,22 +588,22 @@ export class VikingSpecificationHelper {
         }
 
         if (selector <= 19) {
-            return '01';
+            return 'Bones';
         }
 
         if (selector <= 39) {
-            return '02';
+            return 'Ornate';
         }
 
         if (selector <= 59) {
-            return '03';
+            return 'Reinforced';
         }
 
         if (selector <= 79) {
-            return '05';
+            return 'Scutum';
         }
 
-        return 'Bones';
+        return 'Wooden';
     }
 
     /**

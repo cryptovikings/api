@@ -93,11 +93,11 @@ class TestController extends AbstractController {
         const clothesConditions = Object.values(ClothesCondition).filter((v) => v !== 'TBC');
         const beardNames = ['Beaded', 'Bushy', 'Goatee', 'Sophisticated', 'Stubble'];
         const bodyNames = ['Devil', 'Inked', 'Pigman', 'Robot', 'Tanned', 'Tatted', 'White', 'Zombie (Blue)', 'Zombie (Green)'];
-        const bootsNames = ['Standard', '01', '02', '03', '04', '05'];
-        const bottomsNames = ['Standard', '01', '02', '03', '04', '05'];
-        const faceNames = ['01', 'Cyclops', 'Grin', 'Patch', 'Smirk'];
+        const bootsNames = ['Standard', 'Laced', 'Leather', 'Sandals', 'Steel Capped', 'Tailored'];
+        const bottomsNames = ['Standard', 'Buckled', 'Kingly', 'Patchwork', 'Short Shorts', 'Shorts'];
+        const faceNames = ['Cyclops', 'Grin', 'Patch', 'Smirk', 'Stern'];
         const helmetNames = ['None', 'Bejeweled', 'Cap', 'Headband', 'Horned', 'Spiky'];
-        const shieldNames = ['None', '01', '02', '03', '05', '05'];
+        const shieldNames = ['None', 'Bones', 'Ornate', 'Reinforced', 'Scutum', 'Wooden'];
         const topNames = [
             'Fitted Shirt (Blue)',
             'Fitted Shirt (Green)',
