@@ -90,7 +90,9 @@ export class ImageHelper {
                 .background('transparent')
                 .mosaic()
                 .resize(1024, 1024)
-                .write(filePath, ((err) => err ? reject(err) : resolve()));
+                .write(filePath, ((err) => {
+                    err ? reject(`${err.message} : ${JSON.stringify(vikingSpecification.filePaths)}`) : resolve()
+                }));
         });
     }
 
@@ -99,7 +101,7 @@ export class ImageHelper {
      *
      * @param maxVikings the maximum number of vikings to include
      */
-     public static async generateVikingAtlas(maxVikings: number): Promise<void> {
+    public static async generateVikingAtlas(maxVikings: number): Promise<void> {
         // wrap the GM process into a Promise so that it can be awaited
         return new Promise((resolve, reject) => {
             const filePath = path.join(ImageHelper.VIKING_OUT, '_atlas.png');

@@ -91,15 +91,41 @@ class TestController extends AbstractController {
         // list out manually (for now) the various Part Names + Condition Names so as to functionise analysis data production
         const itemConditions = Object.values(ItemCondition).filter((v) => v !== 'TBC');
         const clothesConditions = Object.values(ClothesCondition).filter((v) => v !== 'TBC');
-        const bodyNames = ['Devil', 'Piggy', 'Pink', 'Robot', 'Tats', 'Tats2', 'White', 'Zombie', 'Zombie2'];
-        const beardNames = ['01', '02', '03', '04', '05'];
-        const faceNames = ['01', '02', '03', '04', '05'];
-        const topNames = Array.from(new Array(25).keys()).map((n) => n + 1 < 10 ? `0${n + 1}` : `${n + 1}`);
+        const beardNames = ['Beaded', 'Bushy', 'Goatee', 'Sophisticated', 'Stubble'];
+        const bodyNames = ['Devil', 'Inked', 'Pigman', 'Robot', 'Tanned', 'Tatted', 'White', 'Zombie (Blue)', 'Zombie (Green)'];
         const bootsNames = ['Standard', '01', '02', '03', '04', '05'];
         const bottomsNames = ['Standard', '01', '02', '03', '04', '05'];
-        const helmetNames = ['None', '01', '02', '03', '04', '05'];
+        const faceNames = ['01', 'Cyclops', 'Grin', 'Patch', 'Smirk'];
+        const helmetNames = ['None', 'Bejeweled', 'Cap', 'Headband', 'Horned', 'Spiky'];
         const shieldNames = ['None', '01', '02', '03', '05', '05'];
-        const weaponNames = ['None', '01', '02', '03', '05', '05'];
+        const topNames = [
+            'Fitted Shirt (Blue)',
+            'Fitted Shirt (Green)',
+            'Fitted Shirt (Grey)',
+            'Fitted Shirt (Pink)',
+            'Fitted Shirt (Red)',
+            'Fitted Shirt (Yellow)',
+            'Strapped',
+            'Tank Top (Blue)',
+            'Tank Top (Dark Grey)',
+            'Tank Top (Green)',
+            'Tank Top (Light Grey)',
+            'Tank Top (Pink)',
+            'Tank Top (Red)',
+            'Tattered (Blue)',
+            'Tattered (Dark Grey)',
+            'Tattered (Light Grey)',
+            'Tattered (Purple)',
+            'Tattered (Red)',
+            'Tattered (Yellow)',
+            'Winter Jacket (Blue)',
+            'Winter Jacket (Dark Grey)',
+            'Winter Jacket (Green)',
+            'Winter Jacket (Light Grey)',
+            'Winter Jacket (Pink)',
+            'Winter Jacket (Purple)'
+        ];
+        const weaponNames = ['None', 'Axe', 'Board', 'Hammer', 'Sword', 'Trident'];
 
         /**
          * Internal method for producing analysis data on the prevalence of Part Names + Condition Names amongst their respective sets

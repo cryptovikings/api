@@ -225,7 +225,6 @@ export class EthHelper {
             console.warn('EthHelper [Recover]: Viking Database entries missing!');
 
             await EthHelper.synchronizeDatabase(counts.vikingCount).catch((err) => {
-                // do not throw this error so that recovery can continue
                 console.error('EthHelper [synchronizeDatabase]: error during database synchronization', err);
             });
 
@@ -242,7 +241,6 @@ export class EthHelper {
             console.warn('EthHelper [Recover]: Viking Images missing!');
 
             await EthHelper.synchronizeImages(localVikings).catch((err) => {
-                // do not throw this error so that recovery can continue
                 console.error('EthHelper [synchronizeImages]: error during image synchronization', err);
             });
         }
@@ -256,7 +254,6 @@ export class EthHelper {
             console.warn('EthHelper [Recover]: Contract Vikings are out of sync with totalSupply()!');
 
             await EthHelper.synchronizeContract(counts.totalSupply, counts.vikingCount).catch((err) => {
-                // do not throw this error so that recovery can continue
                 console.error('EthHelper [synchronizeContract]: error during Contract synchronization', err);
             });
         }
@@ -271,7 +268,6 @@ export class EthHelper {
             console.warn('EthHelper [Recover]: synchronizing names...');
 
             await EthHelper.synchronizeNames(counts.vikingCount).catch((err) => {
-                // do not throw this error so that initialization can continue
                 console.error('EthHelper [synchronizeNames]: error during name synchronization', err);
             });
         }
