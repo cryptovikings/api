@@ -24,7 +24,7 @@ export class VikingHelper {
     /**
      * Base URL for front end Viking links
      */
-    private static readonly VIKING_LINK_BASE_URL = `${process.env.FRONT_END_URL!}/viking`;
+    private static readonly VIKING_LINK_BASE_URL = `${process.env.FRONT_END_URL!}/${process.env.FRONT_END_VIKING_ENDPOINT!}`;
 
     /**
      * Given a VikingSpecification, produce and store a Viking in the Database
