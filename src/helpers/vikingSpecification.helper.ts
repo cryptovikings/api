@@ -697,7 +697,7 @@ export class VikingSpecificationHelper {
             return ClothesCondition.RAGGED;
         }
         else if (statistic <= 74) {
-            return ClothesCondition.TORN;
+            return ClothesCondition.ROUGH;
         }
         else if (statistic <= 89) {
             return ClothesCondition.USED;
