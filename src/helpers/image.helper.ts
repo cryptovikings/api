@@ -90,7 +90,9 @@ export class ImageHelper {
                 .background('transparent')
                 .mosaic()
                 .resize(1024, 1024)
-                .write(filePath, ((err) => err ? reject(err) : resolve()));
+                .write(filePath, ((err) => {
+                    err ? reject(`${err.message} : ${JSON.stringify(vikingSpecification.filePaths)}`) : resolve()
+                }));
         });
     }
 
@@ -99,7 +101,7 @@ export class ImageHelper {
      *
      * @param maxVikings the maximum number of vikings to include
      */
-     public static async generateVikingAtlas(maxVikings: number): Promise<void> {
+    public static async generateVikingAtlas(maxVikings: number): Promise<void> {
         // wrap the GM process into a Promise so that it can be awaited
         return new Promise((resolve, reject) => {
             const filePath = path.join(ImageHelper.VIKING_OUT, '_atlas.png');
@@ -107,7 +109,7 @@ export class ImageHelper {
             // initialise an empty gm()
             const image = gm('');
 
-            // montage a random set of 10 (max) Viking Image files
+            // montage a random set of <=maxVikings Viking Image files
             const count = fs.readdirSync(ImageHelper.VIKING_OUT).filter((f) => !f.includes('unknown')).length;
             const amount = Math.min(count, maxVikings);
             const previous: Array<number> = [];

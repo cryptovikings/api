@@ -259,22 +259,22 @@ export class VikingSpecificationHelper {
      */
     private static resolveBeardType(selector: number): string {
         if (selector <= 27) {
-            return '01';
+            return 'Beaded';
         }
 
         if (selector <= 45) {
-            return '02';
+            return 'Bushy';
         }
 
         if (selector <= 63) {
-            return '03';
+            return 'Goatee';
         }
 
         if (selector <= 81) {
-            return '04';
+            return 'Sophisticated';
         }
 
-        return '05';
+        return 'Stubble';
     }
 
     /**
@@ -289,39 +289,47 @@ export class VikingSpecificationHelper {
      * @returns the name of the Body Type
      */
     private static resolveBodyType(selector: number): string {
-        if (selector <= 11) {
+        if (selector <= 9) {
+            return 'Base 1';
+        }
+
+        if (selector <= 18) {
+            return 'Base 2';
+        }
+
+        if (selector <= 27) {
+            return 'Base 3';
+        }
+
+        if (selector <= 36) {
             return 'Devil';
         }
 
-        if (selector <= 22) {
-            return 'Piggy';
+        if (selector <= 45) {
+            return 'Inked';
         }
 
-        if (selector <= 33) {
-            return 'Pink';
+        if (selector <= 54) {
+            return 'Pigman';
         }
 
-        if (selector <= 44) {
+        if (selector <= 63) {
             return 'Robot';
         }
 
-        if (selector <= 55) {
-            return 'Tats';
+        if (selector <= 72) {
+            return 'Tatted';
         }
 
-        if (selector <= 66) {
-            return 'Tats2';
+        if (selector <= 81) {
+            return 'Wolfman';
         }
 
-        if (selector <= 77) {
-            return 'White';
+        if (selector <= 90) {
+            return 'Zombie (Blue)';
         }
 
-        if (selector <= 88) {
-            return 'Zombie';
-        }
-
-        return 'Zombie2';
+        return 'Zombie (Green)';
     }
 
     /**
@@ -337,22 +345,22 @@ export class VikingSpecificationHelper {
      */
     private static resolveFaceType(selector: number): string {
         if (selector <= 19) {
-            return '01';
+            return 'Stern';
         }
 
         if (selector <= 39) {
-            return '02';
+            return 'Cyclops';
         }
 
         if (selector <= 59) {
-            return '03';
+            return 'Grin';
         }
 
         if (selector <= 79) {
-            return '04';
+            return 'Patch';
         }
 
-        return '05';
+        return 'Smirk';
     }
 
     /**
@@ -368,102 +376,102 @@ export class VikingSpecificationHelper {
      */
     private static resolveTopType(selector: number): string {
         if (selector <= 3) {
-            return '01';
+            return 'Fitted Shirt (Blue)';
         }
 
         if (selector <= 7) {
-            return '02';
+            return 'Fitted Shirt (Green)';
         }
 
         if (selector <= 11) {
-            return '03';
+            return 'Fitted Shirt (Grey)';
         }
 
         if (selector <= 15) {
-            return '04';
+            return 'Fitted Shirt (Pink)';
         }
 
         if (selector <= 19) {
-            return '05';
+            return 'Fitted Shirt (Red)';
         }
 
         if (selector <= 23) {
-            return '06';
+            return 'Fitted Shirt (Yellow)';
         }
 
         if (selector <= 27) {
-            return '07';
+            return 'Strapped';
         }
 
         if (selector <= 31) {
-            return '08';
+            return 'Tank Top (Blue)';
         }
 
         if (selector <= 35) {
-            return '09';
+            return 'Tank Top (Dark Grey)';
         }
 
         if (selector <= 39) {
-            return '10';
+            return 'Tank Top (Green)';
         }
 
         if (selector <= 43) {
-            return '11';
+            return 'Tank Top (Light Grey)';
         }
 
         if (selector <= 47) {
-            return '12';
+            return 'Tank Top (Pink)';
         }
 
         if (selector <= 51) {
-            return '13';
+            return 'Tank Top (Red)';
         }
 
         if (selector <= 55) {
-            return '14';
+            return 'Tattered (Blue)';
         }
 
         if (selector <= 59) {
-            return '15';
+            return 'Tattered (Dark Grey)';
         }
 
         if (selector <= 63) {
-            return '16';
+            return 'Tattered (Light Grey)';
         }
 
         if (selector <= 67) {
-            return '17';
+            return 'Tattered (Purple)';
         }
 
         if (selector <= 71) {
-            return '18';
+            return 'Tattered (Red)';
         }
 
         if (selector <= 75) {
-            return '19';
+            return 'Tattered (Yellow)';
         }
 
         if (selector <= 79) {
-            return '20';
+            return 'Winter Jacket (Blue)';
         }
 
         if (selector <= 83) {
-            return '21';
+            return 'Winter Jacket (Dark Grey)';
         }
 
         if (selector <= 87) {
-            return '22';
+            return 'Winter Jacket (Green)';
         }
 
         if (selector <= 91) {
-            return '23';
+            return 'Winter Jacket (Light Grey)';
         }
 
         if (selector <= 95) {
-            return '24';
+            return 'Winter Jacket (Pink)';
         }
 
-        return '25';
+        return 'Winter Jacket (Purple)';
     }
 
     /**
@@ -483,22 +491,22 @@ export class VikingSpecificationHelper {
         }
 
         if (selector <= 19) {
-            return '01';
+            return 'Laced';
         }
 
         if (selector <= 39) {
-            return '02';
+            return 'Leather';
         }
 
         if (selector <= 59) {
-            return '03';
+            return 'Sandals';
         }
 
         if (selector <= 79) {
-            return '04';
+            return 'Steel Capped';
         }
 
-        return '05';
+        return 'Tailored';
     }
 
     /**
@@ -518,22 +526,22 @@ export class VikingSpecificationHelper {
         }
 
         if (selector <= 19) {
-            return '01';
+            return 'Buckled';
         }
 
         if (selector <= 39) {
-            return '02';
+            return 'Kingly';
         }
 
         if (selector <= 59) {
-            return '03';
+            return 'Patchwork';
         }
 
         if (selector <= 79) {
-            return '04';
+            return 'Short Shorts';
         }
 
-        return '05';
+        return 'Shorts';
     }
 
     /**
@@ -553,22 +561,22 @@ export class VikingSpecificationHelper {
         }
 
         if (selector <= 19) {
-            return '01';
+            return 'Bejeweled';
         }
 
         if (selector <= 39) {
-            return '02';
+            return 'Cap';
         }
 
         if (selector <= 59) {
-            return '03';
+            return 'Headband';
         }
 
         if (selector <= 79) {
-            return '04';
+            return 'Horned';
         }
 
-        return '05';
+        return 'Spiky';
     }
 
     /**
@@ -588,22 +596,22 @@ export class VikingSpecificationHelper {
         }
 
         if (selector <= 19) {
-            return '01';
+            return 'Bones';
         }
 
         if (selector <= 39) {
-            return '02';
+            return 'Ornate';
         }
 
         if (selector <= 59) {
-            return '03';
+            return 'Reinforced';
         }
 
         if (selector <= 79) {
-            return '04';
+            return 'Scutum';
         }
 
-        return '05';
+        return 'Wooden';
     }
 
     /**
@@ -623,22 +631,22 @@ export class VikingSpecificationHelper {
         }
 
         if (selector <= 19) {
-            return '01';
+            return 'Axe';
         }
 
         if (selector <= 39) {
-            return '02';
+            return 'Board';
         }
 
         if (selector <= 59) {
-            return '03';
+            return 'Hammer';
         }
 
         if (selector <= 79) {
-            return '04';
+            return 'Trident';
         }
 
-        return '05';
+        return 'Sword';
     }
 
     /**
@@ -689,7 +697,7 @@ export class VikingSpecificationHelper {
             return ClothesCondition.RAGGED;
         }
         else if (statistic <= 74) {
-            return ClothesCondition.TORN;
+            return ClothesCondition.ROUGH;
         }
         else if (statistic <= 89) {
             return ClothesCondition.USED;

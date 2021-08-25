@@ -5,7 +5,7 @@ export enum ClothesCondition {
     TBC = 'TBC',
     STANDARD = 'Standard',
     RAGGED = 'Ragged',
-    TORN = 'Torn',
+    ROUGH = 'Rough',
     USED = 'Used',
     GOOD = 'Good',
     PERFECT = 'Perfect'
