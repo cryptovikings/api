@@ -269,8 +269,8 @@ export class VikingHelper {
             transformed = Object.assign(transformed, { texture: VikingHelper.getTextureImageUrl(data.texture) });
         }
 
-        if (!select || select?.includes('external_link')) {
-            transformed = Object.assign(transformed, { external_link: VikingHelper.getVikingExternalURL(data.number) });
+        if (!select || select?.includes('external_url')) {
+            transformed = Object.assign(transformed, { external_url: VikingHelper.getVikingExternalURL(data.number) });
         }
 
         if (attributes.length) {

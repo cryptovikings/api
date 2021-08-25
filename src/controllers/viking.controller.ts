@@ -32,7 +32,7 @@ class VikingController extends AbstractResourceController<Viking> {
         image: VikingHelper.getVikingImageUrl('viking_unknown'),
         texture: VikingHelper.getTextureImageUrl('viking_unknown'),
         description: 'This Viking hasn\'t yet been minted. Come back once he\'s been minted to check his randomly generated stats and appearance!',
-        external_link: VikingHelper.getVikingExternalURL('mint'),
+        external_url: VikingHelper.getVikingExternalURL('mint'),
         attributes: [
             {
                 trait_type: 'Beard',

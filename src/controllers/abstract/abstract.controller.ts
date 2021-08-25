@@ -56,7 +56,12 @@ export abstract class AbstractController {
                 res.status(status).sendFile(data);
             }
             else {
-                res.status(status).json({ data, pagination });
+                if (Array.isArray(data)) {
+                    res.status(status).json({ data, pagination });
+                }
+                else {
+                    res.status(status).json(data);
+                }
             }
         }
         catch (e) {

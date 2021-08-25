@@ -48,7 +48,7 @@ interface VikingMetadata {
     readonly image: string;
     readonly texture: string;
     readonly description: string;
-    readonly external_link: string;
+    readonly external_url: string;
 
     readonly attributes: [
         // beard appearance
