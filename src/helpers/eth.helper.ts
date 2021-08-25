@@ -12,8 +12,6 @@ import { ImageHelper } from './image.helper';
 /**
  * EthHelper, encapsulating all Ethereum-related functionality, including Contract instantiation and interaction, Contract data synchronization,
  *   Contract Event Listeners and a number of synchronization-related recovery routines
- *
- * EthHelper is careful to handle errors appropriately so as to produce as little downtime as possible
  */
 export class EthHelper {
 
@@ -86,6 +84,7 @@ export class EthHelper {
     public static async initialize(): Promise<void> {
         console.log('EthHelper [Initialize]: initializing...');
 
+        // listen first to catch + queue any events produced by recover()
         if (EthHelper.LISTEN) {
             // register Ethereum event listeners
             EthHelper.listen();
@@ -399,7 +398,7 @@ export class EthHelper {
         for (let i = 0; i < vikingCount; i++) {
             console.log(`EthHelper [synchronizeNames] synchronizing name for Viking with ID ${i}...`);
 
-            const { name } = (await EthHelper.CONTRACT.functions.vikings(i));
+            const { name } = await EthHelper.CONTRACT.functions.vikings(i);
 
             await vikingService.updateOne({ number: i }, { name });
         }

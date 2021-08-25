@@ -109,7 +109,7 @@ export class ImageHelper {
             // initialise an empty gm()
             const image = gm('');
 
-            // montage a random set of 10 (max) Viking Image files
+            // montage a random set of <=maxVikings Viking Image files
             const count = fs.readdirSync(ImageHelper.VIKING_OUT).filter((f) => !f.includes('unknown')).length;
             const amount = Math.min(count, maxVikings);
             const previous: Array<number> = [];
