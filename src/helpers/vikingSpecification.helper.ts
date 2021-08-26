@@ -344,23 +344,39 @@ export class VikingSpecificationHelper {
      * @returns the name of the Face Type
      */
     private static resolveFaceType(selector: number): string {
-        if (selector <= 19) {
-            return 'Stern';
+        if (selector <= 11) {
+            return 'Angry';
         }
 
-        if (selector <= 39) {
+        if (selector <= 22) {
             return 'Cyclops';
         }
 
-        if (selector <= 59) {
+        if (selector <= 33) {
+            return 'Fangs';
+        }
+
+        if (selector <= 33) {
             return 'Grin';
         }
 
-        if (selector <= 79) {
+        if (selector <= 44) {
             return 'Patch';
         }
 
-        return 'Smirk';
+        if (selector <= 55) {
+            return 'Singer';
+        }
+
+        if (selector <= 55) {
+            return 'Smirk';
+        }
+
+        if (selector <= 55) {
+            return 'Stern';
+        }
+
+        return 'Worried';
     }
 
     /**
@@ -635,7 +651,7 @@ export class VikingSpecificationHelper {
         }
 
         if (selector <= 39) {
-            return 'Board';
+            return 'Plank';
         }
 
         if (selector <= 59) {

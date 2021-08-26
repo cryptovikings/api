@@ -95,7 +95,7 @@ class TestController extends AbstractController {
         const bodyNames = ['Base 1', 'Base 2', 'Base 3', 'Devil', 'Inked', 'Pigman', 'Robot', 'Tatted', 'Wolfman', 'Zombie (Blue)', 'Zombie (Green)'];
         const bootsNames = ['Standard', 'Laced', 'Leather', 'Sandals', 'Steel Capped', 'Tailored'];
         const bottomsNames = ['Standard', 'Buckled', 'Kingly', 'Patchwork', 'Short Shorts', 'Shorts'];
-        const faceNames = ['Cyclops', 'Grin', 'Patch', 'Smirk', 'Stern'];
+        const faceNames = ['Angry', 'Cyclops', 'Fangs', 'Grin', 'Patch', 'Singer', 'Smirk', 'Stern', 'Worried'];
         const helmetNames = ['None', 'Bejeweled', 'Cap', 'Headband', 'Horned', 'Spiky'];
         const shieldNames = ['None', 'Bones', 'Ornate', 'Reinforced', 'Scutum', 'Wooden'];
         const topNames = [
@@ -125,7 +125,7 @@ class TestController extends AbstractController {
             'Winter Jacket (Pink)',
             'Winter Jacket (Purple)'
         ];
-        const weaponNames = ['None', 'Axe', 'Board', 'Hammer', 'Sword', 'Trident'];
+        const weaponNames = ['None', 'Axe', 'Plank', 'Hammer', 'Sword', 'Trident'];
 
         /**
          * Internal method for producing analysis data on the prevalence of Part Names + Condition Names amongst their respective sets
