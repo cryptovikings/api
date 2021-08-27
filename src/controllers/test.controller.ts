@@ -95,7 +95,7 @@ class TestController extends AbstractController {
         const bodyNames = ['Base 1', 'Base 2', 'Base 3', 'Devil', 'Inked', 'Pigman', 'Robot', 'Tatted', 'Wolfman', 'Zombie (Blue)', 'Zombie (Green)'];
         const bootsNames = ['Standard', 'Laced', 'Leather', 'Sandals', 'Steel Capped', 'Tailored'];
         const bottomsNames = ['Standard', 'Buckled', 'Kingly', 'Patchwork', 'Short Shorts', 'Shorts'];
-        const faceNames = ['Angry', 'Cyclops', 'Fangs', 'Grin', 'Patch', 'Singer', 'Smirk', 'Stern', 'Worried'];
+        const faceNames = ['Angry', 'Cool', 'Cyclops', 'Fangs', 'Grin', 'Patch', 'Singer', 'Smirk', 'Stern', 'Worried'];
         const helmetNames = ['None', 'Bejeweled', 'Cap', 'Headband', 'Horned', 'Spiky'];
         const shieldNames = ['None', 'Bones', 'Ornate', 'Reinforced', 'Scutum', 'Wooden'];
         const topNames = [
@@ -118,6 +118,11 @@ class TestController extends AbstractController {
             'Tattered (Purple)',
             'Tattered (Red)',
             'Tattered (Yellow)',
+            'Vest (Blue)',
+            'Vest (Green)',
+            'Vest (Pink)',
+            'Vest (White)',
+            'Vest (Yellow)',
             'Winter Jacket (Blue)',
             'Winter Jacket (Dark Grey)',
             'Winter Jacket (Green)',

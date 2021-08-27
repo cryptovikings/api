@@ -344,35 +344,39 @@ export class VikingSpecificationHelper {
      * @returns the name of the Face Type
      */
     private static resolveFaceType(selector: number): string {
-        if (selector <= 11) {
+        if (selector <= 10) {
             return 'Angry';
         }
 
-        if (selector <= 22) {
+        if (selector <= 20) {
+            return 'Cool';
+        }
+
+        if (selector <= 30) {
             return 'Cyclops';
         }
 
-        if (selector <= 33) {
+        if (selector <= 40) {
             return 'Fangs';
         }
 
-        if (selector <= 33) {
+        if (selector <= 50) {
             return 'Grin';
         }
 
-        if (selector <= 44) {
+        if (selector <= 60) {
             return 'Patch';
         }
 
-        if (selector <= 55) {
+        if (selector <= 70) {
             return 'Singer';
         }
 
-        if (selector <= 55) {
+        if (selector <= 80) {
             return 'Smirk';
         }
 
-        if (selector <= 55) {
+        if (selector <= 90) {
             return 'Stern';
         }
 
@@ -391,11 +395,11 @@ export class VikingSpecificationHelper {
      * @returns the name of the Top Type
      */
     private static resolveTopType(selector: number): string {
-        if (selector <= 3) {
+        if (selector <= 5) {
             return 'Fitted Shirt (Blue)';
         }
 
-        if (selector <= 7) {
+        if (selector <= 8) {
             return 'Fitted Shirt (Green)';
         }
 
@@ -403,87 +407,107 @@ export class VikingSpecificationHelper {
             return 'Fitted Shirt (Grey)';
         }
 
-        if (selector <= 15) {
+        if (selector <= 14) {
             return 'Fitted Shirt (Pink)';
         }
 
-        if (selector <= 19) {
+        if (selector <= 17) {
             return 'Fitted Shirt (Red)';
         }
 
-        if (selector <= 23) {
+        if (selector <= 20) {
             return 'Fitted Shirt (Yellow)';
         }
 
-        if (selector <= 27) {
+        if (selector <= 23) {
             return 'Strapped';
         }
 
-        if (selector <= 31) {
+        if (selector <= 26) {
             return 'Tank Top (Blue)';
         }
 
-        if (selector <= 35) {
+        if (selector <= 29) {
             return 'Tank Top (Dark Grey)';
         }
 
-        if (selector <= 39) {
+        if (selector <= 32) {
             return 'Tank Top (Green)';
         }
 
-        if (selector <= 43) {
+        if (selector <= 35) {
             return 'Tank Top (Light Grey)';
         }
 
-        if (selector <= 47) {
+        if (selector <= 38) {
             return 'Tank Top (Pink)';
         }
 
-        if (selector <= 51) {
+        if (selector <= 42) {
             return 'Tank Top (Red)';
         }
 
-        if (selector <= 55) {
+        if (selector <= 45) {
             return 'Tattered (Blue)';
         }
 
-        if (selector <= 59) {
+        if (selector <= 47) {
             return 'Tattered (Dark Grey)';
         }
 
-        if (selector <= 63) {
+        if (selector <= 50) {
             return 'Tattered (Light Grey)';
         }
 
-        if (selector <= 67) {
+        if (selector <= 53) {
             return 'Tattered (Purple)';
         }
 
-        if (selector <= 71) {
+        if (selector <= 56) {
             return 'Tattered (Red)';
         }
 
-        if (selector <= 75) {
+        if (selector <= 59) {
             return 'Tattered (Yellow)';
         }
 
-        if (selector <= 79) {
+        if (selector <= 62) {
+            return 'Vest (Blue)';
+        }
+
+        if (selector <= 65) {
+            return 'Vest (Green)';
+        }
+
+        if (selector <= 68) {
+            return 'Vest (Pink)';
+        }
+
+        if (selector <= 71) {
+            return 'Vest (White)';
+        }
+
+        if (selector <= 74) {
+            return 'Vest (Yellow)';
+        }
+
+        if (selector <= 77) {
             return 'Winter Jacket (Blue)';
         }
 
-        if (selector <= 83) {
+        if (selector <= 80) {
             return 'Winter Jacket (Dark Grey)';
         }
 
-        if (selector <= 87) {
+        if (selector <= 83) {
             return 'Winter Jacket (Green)';
         }
 
-        if (selector <= 91) {
+        if (selector <= 86) {
             return 'Winter Jacket (Light Grey)';
         }
 
-        if (selector <= 95) {
+        if (selector <= 89) {
             return 'Winter Jacket (Pink)';
         }
 
