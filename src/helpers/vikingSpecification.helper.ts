@@ -258,23 +258,35 @@ export class VikingSpecificationHelper {
      * @returns the name of the Beard Type
      */
     private static resolveBeardType(selector: number): string {
-        if (selector <= 27) {
+        if (selector <= 12) {
             return 'Beaded';
         }
 
-        if (selector <= 45) {
+        if (selector <= 24) {
             return 'Bushy';
         }
 
-        if (selector <= 63) {
+        if (selector <= 36) {
             return 'Goatee';
         }
 
-        if (selector <= 81) {
+        if (selector <= 48) {
+            return 'Slick';
+        }
+
+        if (selector <= 60) {
             return 'Sophisticated';
         }
 
-        return 'Stubble';
+        if (selector <= 72) {
+            return 'Straggly';
+        }
+
+        if (selector <= 84) {
+            return 'Stubble';
+        }
+
+        return 'Trim';
     }
 
     /**
