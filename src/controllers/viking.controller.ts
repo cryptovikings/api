@@ -31,8 +31,9 @@ class VikingController extends AbstractResourceController<Viking> {
         name: 'Unminted Viking',
         image: VikingHelper.getVikingImageUrl('viking_unknown'),
         texture: VikingHelper.getTextureImageUrl('viking_unknown'),
-        description: 'This Viking hasn\'t yet been minted. Come back once he\'s been minted to check his randomly generated stats and appearance!',
-        external_url: VikingHelper.getVikingExternalURL('mint'),
+        // eslint-disable-next-line
+        description: 'This CryptoViking is yet to make his way to Midgard! Come back when he\'s completed his journey to find out more about him! The CryptoVikings are a legion of truly-random, generative, hand-drawn NFTs. Residing on Polygon and employing Chainlink\'s VRF (Verifiable Random Function), we generate and store immutable statistics on-chain! Visit https://cryptovikings.io to learn more.',
+        external_url: VikingHelper.getVikingExternalURL(-1),
         attributes: [
             {
                 trait_type: 'Beard',

@@ -42,7 +42,8 @@ export class VikingHelper {
             image: vikingSpecification.image,
             texture: vikingSpecification.texture,
 
-            description: 'A unique and special viking',
+            // eslint-disable-next-line
+            description: `A unique CryptoViking who has made his way to Midgard. He's number ${vikingSpecification.number + 1} of 9873! The CryptoVikings are a legion of truly-random, generative, hand-drawn NFTs. Residing on Polygon and employing Chainlink's VRF (Verifiable Random Function), we generate and store immutable statistics on-chain! Visit https://cryptovikings.io to learn more`,
 
             beard_name: vikingSpecification.types.beard,
             body_name: vikingSpecification.types.body,
@@ -309,7 +310,7 @@ export class VikingHelper {
      *
      * @returns the Viking External URL
      */
-    public static getVikingExternalURL(resource: string | number): string {
+    public static getVikingExternalURL(resource: number): string {
         return `${VikingHelper.VIKING_LINK_BASE_URL}/${resource}`;
     }
 }
