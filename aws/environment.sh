@@ -14,8 +14,10 @@ sudo yum -y groupinstall "Development Tools"
 # install libpng + tools
 sudo yum -y install libpng libpng-devel
 
-# install screen
-sudo yum -y install screen
+# install screen if not present
+if ! which screen > /dev/null; then
+    sudo yum -y install screen
+fi
 
 # install + enable MongoDB if not present
 if ! which mongo > /dev/null; then

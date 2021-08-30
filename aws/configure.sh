@@ -4,7 +4,7 @@ source /root/.bashrc
 
 cd /home/ec2-user
 
-cp .env api
+cp .env_api api/.env
 
 cd api
 
@@ -16,21 +16,19 @@ rm -rf node_modules
 
 npm install --production
 
+rm -rf .git
+
 rm -rf .vscode
 
 rm -rf src
 
-rm -f -f .editorconfig
+rm -f .editorconfig
 
 rm -f .eslintignore
 
 rm -f .eslintrc
 
 rm -f .gitignore
-
-rm -f architecture.md
-
-rm -f deploy.md
 
 rm -f package-lock.json
 
