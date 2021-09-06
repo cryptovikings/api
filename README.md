@@ -1,53 +1,71 @@
-# API
+# CryptoVikings API
 
-NB: built and tested within a Unix (Ubuntu) environment
+API for [CryptoVikings](https://cryptovikings.io); the back-end for an on-demand, truly-random generative NFT collection.
 
-## Requirements
+The API is responsible for producing and storing Viking Metadata and Images based off of the on-chain Viking representation as part of the total minting procedure.
 
+The API is also capable of fully reconstructing its database and image set by referencing the live Contract's Viking collection as a source of truth; as well as correcting any flaws in the Contract's collection should they occur.
+
+
+## Prerequisites
 - **GraphicsMagick**
-    - **Ubuntu**: `sudo apt-get install graphicsmagick`
-    - **Windows**: [Installer](http://www.graphicsmagick.org/INSTALL-windows.html#retrieve-install-package)
+    - **Ubuntu**:
+        - `sudo apt-get install graphicsmagick`
+        - `sudo apt-get install libpng libpng-devel`
+    - **Windows**:
+        - [Installer](http://www.graphicsmagick.org/INSTALL-windows.html#retrieve-install-package)
+
+- **Node/NPM**
+    - **Ubuntu (with NVM)**:
+        - `curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash`
+        - `nvm install node`
+    - **Windows**:
+        - [Installer](https://nodejs.org/en/download/)
+
+- **MongoDB**
+    - **Ubuntu**:
+        - [Tutorial](https://docs.mongodb.com/manual/tutorial/install-mongodb-on-ubuntu/)
+    - **Windows**:
+        - [Installer](https://www.mongodb.com/try/download/community)
+
 
 ## Setup
-
 - clone
 - `npm install`
-- `touch ./.env`
+- `cp .env.example .env`
+- fill out `.env`...
 
-- Fill out `./.env` based on `./.env.example`:
-    - `SERVER_PORT` : the port to run the API on
-        - Example: `"8080"`
-    - `API_URL` : the URL for the API
-        - Example: `"http://localhost:8080"`
-    - `FRONT_END_URL` : the URL for the front end
-        - Example: `"http://localhost:3000"`
-    - `DATABASE_NAME` : the database name to use
-        - xample: `"crypto_api"`
-    - `IMAGE_VIKING_INPUT_ROOT` : root folder for Viking Part Images
-        - Example: `"res/viking"`
-    - `IMAGE_TEXTURE_INPUT_ROOT` : root folder for Texture Images
-        - Example: `"res/texture"`
-    - `IMAGE_VIKING_OUTPUT` : output folder for Viking Images
-        - Example: `"out/viking"`
-    - `IMAGE_TEXTURE_OUTPUT` : output folder for Texture Atlases
-        - Example: `"out/texture"`
-    - `IMAGE_VIKING_ENDPOINT` : API endpoint to use in serving Viking Images from `IMAGE_VIKING_OUTPUT`
-        - Example: `"/image"`
-    - 'IMAGE_TEXTURE_ENDPOINT' : API endpoint to use in serving Texture images from `IMAGE_TEXTURE_OUTPUT`
-        - Example: `"/texture"`
-    - `ETH_CONTRACT_ADDRESS` : the address of the Contract
-    - `ETH_PROVIDER_URL` : the JSON RPC Provider URL
-        - Example (public provider): `"https://matic-mumbai.chainstacklabs.com"`
-    - `ETH_WALLET_SECRET` : the private key of the Wallet to sign transactions with
-    - `ETH_RECOVER` : `true` or `false` - whether or not to execute Contract <-> API Recovery Routines on launch
-    - `ETH_RECOVER_NAMES` : `true` or `false` - whether or not to execute name "synchronization" on launch. `ETH_RECOVER` must also be true for this to work
-    - `ETH_LISTEN` : `true` or `false` - whether or not to run Contract Event Listeners
-    - `ETH_LISTEN_INTERVAL` : millisecond interval setting the polling rate for Ethereum Contract Events
-        - Example: `"20000"`
+
+### .env
+
+| Variable                  | Value (/Examples)         | Purpose                                                                                             |
+| ------------------------- | ------------------------- | --------------------------------------------------------------------------------------------------- |
+| DEV                       | `true` or `false`         | Enables or disables the `/test` route collection                                                    |
+| SERVER_PORT               | `{number}`                | Port to run the API on                                                                              |
+| API_URL                   | `http://localhost:{port}` | Full URL of the API as executed; used for Metadata                                                  |
+| FRONT_END_URL             | `{url}`                   | Full URL of the website; used for Metadata                                                          |
+| FRONT_END_VIKING_ENDPOINT | `/vikings`                | URI for individual Viking on website; used for Metadata                                             |
+| DATABASE_NAME             | `{string}`                | Name of database to use for storing Viking Metadata                                                 |
+| IMAGE_VIKING_INPUT_ROOT   | `res/viking`              | Path to Viking assets directory (from project root)                                                 |
+| IMAGE_TEXTURE_INPUT_ROOT  | `res/texture`             | Path to Texture assets directory (from project root)                                                |
+| IMAGE_VIKING_OUTPUT       | `{path/to/output}`        | Path to Viking image output directory                                                               |
+| IMAGE_TEXTURE_OUTPUT      | `{path/to/output}`        | Path to Texture image output directory                                                              |
+| IMAGE_VIKING_ENDPOINT     | `{/path}` (`/image`)      | Route to use for retrieving Viking images *(`{API_URL}/{IMAGE_VIKING_ENDPOINT}`)*                   |
+| IMAGE_TEXTUE_ENDPOINT     | `{/path}` (`/texture`)    | Route to use for retrieving Viking images *(`{API_URL}/{IMAGE_TEXTURE_ENDPOINT}`)*                  |
+| ETH_CONTRACT_ADDRESS      | `{address}`               | Contract to point to containing Viking data collection                                              |
+| ETH_PROVIDER_URL          | `{url}`                   | RPC Provider - [Information here](https://docs.matic.network/docs/develop/network-details/network/) |
+| ETH_WALLET_SECRET         | *none (empty string)*     | *Not applicable for anyone but the Contract owner*                                                  |
+| ETH_RECOVER               | `true` or `false`         | Whether or not to reconstruct local database + images from Contract Viking data                     |
+| ETH_RECOVER_NAMES         | `true` or `false`         | Whether or not to (separately) synchronize local names with Contract Viking names                   |
+| ETH_LISTEN                | `true` or `false`         | Whether or not to listen for Contract Events                                                        |
+| ETH_LISTEN_INTERVAL       | `{number}`                | Polling interval for Contract Event listening                                                       |
+
 
 ## Scripts
+- `npm run {script-name}`
 
-- `npm run lint` - execute `eslint` in fix mode
-- `npm run dev` - execute the API
-    - set vscode to `autoattach` or `autoattack with flag` for debugging
-- `npm run dist` - build the API to deploy
+| Script | Purpose                    |
+| ------ | -------------------------- |
+| lint   | Execute `eslint` on `src/` |
+| dev    | Execute the API            |
+| dist   | Compile the API source     |

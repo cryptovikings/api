@@ -28,12 +28,12 @@ export class EthHelper {
     /**
      * Wallet based on a secret copied over from the environment
      */
-    private static readonly WALLET = new Wallet(process.env.ETH_WALLET_SECRET!, EthHelper.PROVIDER);
+    private static readonly WALLET = process.env.ETH_WALLET_SECRET ? new Wallet(process.env.ETH_WALLET_SECRET!, EthHelper.PROVIDER) : undefined;
 
     /**
      * Contract instance; a NornirContract for type safety
      */
-    private static readonly CONTRACT: NornirContract = new Contract(EthHelper.CONTRACT_ADDRESS, nornirABI, EthHelper.WALLET) as NornirContract;
+    private static readonly CONTRACT = new Contract(EthHelper.CONTRACT_ADDRESS, nornirABI, EthHelper.WALLET ?? EthHelper.PROVIDER) as NornirContract;
 
     /**
      * Whether or not to recover from API/Contract synchronization issues
