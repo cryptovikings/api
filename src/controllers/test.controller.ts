@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { Request } from 'express';
+import { getLogger } from 'log4js';
 
 import { HttpSuccessCode } from '../enums/httpSuccessCode.enum';
 import { EthHelper } from '../helpers/eth.helper';
@@ -37,10 +38,11 @@ class TestController extends AbstractController {
     public async makeVikings(req: Request): Promise<APIResponse<boolean>> {
         const batchSize = 9;
         const array = Array.from(new Array(parseInt(req.params.count, 10)).keys());
+        const logger = getLogger();
 
         let batch = 1;
         for (let i = 0; i < array.length; i += batchSize) {
-            console.log(`PROCESSING BATCH ${batch} of ${array.length / batchSize}`);
+            logger.info(`PROCESSING BATCH ${batch} of ${array.length / batchSize}`);
 
             await Promise.all(array.slice(i, i + batchSize).map((n) => new Promise((resolve, reject) => {
                 const data = TestHelper.generateVikingContractData(n);

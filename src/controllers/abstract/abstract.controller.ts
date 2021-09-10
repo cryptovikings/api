@@ -1,4 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
+import { getLogger } from 'log4js';
+import { HttpErrorCode } from '../../enums/httpErrorCode.enum';
+import { APIError } from '../../models/utils/apiError.model';
+
 import { APIResponse } from '../../models/utils/apiResponse.model';
 
 /**
@@ -20,6 +24,11 @@ type BoundRequestProcessor = (req: Request, res: Response, next: NextFunction) =
  *        `GET /anything => processRequest() => (AnythingController).anything()`
  */
 export abstract class AbstractController {
+
+    /**
+     * Log4js logger
+     */
+    private logger = getLogger('http');
 
     /**
      * Take a Controller instance method to be used as a request handler for a given route, and return a bound `processRequest()` which
@@ -51,6 +60,8 @@ export abstract class AbstractController {
     ): Promise<void> {
         try {
             const { status, data, pagination, isFile } = await cb(req);
+
+            this.logger.info(`${req.method.toUpperCase()} ${req.originalUrl} => status ${status}`);
 
             if (isFile) {
                 res.status(status).sendFile(data);
