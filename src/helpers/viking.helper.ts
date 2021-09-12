@@ -31,44 +31,44 @@ export class VikingHelper {
      *
      * Effectively just a wrapper for (VikingService).createOne()
      *
-     * @param vikingSpecification the VikingSpecification, derived from Viking Contract Data, containing the Viking information
+     * @param specification the VikingSpecification, derived from Viking Contract Data, containing the Viking information
      *
      * @returns the created Viking data
      */
-    public static async createViking(vikingSpecification: VikingSpecification): Promise<Viking['read']> {
+    public static async storeViking(specification: VikingSpecification): Promise<Viking['read']> {
         return vikingService.createOne({
-            number: vikingSpecification.number,
-            name: vikingSpecification.name,
-            image: vikingSpecification.image,
-            texture: vikingSpecification.texture,
+            number: specification.number,
+            name: specification.name,
+            image: specification.image,
+            texture: specification.texture,
 
             // eslint-disable-next-line
-            description: `A unique CryptoViking who has made his way to Midgard. He's number ${vikingSpecification.number + 1} of 9873! The CryptoVikings are a legion of truly-random, generative, hand-drawn NFTs. Residing on Polygon and employing Chainlink's VRF (Verifiable Random Function), we generate and store immutable statistics on-chain! Visit https://cryptovikings.io to learn more`,
+            description: `A unique CryptoViking who has made his way to Midgard. He's number ${specification.number + 1} of 9873! The CryptoVikings are a legion of truly-random, generative, hand-drawn NFTs. Residing on Polygon and employing Chainlink's VRF (Verifiable Random Function), we generate and store immutable statistics on-chain! Visit https://cryptovikings.io to learn more`,
 
-            beard_name: vikingSpecification.types.beard,
-            body_name: vikingSpecification.types.body,
-            face_name: vikingSpecification.types.face,
-            top_name: vikingSpecification.types.top,
+            beard_name: specification.styles.beard,
+            body_name: specification.styles.body,
+            face_name: specification.styles.face,
+            top_name: specification.styles.top,
 
-            boots_name: vikingSpecification.types.boots,
-            boots_condition: vikingSpecification.conditions.boots,
-            speed: vikingSpecification.stats.speed,
+            boots_name: specification.styles.boots,
+            boots_condition: specification.conditions.boots,
+            speed: specification.stats.speed,
 
-            bottoms_name: vikingSpecification.types.bottoms,
-            bottoms_condition: vikingSpecification.conditions.bottoms,
-            stamina: vikingSpecification.stats.stamina,
+            bottoms_name: specification.styles.bottoms,
+            bottoms_condition: specification.conditions.bottoms,
+            stamina: specification.stats.stamina,
 
-            helmet_name: vikingSpecification.types.helmet,
-            helmet_condition: vikingSpecification.conditions.helmet,
-            intelligence: vikingSpecification.stats.intelligence,
+            helmet_name: specification.styles.helmet,
+            helmet_condition: specification.conditions.helmet,
+            intelligence: specification.stats.intelligence,
 
-            shield_name: vikingSpecification.types.shield,
-            shield_condition: vikingSpecification.conditions.shield,
-            defence: vikingSpecification.stats.defence,
+            shield_name: specification.styles.shield,
+            shield_condition: specification.conditions.shield,
+            defence: specification.stats.defence,
 
-            weapon_name: vikingSpecification.types.weapon,
-            weapon_condition: vikingSpecification.conditions.weapon,
-            attack: vikingSpecification.stats.attack,
+            weapon_name: specification.styles.weapon,
+            weapon_condition: specification.conditions.weapon,
+            attack: specification.stats.attack
         });
     }
 
