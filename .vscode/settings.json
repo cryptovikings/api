@@ -1,6 +1,6 @@
 {
     "editor.rulers": [
-        150
+        170
     ],
     "typescript.preferences.importModuleSpecifier": "relative"
 }

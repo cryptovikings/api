@@ -1,6 +1,4 @@
 import { APIModel, ModelBroadcast, ModelRead, ModelWrite, _createModel } from '../base.model';
-import { ItemCondition } from '../../enums/itemCondition.enum';
-import { ClothesCondition } from '../../enums/clothesCondition.enum';
 
 /**
  * Local Viking Storage format to be used as the basis for Viking Read + Write models
@@ -200,23 +198,23 @@ export const VikingModel = _createModel({
         top_name: { type: String, required: true },
 
         boots_name: { type: String, required: true },
-        boots_condition: { type: String, required: true, enum: ClothesCondition },
+        boots_condition: { type: String, required: true },
         speed: { type: Number, required: true },
 
         bottoms_name: { type: String, required: true },
-        bottoms_condition: { type: String, required: true, enum: ClothesCondition },
+        bottoms_condition: { type: String, required: true },
         stamina: { type: Number, required: true },
 
         helmet_name: { type: String, required: true },
-        helmet_condition: { type: String, required: true, enum: ItemCondition },
+        helmet_condition: { type: String, required: true },
         intelligence: { type: Number, required: true },
 
         shield_name: { type: String, required: true },
-        shield_condition: { type: String, required: true, enum: ItemCondition },
+        shield_condition: { type: String, required: true },
         defence: { type: Number, required: true },
 
         weapon_name: { type: String, required: true },
-        weapon_condition: { type: String, required: true, enum: ItemCondition },
+        weapon_condition: { type: String, required: true },
         attack: { type: Number, required: true },
     }
 });

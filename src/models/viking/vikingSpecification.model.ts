@@ -1,10 +1,7 @@
-import { ClothesCondition } from '../../enums/clothesCondition.enum';
-import { ItemCondition } from '../../enums/itemCondition.enum';
-
 /**
  * Intermediate data format containing all the information required to generate Viking Database Data + Viking Images
  *
- * Derived directly from Viking Contract Data by consistent selection algorithms
+ * Derived directly from Viking Contract Data
  *
  * Contains information on:
  *     - the Viking's Number (direct from Contract; NFT ID)
@@ -20,17 +17,6 @@ export interface VikingSpecification {
     name: string;
     image: string;
     texture: string;
-    types: {
-        beard: string;
-        body: string;
-        boots: string;
-        bottoms: string;
-        face: string;
-        helmet: string;
-        shield: string;
-        top: string;
-        weapon: string;
-    };
     conditions: {
         boots: ClothesCondition;
         bottoms: ClothesCondition;
@@ -44,6 +30,17 @@ export interface VikingSpecification {
         intelligence: number;
         speed: number;
         stamina: number;
+    };
+    styles: {
+        beard: string;
+        body: string;
+        boots: string;
+        bottoms: string;
+        face: string;
+        helmet: string;
+        shield: string;
+        top: string;
+        weapon: string;
     };
     filePaths: {
         beard: string;
