@@ -270,7 +270,7 @@ export class EthHelper {
         if (localVikings !== resolvedVikingCount) {
             logger.warn('EthHelper [Recover]: Database entries missing');
 
-            await EthHelper.synchronizeLocalVikings(resolvedVikingCount).catch((err) => {
+            await EthHelper.synchronizeLocalVikings(totalSupply).catch((err) => {
                 logger.error('EthHelper [synchronizeLocalVikings]: error during local viking synchronization', err);
             });
 
@@ -350,21 +350,22 @@ export class EthHelper {
     /**
      * Synchronize the local Viking database + image set with the Contract's resolved set
      *
-     * Fills gaps in the database by working on the knowledge that Viking IDs are sequential on the Contract side, generating any Viking with an ID in the range
-     *   (0 => resolvedVikingCount) which does not have a local representation
+     * Handles scenarios in which VikingResolved was never received for a given ID, or scenarios in which generation at the time failed
      *
-     * @param resolvedVikingCount the number of resolved Vikings in the Contract's set
+     * Cycles through from 0 => totalSupply, storing Vikings with complete Contract data that're missing locally so as to handle non-contiguous integrity issues
+     *
+     * @param totalSupply ERC-721 totalSupply(), providing the upper bound of VikingIds which may have resolved data
      */
-    private static async synchronizeLocalVikings(resolvedVikingCount: number): Promise<void> {
+    private static async synchronizeLocalVikings(totalSupply: number): Promise<void> {
         const localNumbers = (await vikingService.findMany({}, ['number'])).docs.map((v) => v.number);
 
-        for (let i = 0; i < resolvedVikingCount; i++) {
+        for (let i = 0; i < totalSupply; i++) {
             if (!localNumbers.includes(i)) {
                 const [stats, components, conditions] = await EthHelper.CONTRACT.functions.getVikingData(i);
 
                 // if the contract data is void, DO NOTHING
                 // rationale: void data will cause a crash in trying to write the local viking; will be filled + responded to by synchronize[Generated|Resolved]Vikings()
-                if (!stats.appearance.isZero()) {
+                if (!stats.appearance.isZero() && !!components.beard && !!conditions.boots) {
                     EthHelper.LOGGER.info(`EthHelper [synchronizeLocalVikings]: creating local Viking with ID ${i}`);
                     await EthHelper.generateVikingFromContract(i, stats, components, conditions);
                 }
@@ -424,7 +425,7 @@ export class EthHelper {
 
             // check that a stats does exist but that a components does not
             //   this avoids assuming that generatedVikingCount and totalSupply are the same, accounting for non-contiguous misses on all events
-            //   with resolved sync'ing before generated (and then implicitly again resolved), this "fills the gaps" on should-be-resolved Vikings without accidentally
+            //   with resolved syncing before generated (and then implicitly again resolved), this "fills the gaps" on should-be-resolved Vikings without accidentally
             //     calling resolve for a Viking which does not yet have stats, and allows the generated synchronization to fix missing stats
             if (!stats.appearance.isZero() && !components.beard) {
                 EthHelper.LOGGER.info(`EthHelper [synchronizeResolvedVikings]: VikingComponents for ID ${i} void; sending resolveViking() call request`);
