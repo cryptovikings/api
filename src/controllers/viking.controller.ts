@@ -1,5 +1,3 @@
-import { ClothesCondition } from '../enums/clothesCondition.enum';
-import { ItemCondition } from '../enums/itemCondition.enum';
 import { ErrorHelper } from '../helpers/error.helper';
 import { APIResponse } from '../models/utils/apiResponse.model';
 import { Viking } from '../models/viking/viking.model';
@@ -58,7 +56,7 @@ class VikingController extends AbstractResourceController<Viking> {
             },
             {
                 trait_type: 'Boots Condition',
-                value: ClothesCondition.TBC
+                value: 'TBC'
             },
             {
                 trait_type: 'Speed',
@@ -72,7 +70,7 @@ class VikingController extends AbstractResourceController<Viking> {
             },
             {
                 trait_type: 'Bottoms Condition',
-                value: ClothesCondition.TBC
+                value: 'TBC'
             },
             {
                 trait_type: 'Stamina',
@@ -86,7 +84,7 @@ class VikingController extends AbstractResourceController<Viking> {
             },
             {
                 trait_type: 'Helmet Condition',
-                value: ItemCondition.TBC
+                value: 'TBC'
             },
             {
                 trait_type: 'Intelligence',
@@ -100,7 +98,7 @@ class VikingController extends AbstractResourceController<Viking> {
             },
             {
                 trait_type: 'Shield Condition',
-                value: ItemCondition.TBC
+                value: 'TBC'
             },
             {
                 trait_type: 'Defence',
@@ -114,7 +112,7 @@ class VikingController extends AbstractResourceController<Viking> {
             },
             {
                 trait_type: 'Weapon Condition',
-                value: ItemCondition.TBC
+                value: 'TBC'
             },
             {
                 trait_type: 'Attack',

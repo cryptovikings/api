@@ -9,8 +9,6 @@ import { ImageHelper } from '../helpers/image.helper';
 import { APIResponse } from '../models/utils/apiResponse.model';
 import { vikingService } from '../services/viking.service';
 import { AbstractController } from './abstract/abstract.controller';
-import { ItemCondition } from '../enums/itemCondition.enum';
-import { ClothesCondition } from '../enums/clothesCondition.enum';
 import { TestHelper } from '../helpers/test.helper';
 
 /**
@@ -45,8 +43,8 @@ class TestController extends AbstractController {
             logger.info(`PROCESSING BATCH ${batch} of ${array.length / batchSize}`);
 
             await Promise.all(array.slice(i, i + batchSize).map((n) => new Promise((resolve, reject) => {
-                const data = TestHelper.generateVikingContractData(n);
-                EthHelper.testGenerateViking(n, data).then(() => resolve(null), (err) => reject(err));
+                const { stats, components, conditions } = TestHelper.generateVikingContractData(n);
+                EthHelper.testGenerateViking(n, stats, components, conditions).then(() => resolve(null), (err) => reject(err));
             })));
 
             batch++;
@@ -90,9 +88,9 @@ class TestController extends AbstractController {
         // total vikings, for calculating averages and prevalence percentages
         const totalVikings = await vikingService.count({});
 
-        // list out manually (for now) the various Part Names + Condition Names so as to functionise analysis data production
-        const itemConditions = Object.values(ItemCondition).filter((v) => v !== 'TBC');
-        const clothesConditions = Object.values(ClothesCondition).filter((v) => v !== 'TBC');
+        // list out manually the various Part Names + Condition Names so as to functionise analysis data production
+        const itemConditions = ['None', 'Destroyed', 'Battered', 'War Torn', 'Battle Ready', 'Flawless'];
+        const clothesConditions = ['Standard', 'Ragged', 'Rough', 'Used', 'Good', 'Perfect'];
         const beardNames = ['Beaded', 'Bushy', 'Goatee', 'Slick', 'Sophisticated', 'Straggly', 'Stubble', 'Trim'];
         const bodyNames = ['Base 1', 'Base 2', 'Base 3', 'Devil', 'Inked', 'Pigman', 'Robot', 'Tatted', 'Wolfman', 'Zombie (Blue)', 'Zombie (Green)'];
         const bootsNames = ['Standard', 'Laced', 'Leather', 'Sandals', 'Steel Capped', 'Tailored'];

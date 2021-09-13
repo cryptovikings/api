@@ -21,10 +21,10 @@ declare type DeepRequired<T> = {
 }
 
 /** String union for possible values of ClothesCondition */
-declare type ClothesCondition = 'Standard' | 'Ragged' | 'Rough' | 'Used' | 'Good' | 'Perfect';
+declare type ClothesCondition = 'TBC' | 'Standard' | 'Ragged' | 'Rough' | 'Used' | 'Good' | 'Perfect';
 
 /** String union for possible values of ItemCondition */
-declare type ItemCondition = 'None' | 'Destroyed' | 'Battered' | 'War Torn' | 'Battle Ready' | 'Flawless';
+declare type ItemCondition = 'TBC' | 'None' | 'Destroyed' | 'Battered' | 'War Torn' | 'Battle Ready' | 'Flawless';
 
 /**
  * Contract definition, extending `ethers.Contract`, and adding correctly-typed and strict signatures for known ABI hooks
