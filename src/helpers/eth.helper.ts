@@ -203,7 +203,7 @@ export class EthHelper {
                                 // do not halt execution! It is not a critical issue if we miss a resolveViking call
                                 next();
                             }
-                        )
+                        );
                     }
                     else {
                         // final priority: generateViking() calls
@@ -324,11 +324,14 @@ export class EthHelper {
         // executed last and triggered separately from other recovery scenarios due to RPC load issues. NameChange misses are impractical to detect, so the routine is
         //   "dumb" in that it just retrieves *all* Names from the Contract so as to synchronize
         if (EthHelper.RECOVER_NAMES) {
-            EthHelper.LOGGER.warn('EthHelper [Recover]: synchronizing names...');
+            logger.warn('EthHelper [Recover]: synchronizing names...');
 
             await EthHelper.synchronizeNames(generatedVikingCount).catch((err) => {
-                EthHelper.LOGGER.error('EthHelper [synchronizeNames]: error during name synchronization', err);
+                logger.error('EthHelper [synchronizeNames]: error during name synchronization', err);
             });
+        }
+        else {
+            logger.warn('EthHelper [Recover]: name recovery disabled');
         }
     }
 
@@ -444,7 +447,8 @@ export class EthHelper {
         // if we did fill any void data, and if we're NOT listening, force-sync the database
         // if we are listening, the resolveViking() calls will naturally sync the database by way of the usual event-handling procedure
         if (count && !EthHelper.LISTEN) {
-            await EthHelper.synchronizeLocalVikings(count);
+            EthHelper.LOGGER.info('EthHelper [synchronizeResolvedVikings]: not listening; manually synchronizing local vikings...');
+            await EthHelper.synchronizeLocalVikings(totalSupply);
         }
     }
 
@@ -485,6 +489,7 @@ export class EthHelper {
         // if we did fill any void data, and if we're NOT listening, force-sync remote resolved Vikings (+ implicitly then the local Vikings)
         // if we are listening, the generateViking() calls will naturally sync the resolved + local vikings by way of the usual event-handling procedure
         if (count && !EthHelper.LISTEN) {
+            EthHelper.LOGGER.info('EthHelper [synchronizeGeneratedVikings]: not listening; manually resolving Vikings...');
             await EthHelper.synchronizeResolvedVikings(totalSupply);
         }
     }

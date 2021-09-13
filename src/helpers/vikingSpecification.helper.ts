@@ -69,7 +69,7 @@ export class VikingSpecificationHelper {
                 face: data.face_name,
                 helmet: data.helmet_name,
                 shield: data.shield_name,
-                top: data.shield_name,
+                top: data.top_name,
                 weapon: data.weapon_name
             },
             filePaths: VikingSpecificationHelper.resolveFilePaths(
@@ -81,7 +81,7 @@ export class VikingSpecificationHelper {
                     face: data.face_name,
                     helmet: data.helmet_name,
                     shield: data.shield_name,
-                    top: data.shield_name,
+                    top: data.top_name,
                     weapon: data.weapon_name
                 },
                 {
@@ -133,7 +133,7 @@ export class VikingSpecificationHelper {
                 face: components.face,
                 helmet: components.helmet,
                 shield: components.shield,
-                top: components.shield,
+                top: components.top,
                 weapon: components.weapon
             },
             filePaths: VikingSpecificationHelper.resolveFilePaths(components, conditions)
