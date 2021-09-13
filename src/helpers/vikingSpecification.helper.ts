@@ -5,10 +5,8 @@ import { Viking } from '../models/viking/viking.model';
 import { VikingComponents, VikingConditions, VikingStats } from '../models/viking/vikingStructs.model';
 
 /**
- * VikingSpecification Helper, centralising the production of the intermediate VikingSpecification data format, based on given Viking Contract Data,
- *   used in generating Viking Database Data and in producing Viking Images
- *
- * All Contract Number => Type + Condition name mappings are contained within this class
+ * VikingSpecification Helper, centralising the production of the intermediate VikingSpecification data format, used in generating Viking Database Data and in
+ *   producing Viking Images
  *
  * Separated from the VikingHelper so as to keep classes small and because the derivation of the VikingSpecification can be considered wholly separate
  *   to the subsequent production of Viking Database Data and Viking Metadata
@@ -35,17 +33,123 @@ export class VikingSpecificationHelper {
         weapons: path.join(VikingSpecificationHelper.PARTS_ROOT, 'weapons')
     };
 
-    // public static buildSpecificationFromDatabase(number: number, data: Viking['read']): VikingSpecification {
+    /**
+     * Build a VikingSpecification from Viking Database Data. Mostly just a copy-across job except for the filePaths which are resolved using reconstructed
+     *   VikingComponents and VikingConditions
+     *
+     * @param data the Viking Database Data to build from
+     *
+     * @returns the VikingSpecification
+     */
+    public static buildSpecificationFromDatabase(data: Viking['read']): VikingSpecification {
+        return {
+            number: data.number,
+            name: data.name,
+            image: data.image,
+            texture: data.texture,
+            conditions: {
+                boots: data.boots_condition,
+                bottoms: data.bottoms_condition,
+                helmet: data.helmet_condition,
+                shield: data.shield_condition,
+                weapon: data.weapon_condition
+            },
+            stats: {
+                attack: data.attack,
+                defence: data.defence,
+                intelligence: data.intelligence,
+                speed: data.speed,
+                stamina: data.stamina
+            },
+            styles: {
+                beard: data.beard_name,
+                body: data.body_name,
+                boots: data.boots_name,
+                bottoms: data.bottoms_name,
+                face: data.face_name,
+                helmet: data.helmet_name,
+                shield: data.shield_name,
+                top: data.shield_name,
+                weapon: data.weapon_name
+            },
+            filePaths: VikingSpecificationHelper.resolveFilePaths(
+                {
+                    beard: data.beard_name,
+                    body: data.body_name,
+                    boots: data.boots_name,
+                    bottoms: data.bottoms_name,
+                    face: data.face_name,
+                    helmet: data.helmet_name,
+                    shield: data.shield_name,
+                    top: data.shield_name,
+                    weapon: data.weapon_name
+                },
+                {
+                    boots: data.boots_condition,
+                    bottoms: data.bottoms_condition,
+                    helmet: data.helmet_condition,
+                    shield: data.shield_condition,
+                    weapon: data.weapon_condition
+                }
+            )
+        };
+    }
 
-    // }
+    /**
+     * Build a VikingSpecification from Viking Contract Data
+     *
+     * @param number the Token ID of the Viking
+     * @param stats the VikingStats from the Contract
+     * @param components the VikingComponents from the Contract
+     * @param conditions the VikingConditions from the Contract
+     *
+     * @returns the VikingSpecification
+     */
+    public static buildSpecificationFromContract(number: number, stats: VikingStats, components: VikingComponents, conditions: VikingConditions): VikingSpecification {
+        return {
+            number,
+            name: stats.name,
+            image: `viking_${number}`,
+            texture: `viking_${number}`,
+            conditions: {
+                boots: conditions.boots,
+                bottoms: conditions.bottoms,
+                helmet: conditions.helmet,
+                shield: conditions.shield,
+                weapon: conditions.weapon
+            },
+            stats: {
+                attack: stats.attack.toNumber(),
+                defence: stats.defence.toNumber(),
+                intelligence: stats.intelligence.toNumber(),
+                speed: stats.speed.toNumber(),
+                stamina: stats.stamina.toNumber()
+            },
+            styles: {
+                beard: components.beard,
+                body: components.body,
+                boots: components.boots,
+                bottoms: components.bottoms,
+                face: components.face,
+                helmet: components.helmet,
+                shield: components.shield,
+                top: components.shield,
+                weapon: components.weapon
+            },
+            filePaths: VikingSpecificationHelper.resolveFilePaths(components, conditions)
+        };
+    }
 
-    public static buildSpecificationFromContract(
-        number: number,
-        stats: VikingStats,
-        components: VikingComponents,
-        conditions: VikingConditions
-    ): VikingSpecification {
-
+    /**
+     * Given a VikingComponents and a VikingConditions, resolve the file paths of each of the Viking's assets for use in generating the final image
+     *
+     * @param components the VikingComponents
+     * @param conditions the VikingConditions
+     *
+     * @returns the filePaths part of the VikingSpecification
+     */
+    private static resolveFilePaths(components: VikingComponents, conditions: VikingConditions): VikingSpecification['filePaths'] {
+        // component + condition name sanitizer for use in filenames
         const cleanName = (name: string): string => name.replace(/[\s-]/g, '_').toLocaleLowerCase();
 
         // resolve the File Paths for the beard + body + face + top parts
@@ -100,256 +204,15 @@ export class VikingSpecificationHelper {
         }
 
         return {
-            number,
-            name: stats.name,
-            image: `viking_${number}`,
-            texture: `viking_${number}`,
-            conditions: {
-                boots: conditions.boots,
-                bottoms: conditions.bottoms,
-                helmet: conditions.helmet,
-                shield: conditions.shield,
-                weapon: conditions.weapon
-            },
-            stats: {
-                attack: stats.attack.toNumber(),
-                defence: stats.defence.toNumber(),
-                intelligence: stats.intelligence.toNumber(),
-                speed: stats.speed.toNumber(),
-                stamina: stats.stamina.toNumber()
-            },
-            styles: {
-                beard: components.beard,
-                body: components.body,
-                boots: components.boots,
-                bottoms: components.bottoms,
-                face: components.face,
-                helmet: components.helmet,
-                shield: components.shield,
-                top: components.shield,
-                weapon: components.weapon
-            },
-            filePaths: {
-                beard: beardFile,
-                body: bodyFile,
-                face: faceFile,
-                top: topFile,
-                boots: bootsFile,
-                bottoms: bottomsFile,
-                helmet: helmetFile,
-                shield: shieldFile,
-                weapon: weaponFile
-            }
+            beard: beardFile,
+            body: bodyFile,
+            face: faceFile,
+            top: topFile,
+            boots: bootsFile,
+            bottoms: bottomsFile,
+            helmet: helmetFile,
+            shield: shieldFile,
+            weapon: weaponFile
         };
     }
-
-    // /**
-    //  * Core VikingSpecification production method. Take a Viking Number and some representative data, and produce all the information necessary to
-    //  *   generate a Viking for the database as well as a Viking Image, including:
-    //  *       - Part Type Names
-    //  *       - Item/Clothing Conditions
-    //  *       - Statistics
-    //  *       - File Paths for each Part
-    //  *
-    //  * Capable of building a specification off of both a Contract Viking representation as well as a Local Viking representation. This enables use
-    // eslint-disable-next-line
-    //  *   both in generating Vikings + Images from Contract data in Eth Event Handling, and in generating missing Images based on stored Database Data
-    //  *
-    //  * @param number the ID of the Viking
-    //  * @param data the data, in Contract or Local representations
-    //  */
-    // public static buildVikingSpecification(number: number, data: VikingContractModel | Viking['read']): VikingSpecification {
-    //     // simple string transformer for producing file name parts by replacing spaces and hyphens with underscores
-    //     const cleanName = (name: string): string => name.replace(/[\s-]/g, '_').toLowerCase();
-
-    //     // statistics
-    //     let attack: number,
-    //         defence: number,
-    //         intelligence: number,
-    //         speed: number,
-    //         stamina: number;
-
-    //     // conditions
-    //     let bootsCondition: ClothesCondition,
-    //         bottomsCondition: ClothesCondition,
-    //         helmetCondition: ItemCondition,
-    //         shieldCondition: ItemCondition,
-    //         weaponCondition: ItemCondition;
-
-    //     // part names
-    //     let bootsType: string,
-    //         bottomsType: string,
-    //         helmetType: string,
-    //         shieldType: string,
-    //         weaponType: string,
-    //         beardType: string,
-    //         bodyType: string,
-    //         faceType: string,
-    //         topType: string;
-
-    //     if (VikingSpecificationHelper.isVikingContractModel(data)) {
-    //         // if we're building from Contract data, resolve
-
-    //         attack = data.attack.toNumber();
-    //         defence = data.defence.toNumber();
-    //         intelligence = data.intelligence.toNumber();
-    //         speed = data.speed.toNumber();
-    //         stamina = data.stamina.toNumber();
-
-    //         bootsCondition = VikingSpecificationHelper.resolveClothesCondition(speed);
-    //         bottomsCondition = VikingSpecificationHelper.resolveClothesCondition(stamina);
-    //         helmetCondition = VikingSpecificationHelper.resolveItemCondition(intelligence);
-    //         shieldCondition = VikingSpecificationHelper.resolveItemCondition(defence);
-    //         weaponCondition = VikingSpecificationHelper.resolveItemCondition(attack);
-
-    //         bootsType = VikingSpecificationHelper.resolveBootsType(data.boots.toNumber(), bootsCondition);
-    //         bottomsType = VikingSpecificationHelper.resolveBottomsType(data.bottoms.toNumber(), bottomsCondition);
-    //         helmetType = VikingSpecificationHelper.resolveHelmetType(data.helmet.toNumber(), helmetCondition);
-    //         shieldType = VikingSpecificationHelper.resolveShieldType(data.shield.toNumber(), shieldCondition);
-    //         weaponType = VikingSpecificationHelper.resolveWeaponType(data.weapon.toNumber(), weaponCondition);
-
-    //         // resolve the beard + body + face + top type names based on 2-digit sequential slices of the appearance number
-    //         const appearance = data.appearance.toString();
-
-    //         beardType = VikingSpecificationHelper.resolveBeardType(parseInt(appearance.slice(0, 2), 10));
-    //         bodyType = VikingSpecificationHelper.resolveBodyType(parseInt(appearance.slice(2, 4), 10));
-    //         faceType = VikingSpecificationHelper.resolveFaceType(parseInt(appearance.slice(4, 6), 10));
-    //         topType = VikingSpecificationHelper.resolveTopType(parseInt(appearance.slice(6, 8), 10));
-    //     }
-    //     else {
-    //         // if we're building from Database data, copy
-
-    //         attack = data.attack;
-    //         defence = data.defence;
-    //         intelligence = data.intelligence;
-    //         speed = data.speed;
-    //         stamina = data.stamina;
-
-    //         bootsCondition = data.boots_condition;
-    //         bottomsCondition = data.bottoms_condition;
-    //         helmetCondition = data.helmet_condition;
-    //         shieldCondition = data.shield_condition;
-    //         weaponCondition = data.weapon_condition;
-
-    //         bootsType = data.boots_name;
-    //         bottomsType = data.bottoms_name;
-    //         helmetType = data.helmet_name;
-    //         shieldType = data.shield_name;
-    //         weaponType = data.weapon_name;
-
-    //         beardType = data.beard_name;
-    //         bodyType = data.body_name;
-    //         faceType = data.face_name;
-    //         topType = data.top_name;
-    //     }
-
-    //     // resolve the File Paths for the beard + body + face + top parts
-    //     const beardFile = path.join(VikingSpecificationHelper.directories.beards, `beard_${cleanName(beardType)}.png`);
-    //     const bodyFile = path.join(VikingSpecificationHelper.directories.bodies, `body_${cleanName(bodyType)}.png`);
-    //     const faceFile = path.join(VikingSpecificationHelper.directories.faces, `face_${cleanName(faceType)}.png`);
-    //     const topFile = path.join(VikingSpecificationHelper.directories.tops, `top_${cleanName(topType)}.png`);
-
-    //     // resolve the Boots File Path, defaulting to the "Basic" boots asset if the statistic-based Condition wasn't good enough
-    //     let bootsFile = path.join(VikingSpecificationHelper.directories.boots, 'boots_standard.png');
-    //     if (bootsCondition !== ClothesCondition.STANDARD) {
-    //         const type = cleanName(bootsType);
-    //         const condition = cleanName(bootsCondition);
-
-    //         bootsFile = path.join(VikingSpecificationHelper.directories.boots, type, `boots_${type}_${condition}.png`);
-    //     }
-
-    //     // resolve the Bottoms File Path, defaulting to the "Basic" bottoms asset if the statistic-based Condition wasn't good enough
-    //     let bottomsFile = path.join(VikingSpecificationHelper.directories.bottoms, 'bottoms_standard.png');
-    //     if (bottomsCondition !== ClothesCondition.STANDARD) {
-    //         const type = cleanName(bottomsType);
-    //         const condition = cleanName(bottomsCondition);
-
-    //         bottomsFile = path.join(VikingSpecificationHelper.directories.bottoms, type, `bottoms_${type}_${condition}.png`);
-    //     }
-
-    //     // resolve the Helmet File Path, defaulting to undefined if the statistic-based Condition wasn't good enough
-    //     let helmetFile = undefined;
-    //     if (helmetCondition !== ItemCondition.NONE) {
-    //         const type = cleanName(helmetType);
-    //         const condition = cleanName(helmetCondition);
-
-    //         helmetFile = path.join(VikingSpecificationHelper.directories.helmets, type, `helmet_${type}_${condition}.png`);
-    //     }
-
-    //     // resolve the Shield File Path, defaulting to undefined if the statistic-based Condition wasn't good enough
-    //     let shieldFile = undefined;
-    //     if (shieldCondition !== ItemCondition.NONE) {
-    //         const type = cleanName(shieldType);
-    //         const condition = cleanName(shieldCondition);
-
-    //         shieldFile = path.join(VikingSpecificationHelper.directories.shields, type, `shield_${type}_${condition}.png`);
-    //     }
-
-    //     // resolve the Weapon File Path, defaulting to undefined if the statistic-based Condition wasn't good enough
-    //     let weaponFile = undefined;
-    //     if (weaponCondition !== ItemCondition.NONE) {
-    //         const type = cleanName(weaponType);
-    //         const condition = cleanName(weaponCondition);
-
-    //         weaponFile = path.join(VikingSpecificationHelper.directories.weapons, type, `weapon_${type}_${condition}.png`);
-    //     }
-
-    //     // build the VikingSpecification structure for use in Viking and Image generation
-    //     return {
-    //         number,
-    //         name: data.name,
-    //         image: `viking_${number}`,
-    //         texture: `viking_${number}`,
-    //         types: {
-    //             beard: beardType,
-    //             body: bodyType,
-    //             face: faceType,
-    //             top: topType,
-
-    //             boots: bootsType,
-    //             bottoms: bottomsType,
-
-    //             helmet: helmetType,
-    //             shield: shieldType,
-    //             weapon: weaponType
-    //         },
-    //         stats: {
-    //             attack,
-    //             defence,
-    //             intelligence,
-    //             speed,
-    //             stamina
-    //         },
-    //         conditions: {
-    //             boots: bootsCondition,
-    //             bottoms: bottomsCondition,
-
-    //             helmet: helmetCondition,
-    //             shield: shieldCondition,
-    //             weapon: weaponCondition
-    //         },
-    //         filePaths: {
-    //             beard: beardFile,
-    //             body: bodyFile,
-    //             face: faceFile,
-    //             top: topFile,
-    //             boots: bootsFile,
-    //             bottoms: bottomsFile,
-    //             helmet: helmetFile,
-    //             shield: shieldFile,
-    //             weapon: weaponFile
-    //         }
-    //     };
-    // }
-
-    // /**
-    //  * Type guard for differentiating between Viking Contract Data and Viking Database Data
-    //  *
-    //  * @param data the data to inspect
-    //  *
-    //  * @returns whether or not the data is a VikingContractModel
-    //  */
-    // private static isVikingContractModel(data: VikingContractModel | Viking['read']): data is VikingContractModel {
-    //     return !!(data as VikingContractModel).appearance;
-    // }
 }
