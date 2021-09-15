@@ -66,6 +66,11 @@ export class EthHelper {
     private static readonly LISTENER_POLLING_INTERVAL = parseInt(process.env.ETH_LISTEN_INTERVAL!, 10);
 
     /**
+     * Gas price for transactions
+     */
+    private static readonly GAS_PRICE = parseInt(process.env.ETH_GAS_PRICE!, 10);
+
+    /**
      * Map of event name => event listener
      */
     private static readonly EVENT_MAP = {
@@ -174,7 +179,7 @@ export class EthHelper {
                 if (completeId) {
                     EthHelper.LOGGER.info(`EthHelper [Queue]: sending completeViking call request for Viking ID ${completeId.toNumber()}`);
 
-                    EthHelper.CONTRACT.functions.completeViking(completeId, { gasPrice: 1000000000 }).then(
+                    EthHelper.CONTRACT.functions.completeViking(completeId, { gasPrice: EthHelper.GAS_PRICE }).then(
                         () => {
                             next();
                         },
@@ -193,7 +198,7 @@ export class EthHelper {
                     if (resolveId) {
                         EthHelper.LOGGER.info(`EthHelper [Queue]: sending resolveViking call request for Viking ID ${resolveId.toNumber()}`);
 
-                        EthHelper.CONTRACT.functions.resolveViking(resolveId, { gasPrice: 1000000000 }).then(
+                        EthHelper.CONTRACT.functions.resolveViking(resolveId, { gasPrice: EthHelper.GAS_PRICE }).then(
                             () => {
                                 next();
                             },
@@ -212,7 +217,7 @@ export class EthHelper {
                         if (generateId) {
                             EthHelper.LOGGER.info(`EthHelper [Queue]: sending generateViking call request for Viking ID ${generateId.toNumber()}`);
 
-                            EthHelper.CONTRACT.functions.generateViking(generateId, { gasPrice: 1000000000 }).then(
+                            EthHelper.CONTRACT.functions.generateViking(generateId, { gasPrice: EthHelper.GAS_PRICE }).then(
                                 () => {
                                     next();
                                 },
@@ -433,7 +438,7 @@ export class EthHelper {
             if (!stats.appearance.isZero() && !components.beard) {
                 EthHelper.LOGGER.info(`EthHelper [synchronizeResolvedVikings]: VikingComponents for ID ${i} void; sending resolveViking() call request`);
 
-                await EthHelper.CONTRACT.functions.resolveViking(i, { gasPrice: 1000000000 }).then(
+                await EthHelper.CONTRACT.functions.resolveViking(i, { gasPrice: EthHelper.GAS_PRICE }).then(
                     () => {
                         count++;
                     },
@@ -475,7 +480,7 @@ export class EthHelper {
             if (data.appearance.isZero()) {
                 EthHelper.LOGGER.info(`EthHelper [synchronizeGeneratedVikings]: VikingStats for ID ${i} void; sending generateViking() call request`);
 
-                await EthHelper.CONTRACT.functions.generateViking(i, { gasPrice: 1000000000 }).then(
+                await EthHelper.CONTRACT.functions.generateViking(i, { gasPrice: EthHelper.GAS_PRICE }).then(
                     () => {
                         count++;
                     },
