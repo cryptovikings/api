@@ -179,7 +179,7 @@ export class EthHelper {
                 if (completeId) {
                     EthHelper.LOGGER.info(`EthHelper [Queue]: sending completeViking call request for Viking ID ${completeId.toNumber()}`);
 
-                    EthHelper.CONTRACT.functions.completeViking(completeId, { gasPrice: EthHelper.GAS_PRICE }).then(
+                    EthHelper.CONTRACT.functions.completeViking(completeId, { gasPrice: EthHelper.GAS_PRICE, gasLimit: 40000 }).then(
                         () => {
                             next();
                         },
