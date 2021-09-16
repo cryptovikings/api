@@ -162,8 +162,7 @@ export class EthHelper {
     }
 
     /**
-     * Begin an event processing queue for handling VikingComplete and VikingGenerated event responses in series, avoiding nonce conflicts in the
-     *   minting procedure
+     * Begin an event processing queue for handling outgoing write transactions in series, avoiding nonce conflicts in the minting procedure
      *
      * Event processing is kicked off as a last port of call in initialization so as to avoid nonce conflicts with recovery-related transactions, and
      *   so as to not accidentally miss any events while recovery proceeds, preventing a compounding recovery problem
@@ -593,9 +592,6 @@ export class EthHelper {
                 EthHelper.LOGGER.error('EthHelper [VikingResolved]: error during viking generation:', err);
             }
         );
-
-        // queue up a completeViking call request
-        EthHelper.COMPLETE_VIKING_CALL_QUEUE.push(vikingId);
     }
 
     /**
