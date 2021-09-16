@@ -1,7 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
 import { getLogger } from 'log4js';
-import { HttpErrorCode } from '../../enums/httpErrorCode.enum';
-import { APIError } from '../../models/utils/apiError.model';
 
 import { APIResponse } from '../../models/utils/apiResponse.model';
 
@@ -55,9 +53,7 @@ export abstract class AbstractController {
      * @param res the Express Response
      * @param next the Express NextFunction
      */
-    public async processRequest(
-        cb: (req: Request) => Promise<APIResponse<any>>, req: Request, res: Response, next: NextFunction
-    ): Promise<void> {
+    public async processRequest(cb: (req: Request) => Promise<APIResponse<any>>, req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const { status, data, pagination, isFile } = await cb(req);
 

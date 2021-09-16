@@ -99,38 +99,27 @@ class TestController extends AbstractController {
         const helmetNames = ['None', 'Bejeweled', 'Cap', 'Headband', 'Horned', 'Spiky'];
         const shieldNames = ['None', 'Bones', 'Ornate', 'Reinforced', 'Scutum', 'Wooden'];
         const topNames = [
-            'Fitted Shirt (Blue)',
-            'Fitted Shirt (Green)',
-            'Fitted Shirt (Grey)',
-            'Fitted Shirt (Pink)',
-            'Fitted Shirt (Red)',
-            'Fitted Shirt (Yellow)',
-            'Strapped',
-            'Tank Top (Blue)',
-            'Tank Top (Dark Grey)',
-            'Tank Top (Green)',
-            'Tank Top (Light Grey)',
-            'Tank Top (Pink)',
-            'Tank Top (Red)',
+            'Gorget',
+            'Jacket (Grey)',
+            'Jacket (Pink)',
+            'Jacket (Purple)',
+            'Pendant',
+            'Shirt (Blue)',
+            'Shirt (Grey)',
+            'Shirt (Red)',
+            'Strap',
             'Tattered (Blue)',
-            'Tattered (Dark Grey)',
-            'Tattered (Light Grey)',
-            'Tattered (Purple)',
+            'Tattered (Grey)',
             'Tattered (Red)',
-            'Tattered (Yellow)',
-            'Vest (Blue)',
+            'Traditional',
+            'V Neck (Blue)',
+            'V Neck (Grey)',
+            'V Neck (Pink)',
             'Vest (Green)',
             'Vest (Pink)',
-            'Vest (White)',
             'Vest (Yellow)',
-            'Winter Jacket (Blue)',
-            'Winter Jacket (Dark Grey)',
-            'Winter Jacket (Green)',
-            'Winter Jacket (Light Grey)',
-            'Winter Jacket (Pink)',
-            'Winter Jacket (Purple)'
         ];
-        const weaponNames = ['None', 'Axe', 'Plank', 'Hammer', 'Sword', 'Trident'];
+        const weaponNames = ['None', 'Axe', 'Bat', 'Bow', 'Hammer', 'Plank', 'Sword', 'Trident'];
 
         /**
          * Internal method for producing analysis data on the prevalence of Part Names + Condition Names amongst their respective sets

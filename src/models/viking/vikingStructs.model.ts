@@ -1,5 +1,8 @@
 import { BigNumber } from 'ethers';
 
+/**
+ * Reflection of the Contract VikingStats struct containing numerical information about a Viking
+ */
 export interface VikingStats {
     name: string;
     boots: BigNumber;
@@ -15,6 +18,9 @@ export interface VikingStats {
     appearance: BigNumber;
 }
 
+/**
+ * Reflection of the Contract VikingComponents struct containing the names of all components
+ */
 export interface VikingComponents {
     beard: string;
     body: string;
@@ -27,6 +33,9 @@ export interface VikingComponents {
     weapon: string;
 }
 
+/**
+ * Reflection of the Contract VikingConditions struct containing the conditions of all items
+ */
 export interface VikingConditions {
     boots: ClothesCondition;
     bottoms: ClothesCondition;

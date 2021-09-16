@@ -54,7 +54,7 @@ The API is also capable of fully reconstructing its database and image set by re
 | IMAGE_TEXTUE_ENDPOINT     | `{/path}` (`/texture`)    | Route to use for retrieving Viking images *(`{API_URL}/{IMAGE_TEXTURE_ENDPOINT}`)*                  |
 | ETH_CONTRACT_ADDRESS      | `{address}`               | Contract to point to containing Viking data collection                                              |
 | ETH_PROVIDER_URL          | `{url}`                   | RPC Provider - [Information here](https://docs.matic.network/docs/develop/network-details/network/) |
-| ETH_WALLET_SECRET         | *none (empty string)*     | *Not applicable for anyone but the Contract owner*                                                  |
+| ETH_WALLET                | *none (empty string)*     | *Not applicable*                                 *                                                  |
 | ETH_RECOVER               | `true` or `false`         | Whether or not to reconstruct local database + images from Contract Viking data                     |
 | ETH_RECOVER_NAMES         | `true` or `false`         | Whether or not to (separately) synchronize local names with Contract Viking names                   |
 | ETH_LISTEN                | `true` or `false`         | Whether or not to listen for Contract Events                                                        |

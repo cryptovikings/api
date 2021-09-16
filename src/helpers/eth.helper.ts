@@ -36,9 +36,9 @@ export class EthHelper {
     private static readonly PROVIDER = new providers.JsonRpcProvider(process.env.ETH_PROVIDER_URL);
 
     /**
-     * Wallet based on a secret copied over from the environment
+     * Eth Wallet
      */
-    private static readonly WALLET = process.env.ETH_WALLET_SECRET ? new Wallet(process.env.ETH_WALLET_SECRET!, EthHelper.PROVIDER) : undefined;
+    private static readonly WALLET = process.env.ETH_WALLET ? new Wallet(process.env.ETH_WALLET!, EthHelper.PROVIDER) : undefined;
 
     /**
      * Contract instance; a NornirContract for type safety
@@ -178,7 +178,7 @@ export class EthHelper {
                 if (completeId) {
                     EthHelper.LOGGER.info(`EthHelper [Queue]: sending completeViking call request for Viking ID ${completeId.toNumber()}`);
 
-                    EthHelper.CONTRACT.functions.completeViking(completeId, { gasPrice: EthHelper.GAS_PRICE, gasLimit: 40000 }).then(
+                    EthHelper.CONTRACT.functions.completeViking(completeId, { gasPrice: EthHelper.GAS_PRICE }).then(
                         () => {
                             next();
                         },
