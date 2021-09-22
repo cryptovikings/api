@@ -178,9 +178,19 @@ export class EthHelper {
                 if (completeId) {
                     EthHelper.LOGGER.info(`EthHelper [Queue]: sending completeViking call request for Viking ID ${completeId.toNumber()}`);
 
-                    EthHelper.CONTRACT.functions.completeViking(completeId, { gasPrice: EthHelper.GAS_PRICE }).then(
-                        () => {
-                            next();
+                    EthHelper.CONTRACT.completeViking(completeId, { gasPrice: EthHelper.GAS_PRICE }).then(
+                        (response) => {
+                            response.wait().then(
+                                () => {
+                                    next();
+                                },
+                                (err) => {
+                                    // eslint-disable-next-line
+                                    EthHelper.LOGGER.error(`EthHelper [Queue]: error waiting for confirmation of completeViking for Viking ID ${completeId.toNumber()}:`, err);
+
+                                    next();
+                                }
+                            );
                         },
                         (err) => {
                             EthHelper.LOGGER.error(`EthHelper [Queue]: error during completeViking call request for Viking ID ${completeId.toNumber()}:`, err);
@@ -199,14 +209,13 @@ export class EthHelper {
 
                         EthHelper.CONTRACT.resolveViking(resolveId, { gasPrice: EthHelper.GAS_PRICE }).then(
                             (response) => {
-                                // wait for the resolveViking transaction to be confirmed to ensure that we're not sending further transactions alongside the internals
                                 response.wait().then(
                                     () => {
                                         next();
                                     },
                                     (err) => {
                                         // eslint-disable-next-line
-                                        EthHelper.LOGGER.error(`EthHelper [Queue]: error waiting for confirmation of resolveViking transaction for Viking ID ${resolveId.toNumber()}:`, err);
+                                        EthHelper.LOGGER.error(`EthHelper [Queue]: error waiting for confirmation of resolveViking for Viking ID ${resolveId.toNumber()}:`, err);
 
                                         next();
                                     }
@@ -227,9 +236,19 @@ export class EthHelper {
                         if (generateId) {
                             EthHelper.LOGGER.info(`EthHelper [Queue]: sending generateViking call request for Viking ID ${generateId.toNumber()}`);
 
-                            EthHelper.CONTRACT.functions.generateViking(generateId, { gasPrice: EthHelper.GAS_PRICE }).then(
-                                () => {
-                                    next();
+                            EthHelper.CONTRACT.generateViking(generateId, { gasPrice: EthHelper.GAS_PRICE }).then(
+                                (response) => {
+                                    response.wait().then(
+                                        () => {
+                                            next();
+                                        },
+                                        (err) => {
+                                            // eslint-disable-next-line
+                                            EthHelper.LOGGER.error(`EthHelper [Queue]: error waiting for confirmation of generateViking for Viking ID ${generateId.toNumber()}:`, err);
+
+                                            next();
+                                        }
+                                    );
                                 },
                                 (err) => {
                                     EthHelper.LOGGER.error(`EthHelper [Queue]: error during generateViking call request for Viking ID ${generateId.toNumber()}:`, err);
@@ -448,21 +467,14 @@ export class EthHelper {
             if (!stats.appearance.isZero() && !components.beard) {
                 EthHelper.LOGGER.info(`EthHelper [synchronizeResolvedVikings]: VikingComponents for ID ${i} void; sending resolveViking() call request`);
 
-                const response = await EthHelper.CONTRACT.resolveViking(i, { gasPrice: EthHelper.GAS_PRICE }).catch((err) => {
-                    EthHelper.LOGGER.error(`EthHelper [synchronizeResolvedVikings]: error during resolveViking() call request for ID ${i}:`, err);
-                });
-
-                if (response) {
-                    await response.wait().then(
-                        () => {
-                            count++;
-                        },
-                        (err) => {
-                            // eslint-disable-next-line
-                            EthHelper.LOGGER.error(`EthHelper [synchronizeResolvedVikings]: error waiting for confirmation of resolveViking transaction for Viking ID ${i}:`, err);
-                        }
-                    );
-                }
+                await EthHelper.CONTRACT.resolveViking(i, { gasPrice: EthHelper.GAS_PRICE }).then(
+                    () => {
+                        count++;
+                    },
+                    (err) => {
+                        EthHelper.LOGGER.error(`EthHelper [synchronizeResolvedVikings]: error during resolveViking() call request for ID ${i}:`, err);
+                    }
+                );
             }
         }
 
@@ -497,7 +509,7 @@ export class EthHelper {
             if (data.appearance.isZero()) {
                 EthHelper.LOGGER.info(`EthHelper [synchronizeGeneratedVikings]: VikingStats for ID ${i} void; sending generateViking() call request`);
 
-                await EthHelper.CONTRACT.functions.generateViking(i, { gasPrice: EthHelper.GAS_PRICE }).then(
+                await EthHelper.CONTRACT.generateViking(i, { gasPrice: EthHelper.GAS_PRICE }).then(
                     () => {
                         count++;
                     },

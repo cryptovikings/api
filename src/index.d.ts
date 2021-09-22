@@ -31,7 +31,14 @@ declare type ItemCondition = 'TBC' | 'None' | 'Destroyed' | 'Battered' | 'War To
  * Contract definition, extending `ethers.Contract`, and adding correctly-typed and strict signatures for known ABI hooks
  */
 declare interface NornirContract extends Contract {
+    /** Contract generateViking() */
+    generateViking(id: BigNumber | number, overrides?: { gasPrice?: number }): Promise<TransactionResponse>;
+
+    /** Contract resolveViking() */
     resolveViking(id: BigNumber | number, overrides?: { gasPrice?: number }): Promise<TransactionResponse>;
+
+    /** Contract completeViking() */
+    completeViking(id: BigNumber | number, overrides?: { gasPrice?: number }): Promise<TransactionResponse>;
 
     // override the `functions` property of ethers.Contract to add our methods
     functions: {
@@ -55,15 +62,6 @@ declare interface NornirContract extends Contract {
 
         /** getter for Contract resolvedVikingCount */
         resolvedVikingCount(): Promise<Array<BigNumber>>;
-
-        /** Contract generateViking() */
-        generateViking(id: BigNumber | number, overrides?: { gasPrice?: number }): Promise<void>;
-
-        /** Contract resolveViking() */
-        // resolveViking(id: BigNumber | number, overrides?: { gasPrice?: number }): Promise<void>;
-
-        /** Contract completeViking() */
-        completeViking(id: BigNumber | number, overrides?: { gasPrice?: number }): Promise<void>;
     }
 }
 
