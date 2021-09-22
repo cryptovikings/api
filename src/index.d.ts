@@ -2,6 +2,7 @@ declare type Schema = import('mongoose').Schema;
 declare type Contract = import('ethers').Contract;
 declare type BigNumber = import('ethers').BigNumber;
 declare type ContractFunction = import('ethers').ContractFunction;
+declare type TransactionResponse = import('@ethersproject/abstract-provider').TransactionResponse;
 declare type VikingStats = import('./models/viking/vikingStructs.model').VikingStats;
 declare type VikingComponents = import('./models/viking/vikingStructs.model').VikingComponents;
 declare type VikingConditions = import('./models/viking/vikingStructs.model').VikingConditions;
@@ -30,6 +31,15 @@ declare type ItemCondition = 'TBC' | 'None' | 'Destroyed' | 'Battered' | 'War To
  * Contract definition, extending `ethers.Contract`, and adding correctly-typed and strict signatures for known ABI hooks
  */
 declare interface NornirContract extends Contract {
+    /** Contract generateViking() */
+    generateViking(id: BigNumber | number, overrides?: { gasPrice?: number }): Promise<TransactionResponse>;
+
+    /** Contract resolveViking() */
+    resolveViking(id: BigNumber | number, overrides?: { gasPrice?: number }): Promise<TransactionResponse>;
+
+    /** Contract completeViking() */
+    completeViking(id: BigNumber | number, overrides?: { gasPrice?: number }): Promise<TransactionResponse>;
+
     // override the `functions` property of ethers.Contract to add our methods
     functions: {
         /** ERC-721 `totalSupply()` */
@@ -52,18 +62,6 @@ declare interface NornirContract extends Contract {
 
         /** getter for Contract resolvedVikingCount */
         resolvedVikingCount(): Promise<Array<BigNumber>>;
-
-        /** Contract generateViking() */
-        generateViking(id: BigNumber | number, overrides?: { gasPrice?: number }): Promise<void>;
-
-        /** Contract resolveViking() */
-        resolveViking(id: BigNumber | number, overrides?: { gasPrice?: number }): Promise<void>;
-
-        /** Contract completeViking() */
-        completeViking(id: BigNumber | number, overrides?: { gasPrice?: number }): Promise<void>;
-
-        // re-implement the arbitrary index found in the original definition
-        [name: string]: ContractFunction;
     }
 }
 
