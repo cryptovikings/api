@@ -513,7 +513,7 @@ export class EthHelper {
         for (let i = 0; i < vikingCount; i++) {
             EthHelper.LOGGER.info(`EthHelper [synchronizeNames] synchronizing name for Viking with ID ${i}...`);
 
-            const { name } = await EthHelper.CONTRACT.functions.vikings(i);
+            const { name } = await EthHelper.CONTRACT.functions.vikingStats(i);
 
             await vikingService.updateOne({ number: i }, { name });
         }
