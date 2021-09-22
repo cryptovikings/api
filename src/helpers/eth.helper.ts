@@ -404,6 +404,7 @@ export class EthHelper {
                 // rationale: void data will cause a crash in trying to write the local viking; will be filled + responded to by synchronize[Generated|Resolved]Vikings()
                 if (!stats.appearance.isZero() && !!components.beard && !!conditions.boots) {
                     EthHelper.LOGGER.info(`EthHelper [synchronizeLocalVikings]: creating local Viking with ID ${i}`);
+
                     await EthHelper.generateVikingFromContract(i, stats, components, conditions);
                 }
                 else {
@@ -467,14 +468,16 @@ export class EthHelper {
             if (!stats.appearance.isZero() && !components.beard) {
                 EthHelper.LOGGER.info(`EthHelper [synchronizeResolvedVikings]: VikingComponents for ID ${i} void; sending resolveViking() call request`);
 
-                await EthHelper.CONTRACT.resolveViking(i, { gasPrice: EthHelper.GAS_PRICE }).then(
-                    () => {
-                        count++;
-                    },
-                    (err) => {
-                        EthHelper.LOGGER.error(`EthHelper [synchronizeResolvedVikings]: error during resolveViking() call request for ID ${i}:`, err);
-                    }
-                );
+                try {
+                    const response = await EthHelper.CONTRACT.resolveViking(i, { gasPrice: EthHelper.GAS_PRICE });
+
+                    await response.wait();
+
+                    count++;
+                }
+                catch (e) {
+                    EthHelper.LOGGER.error(`EthHelper [synchronizeResolvedVikings]: error executing or waiting for resolveViking() for ID ${i}:`, e);
+                }
             }
         }
 
@@ -509,14 +512,16 @@ export class EthHelper {
             if (data.appearance.isZero()) {
                 EthHelper.LOGGER.info(`EthHelper [synchronizeGeneratedVikings]: VikingStats for ID ${i} void; sending generateViking() call request`);
 
-                await EthHelper.CONTRACT.generateViking(i, { gasPrice: EthHelper.GAS_PRICE }).then(
-                    () => {
-                        count++;
-                    },
-                    (err) => {
-                        EthHelper.LOGGER.error(`EthHelper [synchronizeGeneratedVikings]: error during generateViking() call request for ID ${i}:`, err);
-                    }
-                );
+                try {
+                    const response = await EthHelper.CONTRACT.generateViking(i, { gasPrice: EthHelper.GAS_PRICE });
+
+                    await response.wait();
+
+                    count++;
+                }
+                catch (e) {
+                    EthHelper.LOGGER.error(`EthHelper [synchronizeGeneratedVikings]: error executing or waiting for generateViking() for ID ${i}:`, e);
+                }
             }
         }
 
